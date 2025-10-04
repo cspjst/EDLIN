@@ -28,7 +28,7 @@ typedef enum {
     // pre & post query commnnd arg(s)
     TOK_REPLACE,    // [range]Rold,new Replace text
     TOK_SEARCH,     // [range]S[string] Search for text
-    TOK_QREPLACE,   // [range]?Rold,new Replace text - interactive 
+    TOK_QREPLACE,   // [range]?Rold,new Replace text - interactive
     TOK_QSEARCH,    // [range]?S[string] Search for text - interactive
     // pre & post commnnd args
     TOK_TRANSFER,   // [toline]Tfilepath Transfer (insert the contents of a new file at the mark)
@@ -36,7 +36,7 @@ typedef enum {
     TOK_EMPTY,      // user hit return on whitespace line
     // error states
     TOK_SYNTAX,     // command ok but args wrong
-    TOK_UNKNOWN     // 
+    TOK_UNKNOWN     //
 } enum_token_t;
 
 typedef char edlin_line_t[EDLIN_LINE_SIZE];
@@ -53,7 +53,7 @@ typedef struct {
 typedef struct {
     enum_token_t token;
     edlin_size_t argc;
-    const char* argv[EDLIN_ARGC_MAX];
+    char* argv[EDLIN_ARGC_MAX];
     bool query;
 } edlin_cmd_t;
 
