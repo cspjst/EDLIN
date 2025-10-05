@@ -12,19 +12,21 @@ static const edlin_token_t EDLIN_TOKENS[] = {
     {'Q', TOK_QUIT},     // 2   Quit        Q (throw away changes)
     // number
     {'A', TOK_APPEND},   // 3   Append      [#lines]A
-    {'W', TOK_WRITE},    // 4   Write       [#lines]W
-    {'I', TOK_INSERT},   // 5   Insert      [line]I
+    {'I', TOK_INSERT},   // 4   Insert      [line]I
+    {'W', TOK_WRITE},    // 5   Write       [#lines]W
+    // number, payload
+    {'T', TOK_TRANSFER}, // 6  Transfer    [toline]Tfilepath
     // range
-    {'L', TOK_LIST},     // 6   List        [range]L
-    {'P', TOK_PAGE},     // 7   Page        [range]P
-    {'D', TOK_DELETE},   // 8   Delete      [range]D Delete lines
+    {'L', TOK_LIST},     // 7   List        [range]L
+    {'P', TOK_PAGE},     // 8   Page        [range]P
+    {'D', TOK_DELETE},   // 9   Delete      [range]D Delete lines
     // range, number
-    {'M', TOK_MOVE},     // 9   Move        [range],tolineM
-    {'C', TOK_COPY},     // 10  Copy        [range][,times]C
+    {'C', TOK_COPY},     // 10   Copy        [range][,times]C
+    {'M', TOK_MOVE},     // 11  Move        [range],tolineM
     // range, number, payload
-    {'R', TOK_REPLACE},  // 11  Replace     [range][?]R[old],[new]
-    {'S', TOK_SEARCH},   // 12  Search      [range][?]S[text]
-    {'T', TOK_TRANSFER}  // 13  Transfer    [toline]Tfilepath
+    {'R', TOK_REPLACE},  // 12  Replace     [range][?]R[old],[new]
+    {'S', TOK_SEARCH},   // 13  Search      [range][?]S[text]
+
 };
 
 // end, quit - no arguemnts
@@ -41,6 +43,7 @@ char* edlin_tokenize_EQ(edlin_cmd_t* cmd, char* input) {
     return input;
 }
 
+// can only get here via tokenize number
 char* edlin_tokenize_range(edlin_cmd_t* cmd, char* input) {
     char * p = input;                                           // copy input ptr
     if( *p != ',' &&                                            // range must start ,
@@ -55,10 +58,9 @@ char* edlin_tokenize_range(edlin_cmd_t* cmd, char* input) {
     while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
     if(*p == '\n' || *p == ';') {                               // reached a teminator
         cmd->token = TOK_SYNTAX;                                // syntax error
-        *p = NUL;                                               // null terminate arg
-        return q;
+        return p;
     }
-    if(*p == ',') return edlin_tokenize_range(cmd, p);          // continue
+    if(*p == ',') return edlin_tokenize_range(cmd, p);          // recursive
     return p;                                                   // range found
 }
 
@@ -111,6 +113,23 @@ char * edlin_tokenize_AWI(edlin_cmd_t* cmd, char* input) {
     return input;
 }
 
+char* edlin_tokenize_T(edlin_cmd_t* cmd, char* input) {
+    char * p = input;
+    if(toupper(*p) != 'T') return p;
+    if(cmd->argc > 1) cmd->token = TOK_SYNTAX;                  // too many args
+    else cmd->token = TOK_TRANSFER;
+    *p++ = NUL;
+    if(*p == '\n'|| *p == CTRL_Z) {
+        cmd->token = TOK_SYNTAX;      // no payload
+        return p;
+    }
+    cmd->argv[cmd->argc++] = p;
+    while(*p != '\n' && *p != CTRL_C && *p != CTRL_Z) p++;
+    // TODO: catch CTRL-Z for command chars
+    *p = NUL;
+    return p;
+}
+
 char* edlin_tokenize(edlin_cmd_t* cmd, char* input) {
     char* p = input;                                // series of fall through filters
     memset(cmd, 0, sizeof(edlin_cmd_t));            // zero out the cmd struct
@@ -126,6 +145,8 @@ char* edlin_tokenize(edlin_cmd_t* cmd, char* input) {
     p = edlin_tokenize_number(cmd, p);
     if(cmd->token) return p;
     p = edlin_tokenize_AWI(cmd, p);
+    if(cmd->token) return p;
+    p = edlin_tokenize_T(cmd, p);
     if(cmd->token) return p;
     p = edlin_tokenize_range(cmd, p);
     if(cmd->token) return p;

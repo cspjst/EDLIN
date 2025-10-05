@@ -20,6 +20,9 @@ typedef enum {
     TOK_APPEND,     // [#lines]A Append a line below the mark
     TOK_INSERT,     // [line]I Insert new lines before the mark
     TOK_WRITE,      // [#lines]W Write the file to disk
+    // single number, payload command
+    TOK_TRANSFER,   // [toline]Tfilepath Transfer (insert the contents of a new file at the mark)
+
     // range commands
     TOK_DELETE,     // [range]D Delete lines
     TOK_LIST,       // [range]L	List the file (mark at top unless set elsewhere)
@@ -32,8 +35,6 @@ typedef enum {
     TOK_SEARCH,     // [range]S[string] Search for text
     TOK_QREPLACE,   // [range]?Rold,new Replace text - interactive
     TOK_QSEARCH,    // [range]?S[string] Search for text - interactive
-    // number, payload command
-    TOK_TRANSFER,   // [toline]Tfilepath Transfer (insert the contents of a new file at the mark)
     // special cases
     TOK_EMPTY,      // user hit return on whitespace line
     // error states
