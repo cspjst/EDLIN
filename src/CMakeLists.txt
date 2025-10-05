@@ -23,11 +23,12 @@ if(WATCOM)
 add_compile_options(
     -0                  # Generate 8086/8088 instructions ONLY (no 286+)
     -e1                 # Minimal stack checking (saves bytes for 64KB segments)
-    -za99               # undocumented switch enable partial C99 compatibility
-    -ml                 # memory model options - large model
+    -os                 # favor code size over execution time
+    -za99               # enable partial C99 compatibility
+    -ms                 # memory model options - large model
     -bt=dos             # Target DOS
-    -l=dos              # DOS library
-    -od                 # Disable optimizations (prevents 286+ instruction sneaking in)
+    #-l=dos              # DOS library
+    #-od                 # Disable optimizations
     -w1                 # Mild warnings (avoid /w3 due to 8086 quirks)
     -zq                 # Quiet mode (cleaner output)
     #-dNDEBUG

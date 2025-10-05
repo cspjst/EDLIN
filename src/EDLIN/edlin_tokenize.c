@@ -119,13 +119,14 @@ char* edlin_tokenize_T(edlin_cmd_t* cmd, char* input) {
     if(cmd->argc > 1) cmd->token = TOK_SYNTAX;                  // too many args
     else cmd->token = TOK_TRANSFER;
     *p++ = NUL;
-    if(*p == '\n'|| *p == CTRL_Z) {
-        cmd->token = TOK_SYNTAX;      // no payload
+    if(*p == '\n' || *p == NUL) {
+        cmd->token = TOK_SYNTAX;                                // no payload
         return p;
     }
     cmd->argv[cmd->argc++] = p;
-    while(*p != '\n' && *p != CTRL_C && *p != CTRL_Z) p++;
-    // TODO: catch CTRL-Z for command chars
+    // TODO: handle CTRL-Z write own BIOS/DOS readline that use IOCTL
+    while(*p != '\n' && *p != NUL) p++;
+    // TODO: handle CTRL-V to enter ctrl codes
     *p = NUL;
     return p;
 }
