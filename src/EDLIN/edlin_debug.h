@@ -16,7 +16,7 @@ void debug_file_t(edlin_file_t* file) {
 }
 
 void debug_cmd_t(edlin_cmd_t* cmd) {
-    printf("token=%i argc=%i %c args: ", cmd->token, cmd->argc, cmd->query ?'?' :'-');
+    printf("token=%i pos=%i argc=%i args: ", cmd->token, cmd->pos, cmd->argc);
     for(int i = 0; i < cmd->argc; ++i) {
         printf(">%s< ", cmd->argv[i]);
     }

@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
             p = edlin_tokenize(&cmd, p);
             debug_cmd_t(&cmd);
             if(cmd.token == TOK_SYNTAX) {
-                edlin_panic(EDLIN_ERR_ENTRY, p);
+                edlin_panic(EDLIN_ERR_ENTRY, "");
                 break;
             }
             p++;

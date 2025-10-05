@@ -6,60 +6,105 @@
 #include <stdio.h>
 
 static const edlin_token_t EDLIN_TOKENS[] = {
+    // no args
     {'?', TOK_HELP},     // 0   Show help   ?
     {'E', TOK_END},      // 1   End         E (save file)
     {'Q', TOK_QUIT},     // 2   Quit        Q (throw away changes)
+    // number
     {'A', TOK_APPEND},   // 3   Append      [#lines]A
-    {'C', TOK_COPY},     // 4   Copy        [range][,times]C
-    {'D', TOK_DELETE},   // 5   Delete      [range]D Delete lines
-    {'I', TOK_INSERT},   // 6   Insert      [line]I
-    {'L', TOK_LIST},     // 7   List        [range]L
-    {'M', TOK_MOVE},     // 8   Move        [range],tolineM
-    {'P', TOK_PAGE},     // 9   Page        [range]P
-    {'W', TOK_WRITE},    // 10  Write       [#lines]W
+    {'W', TOK_WRITE},    // 4   Write       [#lines]W
+    {'I', TOK_INSERT},   // 5   Insert      [line]I
+    // range
+    {'L', TOK_LIST},     // 6   List        [range]L
+    {'P', TOK_PAGE},     // 7   Page        [range]P
+    {'D', TOK_DELETE},   // 8   Delete      [range]D Delete lines
+    // range, number
+    {'M', TOK_MOVE},     // 9   Move        [range],tolineM
+    {'C', TOK_COPY},     // 10  Copy        [range][,times]C
+    // range, number, payload
     {'R', TOK_REPLACE},  // 11  Replace     [range][?]R[old],[new]
     {'S', TOK_SEARCH},   // 12  Search      [range][?]S[text]
     {'T', TOK_TRANSFER}  // 13  Transfer    [toline]Tfilepath
 };
 
-char* edlin_tokenize_num(edlin_cmd_t* cmd, char* input) {
+// end, quit - no arguemnts
+char* edlin_tokenize_EQ(edlin_cmd_t* cmd, char* input) {
     char * p = input;
-    if(*p != '+' && *p != '-' && !isdigit(*p)) return input;
-    cmd->argv[0] = p++;
-    cmd->token = TOK_EDIT;
-    cmd->argc = 1;
-    while(isdigit(*p)) p++;
-    char* q = p;
-    while(*p == ' ' || *p == '\t') p++;
-    if(*p == '\n' || *p == ';') {
-        *q = NUL;
+    for(int i = 1; i < 3; ++i) {
+        if(toupper(*p) == EDLIN_TOKENS[i].ascii) {
+            if(cmd->argc) cmd->token = TOK_SYNTAX;              // quit and end have no args
+            else cmd->token = EDLIN_TOKENS[i].token;
+            *p = NUL;
+            return p;
+        }
+    }
+    return input;
+}
+
+char* edlin_tokenize_range(edlin_cmd_t* cmd, char* input) {
+    char * p = input;                                           // copy input ptr
+    if( *p != ',' &&                                            // range must start ,
+        *(p + 1) != '+' &&                                      // then be +
+        *(p + 1) != '-' &&                                      // or -
+        !isdigit(*(p + 1))                                      // or digit
+    ) return input;                                             // otherwise invalid
+    if(cmd->argc && *p == ',') *p++ = NUL;                      // null terminate previous arg
+    cmd->argv[cmd->argc++] = p++;                               // new arg
+    while(isdigit(*p)) p++;                                     // scan over digits
+    char* q = p;                                                // copy end ptr
+    while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
+    if(*p == '\n' || *p == ';') {                               // reached a teminator
+        cmd->token = TOK_SYNTAX;                                // syntax error
+        *p = NUL;                                               // null terminate arg
+        return q;
+    }
+    if(*p == ',') return edlin_tokenize_range(cmd, p);          // continue
+    return p;                                                   // range found
+}
+
+char* edlin_tokenize_number(edlin_cmd_t* cmd, char* input) {
+    char * p = input;                                           // copy input ptr
+    if( *p != '+' &&                                            // must start with +
+        *p != '-' &&                                            // or -
+        !isdigit(*p)                                            // or digit
+    ) return input;                                             // otherwise invalid
+    cmd->argv[cmd->argc++] = p++;                               // new arg
+    while(isdigit(*p)) p++;                                     // scan over digits
+    char* q = p;                                                // copy end ptr
+    while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
+    if(*p == '\n' || *p == ';') {                               // reached a teminator
+        cmd->token = TOK_EDIT;                                  // valid edit line number
+        *q = NUL;                                               // null terminate arg
         return p;
     }
-    cmd->token = TOK_ERROR;                         // continue
-    return input;
+    if(*p == ',') return edlin_tokenize_range(cmd, p);          // might be a range
+    return p;                                                   // number found
 }
 
 char* edlin_tokenize_dot(edlin_cmd_t* cmd, char* input) {
     char * p = input;
     if(*p != '.') return input;
     cmd->argv[0] = p++;
-    cmd->token = TOK_EDIT;
     cmd->argc = 1;
     char* q = p;
-    while(*p == ' ' || *p == '\t') p++;
+    while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
     if(*p == '\n' || *p == ';') {
+        cmd->token = TOK_EDIT;
         *q = NUL;
         return p;
     }
-    cmd->token = TOK_SYNTAX;                        // halt
+    cmd->token = TOK_SYNTAX;
     return input;
 }
 
-char* edlin_tokenize_EQ(edlin_cmd_t* cmd, char* input) {
+// append, write, insert - 1 optional number
+char * edlin_tokenize_AWI(edlin_cmd_t* cmd, char* input) {
     char * p = input;
-    for(int i = 1; i < 3; ++i) {
+    for(int i = 3; i < 6; ++i) {
         if(toupper(*p) == EDLIN_TOKENS[i].ascii) {
-            cmd->token = EDLIN_TOKENS[i].token;
+            if(cmd->argc > 1) cmd->token = TOK_SYNTAX;          // too many args
+            else cmd->token = EDLIN_TOKENS[i].token;
+            *p = NUL;
             return p;
         }
     }
@@ -70,23 +115,22 @@ char* edlin_tokenize(edlin_cmd_t* cmd, char* input) {
     char* p = input;                                // series of fall through filters
     memset(cmd, 0, sizeof(edlin_cmd_t));            // zero out the cmd struct
     while(*p == ' ' || *p == '\t') p++;             // scan over any whitespace
-    if(*p == '\n' || *p == NUL) {                                // empty input string
+    if(*p == '\n' || *p == NUL) {                   // empty input string
         cmd->token = TOK_EMPTY;
         return p;
     }
-    if(*p == ' ') p++;                              // skip delimiters
-    // tok A,C,D,I,L,M,P,W
-    //printf(">%s<\n", p);
     p = edlin_tokenize_EQ(cmd, p);
     if(cmd->token) return p;
-    //printf(">%s<\n", p);
     p = edlin_tokenize_dot(cmd, p);
     if(cmd->token) return p;
-    //printf(">%s<\n", p);
-    p = edlin_tokenize_num(cmd, p);
+    p = edlin_tokenize_number(cmd, p);
     if(cmd->token) return p;
-    p++;
+    p = edlin_tokenize_AWI(cmd, p);
+    if(cmd->token) return p;
+    p = edlin_tokenize_range(cmd, p);
+    if(cmd->token) return p;
     cmd->token = TOK_SYNTAX;
+    p++;
     return input;
 }
 
