@@ -61,10 +61,9 @@ The most fascinating modal shift occurs when you enter a line number alone (e.g.
 ### 4. Memory Management Commands: A Testament to Hardware Constraints
 Some commands reveal the brutal memory limitations of the early 1980s. The A (Append) command is a prime example. It was not for adding typed content, but for loading the next segment of a file from disk into RAM. When a file was too large for the 64KB memory limit, EDLIN would only load a portion. `[#lines]A` was a memory management tool, appending the next block of the file from disk to make it editable.
 
+### 5. The "Incorrect DOS Version" Debacle: Redeeming Tim Paterson's Design
+One of EDLIN's most infamous quirks was its stubborn refusal to run on DOS versions other than the one it was shipped with, displaying the frustrating "Incorrect DOS version" error. Through implementing EDLIN myself, I've come to understand this wasn't poor engineering—it was necessary survival in an era of rapidly evolving system internals. Paterson's EDLIN was highly optimised to work within severe hardware constraints of the early IBM PC system. Unfortunately, this engineering pragmatism of system-Level optimizations bound EDLIN to the version of DOS that it came with. Therefore, the decision to validate the execution environment was the responsible choice. The alternative would have been mysterious crashes and corrupted files when EDLIN encountered unexpected system layouts.
+
 ## Implementation notes
 
-For this implementation of EDLIN the _command mode_ usage is slightly different, such that, the user does not have to type the control characters mandated by the original Microsoft DOS version of EDLIN:
-+ To exit from _insert mode_ rather than typing `Ctrl-C` (in the same way as the FreeDOSS version of EDLIN) the user enters a single fullstop (aka period) on an empty line and hits `Enter` - this will switch to _command mode_.
-+ Using the (R)eplace command, rather than separating the search and replace text strings with `Ctrl-Z` a simple comma between them will suffice e.g. `?Rold,new`
-+ Multiple commands on one line is valid in EDLIN but rather than permitting one command to follow another without any special separators - other than a semicolon `;` after single line number or range - my version insists on semicolon separator between all commands on a single line.
-+ When in template mode rather using `INS` to switch into inser mode and `INS F3` to switch back my EDLIN uses `INS` to toggle modes.
+
