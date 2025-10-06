@@ -40,7 +40,7 @@ bool edlin_config(int argc, char* argv[], edlin_file_t* file) {
         }
         switch (toupper(argv[i][1])) {
         case 'B':
-            file->ignoreCRTLZ = true;
+            file->raw = true;
             break;
         default:
             edlin_panic(EDLIN_ERR_UKNOWN_OPT,argv[i]);

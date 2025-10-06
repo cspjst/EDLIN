@@ -7,7 +7,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-
 edlin_file_t* edlin_new_file() {
     // 1. allocate a file struct
     edlin_file_t* file = malloc(sizeof(edlin_file_t));
@@ -23,7 +22,7 @@ edlin_file_t* edlin_new_file() {
     }
     // 3. set defaults
     file->filepath = NULL;
-    file->ignoreCRTLZ = false;
+    file->raw = false;
     file->size = 0;
     return file;
 }
@@ -67,16 +66,16 @@ bool edlin_load_file(edlin_file_t* file) {
         edlin_panic(EDLIN_ERR_NULL, "Null pointer in load file");
         return false;
     }
-    FILE* f = fopen((const char*)file->filepath, "r");
+    // select binary or text file open
+    FILE* f = fopen((const char*)file->filepath, file->raw ? "rb" : "r");
     if (!f) {
         file->size = 0;
         return true;    // create file when save
     }
     file->size = 0;
     edlin_line_t* line;
-    bool reading = true;
 
-    while (reading) {
+    while (true) {
         if (file->size == file->capacity) {
             fclose(f);
             return false;
@@ -88,9 +87,7 @@ bool edlin_load_file(edlin_file_t* file) {
         }
         if (!edlin_read_line(line, f)) {
             free(line);
-            reading = false;
-
-            continue;
+            break;
         }
         file->lines[file->size++] = line;
     }

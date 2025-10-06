@@ -56,7 +56,7 @@ char* edlin_tokenize_range(edlin_cmd_t* cmd, char* input) {
     while(isdigit(*p)) p++;                                     // scan over digits
     char* q = p;                                                // copy end ptr
     while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
-    if(*p == '\n' || *p == ';') {                               // reached a teminator
+   ** if(*p == '\n' || *p == ';') {                               // reached a teminator
         cmd->token = TOK_SYNTAX;                                // syntax error
         return p;
     }
@@ -74,7 +74,7 @@ char* edlin_tokenize_number(edlin_cmd_t* cmd, char* input) {
     while(isdigit(*p)) p++;                                     // scan over digits
     char* q = p;                                                // copy end ptr
     while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
-    if(*p == '\n' || *p == ';') {                               // reached a teminator
+   ** if(*p == '\n' || *p == ';') {                               // reached a teminator
         cmd->token = TOK_EDIT;                                  // valid edit line number
         *q = NUL;                                               // null terminate arg
         return p;
@@ -119,13 +119,13 @@ char* edlin_tokenize_T(edlin_cmd_t* cmd, char* input) {
     if(cmd->argc > 1) cmd->token = TOK_SYNTAX;                  // too many args
     else cmd->token = TOK_TRANSFER;
     *p++ = NUL;
-    if(*p == '\n' || *p == NUL) {
+    printf("*** %i ***", *p);
+    if(*p == 13 || *p == CTRL_Z) {
         cmd->token = TOK_SYNTAX;                                // no payload
         return p;
     }
     cmd->argv[cmd->argc++] = p;
-    // TODO: handle CTRL-Z write own BIOS/DOS readline that use IOCTL
-    while(*p != '\n' && *p != NUL) p++;
+    while(*p != '\n' && *p != CTRL_Z) p++;
     // TODO: handle CTRL-V to enter ctrl codes
     *p = NUL;
     return p;

@@ -7,6 +7,8 @@
 
 typedef uint16_t edlin_size_t;
 
+typedef int fmode_t;
+
 // use sequential char values to in-place tokenize and make separating out command types easier using > and <
 typedef enum {
     TOK_ERROR = 0,  // error
@@ -46,7 +48,7 @@ typedef char edlin_line_t[EDLIN_LINE_SIZE];
 
 typedef struct {
     char* filepath;
-    bool ignoreCRTLZ;
+    bool raw;               // raw binary mode
     edlin_line_t** lines;   // array of pointers to line buffers
     edlin_size_t pos;       // insert position line number
     edlin_size_t size;
