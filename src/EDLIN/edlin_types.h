@@ -30,6 +30,8 @@ typedef struct {
 typedef struct {
     char ascii;
     enum_token_t token;
+    edlin_size_t argc;
+    edlin_size_t strc;
 } edlin_token_t;
 
 #endif
