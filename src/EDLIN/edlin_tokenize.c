@@ -14,7 +14,7 @@ static const edlin_token_t LOOKUP_TOKENS[] = {
     {'A', TOK_APPEND,     1,      0,     "Append      [#lines]A"},
     {'I', TOK_INSERT,     1,      0,     "Insert      [line]I"},
     {'W', TOK_WRITE,      1,      0,     "Write       [#lines]W"},
-    {'T', TOK_TRANSFER,   1,      1,     "Transfer     [toline]Tfilepath"},
+    {'T', TOK_TRANSFER,   1,      1,     "Transfer    [toline]Tfilepath"},
     {'L', TOK_LIST,       2,      0,     "List        [range]L"},
     {'P', TOK_PAGE,       2,      0,     "Page        [range]P"},
     {'D', TOK_DELETE,     2,      0,     "Delete      [range]D Delete lines"},
