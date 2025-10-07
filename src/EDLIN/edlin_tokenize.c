@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 
-static const edlin_token_t EDLIN_TOKENS[] = {
+static const edlin_token_t LOOKUP_TOKENS[] = {
     // no args
     {'?', TOK_HELP},     // 0   Show help   ?
     {'E', TOK_END},      // 1   End         E (save file)
@@ -33,7 +33,7 @@ static const edlin_token_t EDLIN_TOKENS[] = {
 char* edlin_tokenize_EQ(edlin_cmd_t* cmd, char* input) {
     char * p = input;
     for(int i = 1; i < 3; ++i) {
-        if(toupper(*p) == EDLIN_TOKENS[i].ascii) {
+        if(toupper(*p) == LOOKUP_TOKENS[i].ascii) {
             if(cmd->argc) cmd->token = TOK_SYNTAX;              // quit and end have no args
             else cmd->token = EDLIN_TOKENS[i].token;
             *p = NUL;
@@ -103,7 +103,7 @@ char* edlin_tokenize_dot(edlin_cmd_t* cmd, char* input) {
 char * edlin_tokenize_AWI(edlin_cmd_t* cmd, char* input) {
     char * p = input;
     for(int i = 3; i < 6; ++i) {
-        if(toupper(*p) == EDLIN_TOKENS[i].ascii) {
+        if(toupper(*p) == LOOKUP_TOKENS[i].ascii) {
             if(cmd->argc > 1) cmd->token = TOK_SYNTAX;          // too many args
             else cmd->token = EDLIN_TOKENS[i].token;
             *p = NUL;
