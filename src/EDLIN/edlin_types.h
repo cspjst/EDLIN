@@ -2,6 +2,7 @@
 #define EDLIN_TYPES_H
 
 #include "edlin_constants.h"
+#include "edlin_tokens.h"
 #include <stdint.h>
 #include <stdbool.h>
 
