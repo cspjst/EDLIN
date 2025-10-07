@@ -6,27 +6,21 @@
 #include <stdio.h>
 
 static const edlin_token_t LOOKUP_TOKENS[] = {
-    // no args
-    {'?', TOK_HELP},     // 0   Show help   ?
-    {'E', TOK_END},      // 1   End         E (save file)
-    {'Q', TOK_QUIT},     // 2   Quit        Q (throw away changes)
-    // number
-    {'A', TOK_APPEND},   // 3   Append      [#lines]A
-    {'I', TOK_INSERT},   // 4   Insert      [line]I
-    {'W', TOK_WRITE},    // 5   Write       [#lines]W
-    // number, payload
-    {'T', TOK_TRANSFER}, // 6  Transfer    [toline]Tfilepath
-    // range
-    {'L', TOK_LIST},     // 7   List        [range]L
-    {'P', TOK_PAGE},     // 8   Page        [range]P
-    {'D', TOK_DELETE},   // 9   Delete      [range]D Delete lines
-    // range, number
-    {'C', TOK_COPY},     // 10   Copy        [range][,times]C
-    {'M', TOK_MOVE},     // 11  Move        [range],tolineM
-    // range, number, payload
-    {'R', TOK_REPLACE},  // 12  Replace     [range][?]R[old],[new]
-    {'S', TOK_SEARCH},   // 13  Search      [range][?]S[text]
-
+    //ch    token  argc: pre     post  
+    {'?', TOK_HELP,       0,      0},    // 0   Show help   ?
+    {'E', TOK_END,        0       0},    // 1   End         E (save file)
+    {'Q', TOK_QUIT,       0       0},    // 2   Quit        Q (throw away changes)
+    {'A', TOK_APPEND,     1,      0},    // 3   Append      [#lines]A
+    {'I', TOK_INSERT,     1,      0},    // 4   Insert      [line]I
+    {'W', TOK_WRITE,      1,      0},    // 5   Write       [#lines]W
+    {'T', TOK_TRANSFER,   1,      1},    // 6  Transfer     [toline]Tfilepath
+    {'L', TOK_LIST,       2,      0},    // 7   List        [range]L
+    {'P', TOK_PAGE,       2,      0},    // 8   Page        [range]P
+    {'D', TOK_DELETE,     2,      0},    // 9   Delete      [range]D Delete lines
+    {'C', TOK_COPY,       3,      0},    // 10  Copy        [range][,times]C
+    {'M', TOK_MOVE,       3,      0},    // 11  Move        [range],tolineM
+    {'R', TOK_REPLACE,    3,      2},    // 12  Replace     [range][?]R[old],[new]
+    {'S', TOK_SEARCH,     3,      1},    // 13  Search      [range][?]S[text]
 };
 
 // end, quit - no arguemnts
