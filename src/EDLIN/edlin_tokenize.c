@@ -6,21 +6,22 @@
 #include <stdio.h>
 
 static const edlin_token_t LOOKUP_TOKENS[] = {
-    //ch    token  argc: pre     post  
-    {'?', TOK_HELP,       0,      0},    // 0   Show help   ?
-    {'E', TOK_END,        0       0},    // 1   End         E (save file)
-    {'Q', TOK_QUIT,       0       0},    // 2   Quit        Q (throw away changes)
-    {'A', TOK_APPEND,     1,      0},    // 3   Append      [#lines]A
-    {'I', TOK_INSERT,     1,      0},    // 4   Insert      [line]I
-    {'W', TOK_WRITE,      1,      0},    // 5   Write       [#lines]W
-    {'T', TOK_TRANSFER,   1,      1},    // 6  Transfer     [toline]Tfilepath
-    {'L', TOK_LIST,       2,      0},    // 7   List        [range]L
-    {'P', TOK_PAGE,       2,      0},    // 8   Page        [range]P
-    {'D', TOK_DELETE,     2,      0},    // 9   Delete      [range]D Delete lines
-    {'C', TOK_COPY,       3,      0},    // 10  Copy        [range][,times]C
-    {'M', TOK_MOVE,       3,      0},    // 11  Move        [range],tolineM
-    {'R', TOK_REPLACE,    3,      2},    // 12  Replace     [range][?]R[old],[new]
-    {'S', TOK_SEARCH,     3,      1},    // 13  Search      [range][?]S[text]
+    //ch    token  argc: pre     post      usage
+    ['.', TOK_EDIT,       0,      0,     "Edit        . (current line)"},    
+    {'?', TOK_HELP,       0,      0,     "Show help   ?"},
+    {'E', TOK_END,        0       0,     "End         E (save file)"},
+    {'Q', TOK_QUIT,       0       0,     "Quit        Q (throw away changes)"},
+    {'A', TOK_APPEND,     1,      0,     "Append      [#lines]A"},
+    {'I', TOK_INSERT,     1,      0,     "Insert      [line]I"},
+    {'W', TOK_WRITE,      1,      0,     "Write       [#lines]W"},
+    {'T', TOK_TRANSFER,   1,      1,     "Transfer     [toline]Tfilepath"},
+    {'L', TOK_LIST,       2,      0,     "List        [range]L"},
+    {'P', TOK_PAGE,       2,      0,     "Page        [range]P"},
+    {'D', TOK_DELETE,     2,      0,     "Delete      [range]D Delete lines"},
+    {'C', TOK_COPY,       3,      0,     "Copy        [range][,times]C"},
+    {'M', TOK_MOVE,       3,      0,     "Move        [range],tolineM"},
+    {'R', TOK_REPLACE,    3,      2,     "Replace     [range][?]R[old],[new]"},
+    {'S', TOK_SEARCH,     3,      1,     "Search      [range][?]S[text]"}
 };
 
 // end, quit - no arguemnts
@@ -68,7 +69,7 @@ char* edlin_tokenize_number(edlin_cmd_t* cmd, char* input) {
     while(isdigit(*p)) p++;                                     // scan over digits
     char* q = p;                                                // copy end ptr
     while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
-   ** if(*p == CR || *p == ';') {                               // reached a teminator
+    if(*p == CR || *p == ';') {                               // reached a teminator
         cmd->token = TOK_EDIT;                                  // valid edit line number
         *q = NUL;                                               // null terminate arg
         return p;
@@ -89,7 +90,6 @@ char* edlin_tokenize_dot(edlin_cmd_t* cmd, char* input) {
         *q = NUL;
         return p;
     }
-    cmd->token = TOK_SYNTAX;
     return input;
 }
 
