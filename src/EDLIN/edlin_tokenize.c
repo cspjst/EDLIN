@@ -56,7 +56,7 @@ char* edlin_tokenize_range(edlin_cmd_t* cmd, char* input) {
     while(isdigit(*p)) p++;                                     // scan over digits
     char* q = p;                                                // copy end ptr
     while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
-   ** if(*p == '\n' || *p == ';') {                               // reached a teminator
+   ** if(*p == CR || *p == ';') {                               // reached a teminator
         cmd->token = TOK_SYNTAX;                                // syntax error
         return p;
     }
@@ -74,7 +74,7 @@ char* edlin_tokenize_number(edlin_cmd_t* cmd, char* input) {
     while(isdigit(*p)) p++;                                     // scan over digits
     char* q = p;                                                // copy end ptr
     while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
-   ** if(*p == '\n' || *p == ';') {                               // reached a teminator
+   ** if(*p == CR || *p == ';') {                               // reached a teminator
         cmd->token = TOK_EDIT;                                  // valid edit line number
         *q = NUL;                                               // null terminate arg
         return p;
@@ -90,7 +90,7 @@ char* edlin_tokenize_dot(edlin_cmd_t* cmd, char* input) {
     cmd->argc = 1;
     char* q = p;
     while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
-    if(*p == '\n' || *p == ';') {
+    if(*p == CR || *p == ';') {
         cmd->token = TOK_EDIT;
         *q = NUL;
         return p;
@@ -119,13 +119,12 @@ char* edlin_tokenize_T(edlin_cmd_t* cmd, char* input) {
     if(cmd->argc > 1) cmd->token = TOK_SYNTAX;                  // too many args
     else cmd->token = TOK_TRANSFER;
     *p++ = NUL;
-    printf("*** %i ***", *p);
-    if(*p == 13 || *p == CTRL_Z) {
+    if(*p == CR || *p == CTRL_Z) {
         cmd->token = TOK_SYNTAX;                                // no payload
         return p;
     }
     cmd->argv[cmd->argc++] = p;
-    while(*p != '\n' && *p != CTRL_Z) p++;
+    while(*p != CR && *p != CTRL_Z) p++;
     // TODO: handle CTRL-V to enter ctrl codes
     *p = NUL;
     return p;
