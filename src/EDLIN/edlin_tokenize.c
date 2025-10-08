@@ -4,29 +4,29 @@
 #include "edlin_tokens.h"
 #include <ctype.h>
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 
 static const edlin_token_t LOOKUP_TOKENS[] = {
     //ch    token  argc: pre     post      usage
-    {'.', TOK_EDIT,       0,      0,     "Edit        . (current line)"},
     {'?', TOK_HELP,       0,      0,     "Show help   ?"},
+    {'.', TOK_EDIT,       0,      0,     "Edit        . (current line)"},
     {'E', TOK_END,        0,      0,     "End         E (save file)"},
     {'Q', TOK_QUIT,       0,      0,     "Quit        Q (throw away changes)"},
     {'A', TOK_APPEND,     1,      0,     "Append      [#lines]A"},
     {'I', TOK_INSERT,     1,      0,     "Insert      [line]I"},
     {'W', TOK_WRITE,      1,      0,     "Write       [#lines]W"},
-    {'T', TOK_TRANSFER,   1,      1,     "Transfer    [toline]Tfilepath"},
     {'L', TOK_LIST,       2,      0,     "List        [range]L"},
     {'P', TOK_PAGE,       2,      0,     "Page        [range]P"},
     {'D', TOK_DELETE,     2,      0,     "Delete      [range]D Delete lines"},
     {'C', TOK_COPY,       3,      0,     "Copy        [range][,times]C"},
     {'M', TOK_MOVE,       3,      0,     "Move        [range],tolineM"},
+    {'T', TOK_TRANSFER,   1,      1,     "Transfer    [toline]Tfilepath"},
     {'R', TOK_REPLACE,    3,      2,     "Replace     [range][?]R[old],[new]"},
     {'S', TOK_SEARCH,     3,      1,     "Search      [range][?]S[text]"}
 };
 
-// recursively tokenize a comma-separated list of numbers/ranges
-char* edlin_tokenize_csv(edlin_cmd_t* cmd, char* input) {
+// recursively tokenize a comma-separated list of numbers
+char* edlin_tokenize_num(edlin_cmd_t* cmd, char* input) {
     char * p = input;
     if(*p == ',') {                                             // leading comma -> omitted first field (current line)
         *p = NUL;                                               // empty string token
@@ -38,7 +38,7 @@ char* edlin_tokenize_csv(edlin_cmd_t* cmd, char* input) {
     while(isdigit(*p)) p++;                                     // consume remainder
     if(*p == ',') {                                             // comma separator -> more fields follow
         *p++ = NUL;                                             // null terminate current field, consume comma
-        return edlin_tokenize_csv(cmd, p);                      // recurse...
+        return edlin_tokenize_num(cmd, p);                      // recurse...
     }
     if(*p == CR || *p == ';') {                                 // end of input
         *p = NUL;                                               // null terminate final field
@@ -47,7 +47,42 @@ char* edlin_tokenize_csv(edlin_cmd_t* cmd, char* input) {
     return p;
 }
 
+// recursively tokenize a comma-separated list of strings ctrl-z or null terminated
+char* edlin_tokenize_str(edlin_cmd_t* cmd, char* input) {
+    char * p = input;
 
+    return input;
+}
+
+char* edlin_tokenize_query(edlin_cmd_t* cmd, char* input) {
+    char * p = input;
+    if(*p++ != '?') return input;
+    for(int i = TOK_TRANSFER; i < TOK_SEARCH; ++i) {
+        if(toupper(*p) == LOOKUP_TOKENS[i].ascii) {
+            if(cmd->argc > LOOKUP_TOKENS[i].argc) cmd->token = TOK_SYNTAX;
+            else cmd->token = LOOKUP_TOKENS[i].token + TOK_QUERY;
+            *p = *input = NUL;
+            return edlin_tokenize_str(cmd, p + 1);
+        }
+    }
+    if(cmd->argc > LOOKUP_TOKENS[0].argc) cmd->token = TOK_SYNTAX;
+    else cmd->token = LOOKUP_TOKENS[0].token;
+    return input;
+}
+
+char* edlin_tokenize_char(edlin_cmd_t* cmd, char* input) {
+    char * p = input;
+    for(int i = 1; i < TOK_TRANSFER; ++i) {
+        if(toupper(*p) == LOOKUP_TOKENS[i].ascii) {
+            if(cmd->argc > LOOKUP_TOKENS[i].argc) cmd->token = TOK_SYNTAX;
+            else cmd->token = LOOKUP_TOKENS[i].token;
+            *p = NUL;
+            if(LOOKUP_TOKENS[i].strc) p = edlin_tokenize_str(cmd, p + 1);
+            return p;
+        }
+    }
+    return input;
+}
 
 
 char* edlin_tokenize(edlin_cmd_t* cmd, char* input) {
@@ -58,11 +93,12 @@ char* edlin_tokenize(edlin_cmd_t* cmd, char* input) {
         cmd->token = TOK_EMPTY;
         return p;
     }
-    p = edlin_tokenize_csv(cmd, p);
+    p = edlin_tokenize_num(cmd, p);
     if(cmd->token) return p;
-
-
-
+    p = edlin_tokenize_query(cmd, p);
+    if(cmd->token) return p;
+    p = edlin_tokenize_char(cmd, p);
+    if(cmd->token) return p;
     cmd->token = TOK_SYNTAX;
     p++;
     return input;
