@@ -10,6 +10,7 @@ static const edlin_token_t LOOKUP_TOKENS[] = {
     //ch    token  argc: pre     post      usage
     {'?', TOK_HELP,       0,      0,     "Show help   ?"},
     {'.', TOK_EDIT,       0,      0,     "Edit        . (current line)"},
+    {'#', TOK_HASH,       0,      0,     "Edit        # (beyond last line)"},
     {'E', TOK_END,        0,      0,     "End         E (save file)"},
     {'Q', TOK_QUIT,       0,      0,     "Quit        Q (throw away changes)"},
     {'A', TOK_APPEND,     1,      0,     "Append      [#lines]A"},
@@ -25,20 +26,34 @@ static const edlin_token_t LOOKUP_TOKENS[] = {
     {'S', TOK_SEARCH,     3,      1,     "Search      [range][?]S[text]"}
 };
 
-// recursively tokenize a comma-separated list of numbers
-char* edlin_tokenize_num(edlin_cmd_t* cmd, char* input) {
+char* edlin_trim_whitespace(char* p) {
+    char* q = p;
+    while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
+    if(p > q) *q = NUL;                                         // null terminate
+    return p;
+}
+
+// recursively tokenize a comma-separated list of <line>
+char* edlin_tokenize_line(edlin_cmd_t* cmd, char* input) {
     char * p = input;
     if(*p == ',') {                                             // leading comma -> omitted first field (current line)
         *p = NUL;                                               // empty string token
         cmd->argv[cmd->argc++] = p++;                           // store and advance past comma
     }
-    while(*p == ' ' || *p == '\t') p++;                         // skip whitespace
-    if(*p != '+' && *p != '-' && !isdigit(*p)) return input;    // not a valid number
-    cmd->argv[cmd->argc++] = p++;                               // store start of number
-    while(isdigit(*p)) p++;                                     // consume remainder
+    p = edlin_trim_whitespace(p);
+    if(
+        *p != '.' &&
+        *p != '#' &&
+        *p != '+' &&
+        *p != '-' &&
+        !isdigit(*p)
+    ) return input;                                             // not a valid <line>
+    cmd->argv[cmd->argc++] = p++;                               // store start of <line>
+    while(isdigit(*p)) p++;                                     // consume any remainder
+    p = edlin_trim_whitespace(p);
     if(*p == ',') {                                             // comma separator -> more fields follow
         *p++ = NUL;                                             // null terminate current field, consume comma
-        return edlin_tokenize_num(cmd, p);                      // recurse...
+        return edlin_tokenize_line(cmd, p);                     // recurse...
     }
     if(*p == CR || *p == ';') {                                 // end of input
         *p = NUL;                                               // null terminate final field
@@ -47,22 +62,26 @@ char* edlin_tokenize_num(edlin_cmd_t* cmd, char* input) {
     return p;
 }
 
-// recursively tokenize a comma-separated list of strings ctrl-z or null terminated
-char* edlin_tokenize_str(edlin_cmd_t* cmd, char* input) {
+// tokenize ctrl-z separated <string>
+char* edlin_tokenize_string(edlin_cmd_t* cmd, char* input, int strc) {
     char * p = input;
-
-    return input;
+    for(int i = 0; i < strc; ++i) {
+        cmd->argv[cmd->argc++] = p;
+        while(*p != CTRL_Z && *p != CR) p++;
+        *p++ = NUL;
+    }
+    return p;
 }
 
 char* edlin_tokenize_query(edlin_cmd_t* cmd, char* input) {
     char * p = input;
     if(*p++ != '?') return input;
-    for(int i = TOK_TRANSFER; i < TOK_SEARCH; ++i) {
+    for(int i = 14; i < 16; ++i) {
         if(toupper(*p) == LOOKUP_TOKENS[i].ascii) {
             if(cmd->argc > LOOKUP_TOKENS[i].argc) cmd->token = TOK_SYNTAX;
             else cmd->token = LOOKUP_TOKENS[i].token + TOK_QUERY;
             *p = *input = NUL;
-            return edlin_tokenize_str(cmd, p + 1);
+            return edlin_tokenize_string(cmd, p + 1, LOOKUP_TOKENS[i].strc);
         }
     }
     if(cmd->argc > LOOKUP_TOKENS[0].argc) cmd->token = TOK_SYNTAX;
@@ -72,12 +91,12 @@ char* edlin_tokenize_query(edlin_cmd_t* cmd, char* input) {
 
 char* edlin_tokenize_char(edlin_cmd_t* cmd, char* input) {
     char * p = input;
-    for(int i = 1; i < TOK_TRANSFER; ++i) {
+    for(int i = 1; i < 16; ++i) {
         if(toupper(*p) == LOOKUP_TOKENS[i].ascii) {
             if(cmd->argc > LOOKUP_TOKENS[i].argc) cmd->token = TOK_SYNTAX;
             else cmd->token = LOOKUP_TOKENS[i].token;
             *p = NUL;
-            if(LOOKUP_TOKENS[i].strc) p = edlin_tokenize_str(cmd, p + 1);
+            if(LOOKUP_TOKENS[i].strc) p = edlin_tokenize_string(cmd, p + 1, LOOKUP_TOKENS[i].strc);
             return p;
         }
     }
@@ -93,7 +112,7 @@ char* edlin_tokenize(edlin_cmd_t* cmd, char* input) {
         cmd->token = TOK_EMPTY;
         return p;
     }
-    p = edlin_tokenize_num(cmd, p);
+    p = edlin_tokenize_line(cmd, p);
     if(cmd->token) return p;
     p = edlin_tokenize_query(cmd, p);
     if(cmd->token) return p;
@@ -105,6 +124,19 @@ char* edlin_tokenize(edlin_cmd_t* cmd, char* input) {
 }
 
 /*
+if(*p == '.' || *p == '#') {                                // line markers
+    cmd->argv[cmd->argc++] = p++;
+    p = edlin_trim_whitespace(p);
+    if(*p == ',') {                                         // comma separator -> more fields follow
+        *p++ = NUL;                                         // null terminate current field, consume comma
+        return edlin_tokenize_num(cmd, p);                  // recurse...
+    }
+    if(*p == CR || *p == ';') {                                 // end of input
+        *p = NUL;                                               // null terminate final field
+        if(cmd->argc == 1) cmd->token = TOK_EDIT;               // single number ->  → implicit line edit
+    }
+    return p;
+}
 
 char* edlin_tokenize_dot(edlin_cmd_t* cmd, char* input) {
     char * p = input;

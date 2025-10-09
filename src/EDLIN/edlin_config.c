@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 static const char EDLIN_INTRO[] = " \
-\nEDLIN 0.02, copyright (c) 2025 Jeremy Thornton\n\
+\nEDLIN 0.03, copyright (c) 2025 Jeremy Thornton\n\
 This program comes with ABSOLUTELY NO WARRANTY.\n\
 It is free software, and you are welcome to redistribute it\n\
 under the terms of the MIT License.\n\n\

@@ -7,6 +7,7 @@ typedef enum {
     TOK_HELP,       // ? Show help
     TOK_QUERY,      // ? Interactive mode
     TOK_EDIT,       // line# Edit a single line
+    TOK_HASH,       // line after the last line number
     TOK_END,        // E End (save file)
     TOK_QUIT,       // Q Quit (throw away changes)
     // single number commands
