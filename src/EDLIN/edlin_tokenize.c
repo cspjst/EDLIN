@@ -69,10 +69,10 @@ char* edlin_tokenize_line(edlin_cmd_t* cmd, char* input) {
 // tokenize Ctrl+Z-delimited strings (for R/S commands: "old^Znew^Z")
 char* edlin_tokenize_string(edlin_cmd_t* cmd, char* input, int strc) {
     char * p = input;
-    for(int i = 0; i < strc; ++i) {
+    for(int i = 1; i <= strc; ++i) {
         cmd->argv[cmd->argc++] = p;                             // store string start
         while(*p != CTRL_Z && *p != CR) p++;                    // find Ctrl+Z or EOL
-        *p++ = NUL;                                             // null-terminate string
+        *p++ = NUL;                                             // null-terminate string and process next <string> arg
     }
     return p;
 }
