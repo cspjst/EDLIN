@@ -29,17 +29,8 @@ int main(int argc, char* argv[]) {
                 edlin_panic(EDLIN_ERR_ENTRY, "");
                 break;
             }
-            //p++;
-            ***
-debug_cmd_t(&cmd);
-    edlin_execute(&cmd, file);  // your execution function
-    
-    // Exit if end of line
-    if(*p == CR || *p == LF || *p == NUL) {
-        break;
-    }
-    // Otherwise, p points to next command (whitespace will be skipped next iteration)
-        }
+            p++;
+        } 
     }
 
     edlin_free_file(file);
