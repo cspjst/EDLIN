@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
                 break;
             }
             p++;
-        } 
+        }
     }
 
     edlin_free_file(file);
