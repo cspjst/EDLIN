@@ -3,11 +3,8 @@
 
 typedef enum {
     TOK_ERROR = 0,  // error
+    TOK_QUERY = 0,
     // no arg commands
-    TOK_HELP,       // ? Show help
-    TOK_QUERY,      // ? Interactive mode
-    TOK_EDIT,       // line# Edit a single line
-    TOK_HASH,       // line after the last line number
     TOK_END,        // E End (save file)
     TOK_QUIT,       // Q Quit (throw away changes)
     // single number commands
@@ -26,13 +23,14 @@ typedef enum {
     // range, number, payload commands
     TOK_REPLACE,    // [range]Rold,new Replace text
     TOK_SEARCH,     // [range]S[string] Search for text
-    TOK_QREPLACE,   // [range]?Rold,new Replace text - interactive
-    TOK_QSEARCH,    // [range]?S[string] Search for text - interactive
     // special cases
+    TOK_QREPLACE,    // [range]?Rold,new Replace text
+    TOK_QSEARCH,     // [range]?S[string] Search for text
+    TOK_HELP,
+    TOK_EDIT,
     TOK_EMPTY,      // user hit return on whitespace line
     // error states
     TOK_SYNTAX,     // command ok but args wrong
-    TOK_UNKNOWN     //
 } enum_token_t;
 
 #endif
