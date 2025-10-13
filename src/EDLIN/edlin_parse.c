@@ -1,6 +1,7 @@
 #include "edlin_parse.h" 
 #include "edlin_tokens.h"
 #include "edlin_lookup_table.h"
+#include <stdio.h>
 
 // dispatch table 
 static const edlin_fn_command_t EDLIN_DISPATCH[] = {
