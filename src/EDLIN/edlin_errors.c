@@ -1,7 +1,7 @@
 #include "edlin_errors.h"
 #include <stdio.h>
 
-// EDLIN DOS 2.0 onwards error messages
+// EDLIN DOS error messages
 const char* const EDLIN_ERROR_MESSAGES[] = {
     "Cannot edit .BAK file - rename file",      // EDLIN_ERR_RENAME_BAK
     "No room in directory for file",            // EDLIN_ERR_NO_ROOM
@@ -15,7 +15,8 @@ const char* const EDLIN_ERROR_MESSAGES[] = {
     "File not found",                           // EDLIN_ERR_NOT_FOUND
     "Must specify destination number",          // EDLIN_ERR_SPECIFY_DEST
     "Not enough room to merge the entire file", // EDLIN_ERR_FAIL_MERGE
-    "File creation error"                       // EDLIN_ERR_FAIL_CREATE
+    "File creation error",                      // EDLIN_ERR_FAIL_CREATE
+    "Invalid Parameter"                         // EDLIN_ERR_INVALID_ARG
 };
 
 void* edlin_panic(edlin_err_t e) {

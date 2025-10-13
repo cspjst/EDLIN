@@ -6,10 +6,12 @@
 #include <stdio.h>
 
 void debug_file_t(edlin_file_t* file) {
-    printf("file %s\nraw %u\npos %u\nsize %u\ncapacity %u\n",
+    printf("file %s\nraw %u\nopen %u\nbak %u\npos %u\nsize %u\ncapacity %u\n",
         file->filepath,
-        file->raw,
         file->pos,
+        file->raw,
+        file->open,
+        file->bak,
         file->size,
         file->capacity
     );

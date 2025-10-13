@@ -63,10 +63,6 @@ bool edlin_read_line(edlin_line_t* line, FILE* istream) {
 }
 
 bool edlin_load_file(edlin_file_t* file) {
-    if (!file) {
-        edlin_panic(EDLIN_ERR_NOT_FOUND);
-        return false;
-    }
     // select binary or text file open
     FILE* f = fopen((const char*)file->filepath, file->raw ? "rb" : "r");
     if (!f) {
@@ -74,6 +70,7 @@ bool edlin_load_file(edlin_file_t* file) {
         return true;    // create file when save
     }
     file->size = 0;
+    file->bak = true;
     edlin_line_t* line;
 
     while (true) {

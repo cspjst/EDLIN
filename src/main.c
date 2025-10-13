@@ -19,8 +19,8 @@ int main(int argc, char* argv[]) {
     edlin_file_t* file = edlin_new_file();
     // Set stdin to binary mode
     setmode(fileno(stdin), O_BINARY);
-    edlin_intro();
     if (file && edlin_config(argc, argv, file)) {
+        debug_file_t(file);
         while(file->open) {
             printf("*");
             edlin_read_line(&input, stdin);

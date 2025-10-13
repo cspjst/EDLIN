@@ -14,7 +14,8 @@ typedef enum {
     EDLIN_ERR_NOT_FOUND,
     EDLIN_ERR_SPECIFY_DEST,
     EDLIN_ERR_FAIL_MERGE,
-    EDLIN_ERR_FAIL_CREATE
+    EDLIN_ERR_FAIL_CREATE,
+    EDLIN_ERR_INVALID_ARG
 } edlin_err_t;
 
 void* edlin_panic(edlin_err_t e);
