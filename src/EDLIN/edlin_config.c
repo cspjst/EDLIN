@@ -26,13 +26,13 @@ void edlin_usage() {
 
 bool edlin_config(int argc, char* argv[], edlin_file_t* file) {
     if(argc == 1) {
-        edlin_panic(EDLIN_ERR_MISSING_ARG, EDLIN_MSG_FILENAME);
+        edlin_panic(EDLIN_ERR_SPECIFY_FILE);
         return false;
     }
     for(int i = 1; i < argc; ++i) {
         if (argv[i][0] != '/') {
             if (file->filepath != NULL) {
-                edlin_panic(EDLIN_ERR_MULTIPLE_FILENAMES,argv[i]);
+                edlin_panic(EDLIN_ERR_ENTRY);
                 return false;
             }
             file->filepath = argv[i];
@@ -43,12 +43,12 @@ bool edlin_config(int argc, char* argv[], edlin_file_t* file) {
             file->raw = true;
             break;
         default:
-            edlin_panic(EDLIN_ERR_UKNOWN_OPT,argv[i]);
+            edlin_panic(EDLIN_ERR_ENTRY);
             return false;
         }
     }
     if(!file->filepath) {
-        edlin_panic(EDLIN_ERR_MISSING_ARG, EDLIN_MSG_FILENAME);
+        edlin_panic(EDLIN_ERR_INVALID_PATH);
         return false;
     }
     if(!edlin_load_file(file)) {

@@ -1,6 +1,9 @@
 #ifndef EDLIN_LOOKUP_TABLE_H
 #define EDLIN_LOOKUP_TABLE_H
 
+#include "edlin_types.h"
+#include "edlin_tokens.h"
+
 static const edlin_token_t LOOKUP_TOKENS[] = {
     //ch   token         argc    strc     usage
     {'?', TOK_HELP,       0,      0,     "Show help   ?"},

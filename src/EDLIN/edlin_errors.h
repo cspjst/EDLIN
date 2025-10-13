@@ -2,17 +2,21 @@
 #define EDLIN_ERRORS_H
 
 typedef enum {
-    EDLIN_ERR_NULL = 0,
-    EDLIN_ERR_MISSING_ARG,
-    EDLIN_ERR_MULTIPLE_FILENAMES,
-    EDLIN_ERR_UKNOWN_OPT,
-    EDLIN_ERR_ALLOC,
-    EDLIN_ERR_BUFFER_FULL,
-    EDLIN_ERR_STREAM,
-
-    EDLIN_ERR_ENTRY
+    EDLIN_ERR_RENAME_BAK,
+    EDLIN_ERR_NO_ROOM,
+    EDLIN_ERR_ENTRY,
+    EDLIN_ERR_TOO_LONG,
+    EDLIN_ERR_DISK_FULL,
+    EDLIN_ERR_WRONG_DOS,
+    EDLIN_ERR_INVALID_PATH,
+    EDLIN_ERR_SPECIFY_FILE,
+    EDLIN_ERR_INSUFF_MEMORY,
+    EDLIN_ERR_NOT_FOUND,
+    EDLIN_ERR_SPECIFY_DEST,
+    EDLIN_ERR_FAIL_MERGE,
+    EDLIN_ERR_FAIL_CREATE
 } edlin_err_t;
 
-void* edlin_panic(edlin_err_t e, const char* context);
+void* edlin_panic(edlin_err_t e);
 
 #endif

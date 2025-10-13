@@ -17,6 +17,7 @@ typedef struct {
     bool raw;               // raw binary mode
     edlin_line_t** lines;   // array of pointers to line buffers
     edlin_size_t pos;       // insert position line number
+    bool open;              // open for editing
     edlin_size_t size;
     edlin_size_t capacity;
 } edlin_file_t;

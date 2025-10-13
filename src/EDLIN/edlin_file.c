@@ -23,6 +23,7 @@ edlin_file_t* edlin_new_file() {
     // 3. set defaults
     file->filepath = NULL;
     file->raw = false;
+    file->open = true;
     file->size = 0;
     return file;
 }
@@ -43,7 +44,7 @@ void edlin_free_file(edlin_file_t* file) {
 edlin_line_t* edlin_new_line() {
      edlin_line_t* line = calloc(1, EDLIN_LINE_SIZE);
      if(!line) {
-         edlin_panic(EDLIN_ERR_ALLOC, "new line failed!");
+         edlin_panic(EDLIN_ERR_INSUFF_MEMORY);
      }
      return line;
 }
@@ -54,7 +55,7 @@ bool edlin_read_line(edlin_line_t* line, FILE* istream) {
         if (feof(istream)) {
             return false;  // Graceful EOF indication
         } else {
-            edlin_panic(EDLIN_ERR_STREAM, "read line failed!");
+            edlin_panic(EDLIN_ERR_NOT_FOUND);
             return false;
         }
     }
@@ -63,7 +64,7 @@ bool edlin_read_line(edlin_line_t* line, FILE* istream) {
 
 bool edlin_load_file(edlin_file_t* file) {
     if (!file) {
-        edlin_panic(EDLIN_ERR_NULL, "Null pointer in load file");
+        edlin_panic(EDLIN_ERR_NOT_FOUND);
         return false;
     }
     // select binary or text file open
@@ -109,18 +110,3 @@ void edlin_print_file(edlin_file_t* file) {
         }
     }
 }
-
-
-/*
-void edlin_trim_line(edlin_line_t* line) {
-    if (line == NULL) return;
-    char* p = *line;
-    // Trim newline and anything after it
-    size_t len = strcspn(p, "\n");
-    p[len] = '\0';
-    // Trim trailing whitespace
-    while (len > 0 && isspace((unsigned char)p[len - 1])) {
-        p[--len] = '\0';
-    }
-}
- */

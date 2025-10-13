@@ -1,5 +1,6 @@
 #include "EDLIN/edlin_file.h"
 #include "EDLIN/edlin_config.h"
+#include "EDLIN/edlin_parse.h"
 #include "EDLIN/edlin_tokenize.h"
 #include "EDLIN/edlin_types.h"
 #include "EDLIN/edlin_debug.h"
@@ -20,16 +21,21 @@ int main(int argc, char* argv[]) {
     setmode(fileno(stdin), O_BINARY);
     edlin_intro();
     if (file && edlin_config(argc, argv, file)) {
-        edlin_read_line(&input, stdin);
-        char* p = input;
-        while(cmd.token != TOK_EMPTY) {
-            p = edlin_tokenize(&cmd, p);
-            debug_cmd_t(&cmd);
-            if(cmd.token == TOK_SYNTAX) {
-                edlin_panic(EDLIN_ERR_ENTRY, "");
-                break;
+        while(file->open) {
+            printf("*");
+            edlin_read_line(&input, stdin);
+            char* p = input;
+            while(cmd.token != TOK_EMPTY) {
+                p = edlin_tokenize(&cmd, p);
+                if(cmd.token == TOK_SYNTAX) {
+                    edlin_panic(EDLIN_ERR_ENTRY);
+                    break;
+                }
+                edlin_parse(&cmd, file);
+                debug_cmd_t(&cmd);
+                p++;
             }
-            p++;
+            cmd.token = 0;
         }
     }
 
