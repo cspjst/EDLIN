@@ -12,5 +12,6 @@
 #define EDLIN_MAX_LINES     65534
 #define EDLIN_PAGE_SIZE     23
 #define EDLIN_ARGC_MAX      5
+#define EDLIN_CMD_COUNT     17
 
 #endif
