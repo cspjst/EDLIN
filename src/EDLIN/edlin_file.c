@@ -2,7 +2,7 @@
 #include "edlin_constants.h"
 #include "edlin_errors.h"
 #include "edlin_types.h"
-#include "edlin_kbd.h"
+#include "edlin_yesno.h"
 #include "../DOS/dos_memory.h"
 #include <string.h>
 #include <stdlib.h>
@@ -100,7 +100,7 @@ void edlin_print_file(edlin_file_t* file) {
         if (
             (i + 1) % EDLIN_PAGE_SIZE == 0
             && i + 1 < file->size
-            && !edlin_kbd_yesno("Continue ")
+            && !edlin_yesno("Continue ")
         ) {
             printf("\n");
             return;

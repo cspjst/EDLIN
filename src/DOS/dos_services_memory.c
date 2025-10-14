@@ -32,7 +32,7 @@
 * @param       segment* pointer to segment variable
 * @return      the segment address of the reserved memory or 0 if request failed
 */
-#include "dos_memory.h"
+#include "dos_services_memory.h"
 #include <stdint.h>
 #include <assert.h>
 
