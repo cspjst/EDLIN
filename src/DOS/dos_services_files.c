@@ -2,6 +2,7 @@
 #include "dos_error_messages.h"
 #include "dos_error_types.h"
 #include "dos_services_constants.h"
+#include "dos_services_files_constants.h"
 
 //#include <stdio.h>
 
@@ -20,6 +21,7 @@
 * - used to determine available space on specified disk
 * - see	INT 21,1B   INT 21,1C
 */
+/*
 void dos_get_disk_free_space(uint8_t drive_number, dos_file_disk_space_info_t* info) {
 	__asm {
 		.8086
@@ -54,7 +56,7 @@ END:		popf
 		dos_global_error_code = DOS_INVALID_DRIVE_SPECIFIED], drive_number);
 	}
 }
-
+*/
 /**
 * INT 21, 3C - Create File Using Handle
 * AH = 3C
