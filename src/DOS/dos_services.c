@@ -1,10 +1,10 @@
 #include "dos_services.h"
+#include "dos_services_constants.h"
+#include "dos_error_types.h"
+#include "dos_error_messages.h"
+#include <assert.h>
 
 #include <stdio.h>
-
-#include "dos_services_constants.h"
-#include "dos_services_types.h"
-#include "dos_error_messages.h"
 
 /**
 * @brief Provides a safe method for changing interrupt vectors

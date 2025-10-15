@@ -1,3 +1,12 @@
+#include "RETRO/iotools.h"
+
+
+int main(int argc, char* argv[]) {
+
+}
+
+
+/*
 #include "EDLIN/edlin_file.h"
 #include "EDLIN/edlin_config.h"
 #include "EDLIN/edlin_parse.h"
@@ -43,3 +52,4 @@ int main(int argc, char* argv[]) {
 
     return EXIT_SUCCESS;
 }
+*/

@@ -1,4 +1,4 @@
-#include "edlin_kbd.h"
+#include "edlin_yesno.h"
 #include "../BIOS/bios_keyboard_services.h"
 #include "../BIOS/bios_keyboard_scan_codes.h"
 #include <stdio.h>

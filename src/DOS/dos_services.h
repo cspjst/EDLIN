@@ -6,9 +6,6 @@
 
 #include <stdint.h>
 
-#include "dos_services_constants.h"
-#include "dos_services_types.h"
-
 // 0  Program terminate
 // 1  Keyboard input with echo
 // 2  Display output
@@ -74,7 +71,7 @@ void* dos_get_interrupt_vector(uint8_t vec_num);
 // 38  Get/set country dependent information
 // 39  Create subdirectory (mkdir)
 // 3A  Remove subdirectory (rmdir)
-// 3B  Change current subdirectory (chdir) 
+// 3B  Change current subdirectory (chdir)
 // 3C  Create file using handle
 // 3D  Open file using handle
 // 3E  Close file using handle

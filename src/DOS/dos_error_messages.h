@@ -11,31 +11,6 @@
 #define MAX_ERR_STRING_LEN  64
 
 /**
-* Useful for user code to raise first classic 12h codes
-*/
-typedef enum {
-    DOS_SUCCESS = 0,
-    DOS_INVALID_FUNCTION_NUMBER,
-    DOS_FILE_NOT_FOUND,
-    DOS_PATH_NOT_FOUND,
-    DOS_TOO_MANY_OPEN_FILES,
-    DOS_ACCESS_DENIED,
-    DOS_INVALID_HANDLE,
-    DOS_MCB_DESTROYED,
-    DOS_INSUFFICIENT_MEMORY,
-    DOS_INVALID_MEMORY_BLOCK_ADDRESS,
-    DOS_INVALID_ENVIRONMENT,
-    DOS_INVALID_FORMAT,
-    DOS_INVALID_ACCESS_MODE,
-    DOS_INVALID_DATA,
-    DOS_RESERVED,
-    DOS_INVALID_DRIVE_SPECIFIED,
-    DOS_ATTEMPT_TO_REMOVE_CURRENT_DIRECTORY,
-    DOS_NOT_SAME_DEVICE,
-    DOS_NO_MORE_FILES
-} dos_error_codes;
-
-/**
 * @brief translate DOS error code to standard message.
 *
 * Of the following error codes, only error codes 1 - 12h are returned in AX upon exit from interrupt 21 or 24;

@@ -3,7 +3,7 @@
 #include "edlin_errors.h"
 #include "edlin_types.h"
 #include "edlin_yesno.h"
-#include "../DOS/dos_memory.h"
+#include "../RETRO/memtools.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -14,7 +14,7 @@ edlin_file_t* edlin_new_file() {
         return NULL;
     }
     // 2. allocate line pointers for 75% of DOS free memory
-    file->capacity = (dos_memory_available() * 0.75f) / EDLIN_LINE_SIZE;
+    file->capacity = (mem_available() * 0.75f) / EDLIN_LINE_SIZE;
     file->lines = calloc(file->capacity, sizeof(edlin_line_t*));  // arrray of null line pointers
     if (!file->lines) {
         free(file);

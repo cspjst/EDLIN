@@ -1,8 +1,9 @@
-#include <stdio.h>
-
-#include "dos_error_messages.h"
 #include "dos_services_files.h"
+#include "dos_error_messages.h"
+#include "dos_error_types.h"
 #include "dos_services_constants.h"
+
+//#include <stdio.h>
 
 /**
 * INT 21,36 - Get Disk Free Space
@@ -49,11 +50,9 @@ OK:		lds		di, info
 END:		popf
 		pop		ds
 	}
-#ifndef NDEBUG
 	if (info->sectors_per_cluster == 0xFFFF) {
-		fprintf(stderr, "%s drive_number=%i", dos_error_messages[DOS_INVALID_DRIVE_SPECIFIED], drive_number);
+		dos_global_error_code = DOS_INVALID_DRIVE_SPECIFIED], drive_number);
 	}
-#endif
 }
 
 /**
@@ -71,8 +70,8 @@ END:		popf
 * @note - if file already exists, it is truncated to zero bytes on opening
 */
 dos_file_handle_t dos_create_file(const char* path_name, dos_file_attributes_t create_attributes) {
+    dos_global_error_code = 0;
 	dos_file_handle_t fhandle = 0;
-	dos_error_code_t err_code = 0;
 	__asm {
 		.8086
 		push	ds
@@ -83,18 +82,13 @@ dos_file_handle_t dos_create_file(const char* path_name, dos_file_attributes_t c
 		mov		ah, DOS_CREATE_FILE_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		err_code, ax
+		mov		dos_global_error_code, ax
 		xor		ax,ax
 OK:		mov		fhandle, ax
 
 END:	popf
 		pop		ds
 	}
-#ifndef NDEBUG
-	if (err_code) {
-		fprintf(stderr, "%s drive_number=%s\n", dos_error_messages[err_code], path_name);
-	}
-#endif
 	return fhandle;
 }
 
@@ -112,8 +106,8 @@ END:	popf
 *    = error code if CF set  (see DOS ERROR CODES)
 */
 dos_file_handle_t dos_open_file(const char* path_name, uint8_t access_attributes) {
+    dos_global_error_code = 0;
 	dos_file_handle_t fhandle = 0;
-	dos_error_code_t err_code = 0;
 	__asm {
 		.8086
 		push	ds
@@ -124,19 +118,13 @@ dos_file_handle_t dos_open_file(const char* path_name, uint8_t access_attributes
 		mov		ah, DOS_OPEN_FILE_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		err_code, ax
+		mov		dos_global_error_code, ax
 		xor		ax, ax
 OK:		mov		fhandle, ax
 
 END:	popf
 		pop		ds
 	}
-
-#ifndef NDEBUG
-	if (err_code) {
-		fprintf(stderr, "%s path name=%s\n", dos_error_messages[err_code], path_name);
-	}
-#endif
 	return fhandle;
 }
 
@@ -152,7 +140,7 @@ END:	popf
 * - handle is freed
 */
 dos_error_code_t dos_close_file(dos_file_handle_t fhandle) {
-	dos_error_code_t err_code = 0;
+	dos_global_error_code = 0;
 	__asm {
 		.8086
 		push	ds
@@ -162,17 +150,12 @@ dos_error_code_t dos_close_file(dos_file_handle_t fhandle) {
 		mov		ah, DOS_CLOSE_FILE_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		END
-		mov		err_code, ax
+		mov		dos_global_error_code, ax
 
-END:		popf
+END:	popf
 		pop		ds
 	}
-#ifndef NDEBUG
-	if (err_code) {
-		fprintf(stderr, "%s file_handle=%i\n", dos_error_messages[err_code], fhandle);
-	}
-#endif
-	return err_code;
+	return EOF;
 }
 
 /**
@@ -190,9 +173,9 @@ END:		popf
 * - when AX is not equal to CX then a partial read occurred due to end of file
 * - if AX is zero, no data was read, and EOF occurred before read
 */
-uint16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes) {
+int16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes) {
+    dos_global_error_code = 0;
 	uint16_t bytes_read = 0;
-	dos_error_code_t err_code = 0;
 	__asm {
 		.8086
 		push	ds
@@ -204,7 +187,7 @@ uint16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes)
 		mov		ah, DOS_READ_FILE_OR_DEVICE_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		err_code, ax
+		mov		dos_global_error_code, ax
 		jmp		END
 
 OK:		mov		bytes_read, ax
@@ -212,11 +195,7 @@ OK:		mov		bytes_read, ax
 END:		popf
 		pop		ds
 	}
-#ifndef NDEBUG
-	if (err_code) {
-		fprintf(stderr, "%s file_handle=%i\n", dos_error_messages[err_code], fhandle);
-	}
-#endif
+	if (dos_global_error_code) bytes_read = EOF;
 	return bytes_read;
 }
 
@@ -234,9 +213,9 @@ END:		popf
 * - if AX is not equal to CX on return, a partial write occurred
 * - this function can be used to truncate a file to the current file position by writing zero bytes
 */
-uint16_t dos_write_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes) {
-	uint16_t bytes_written = 0;
-	dos_error_code_t err_code = 0;
+int16_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t nbytes) {
+	dos_global_error_code = 0;
+    uint16_t bytes_written = 0;
 	__asm {
 		.8086
 		push	ds
@@ -248,19 +227,15 @@ uint16_t dos_write_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes
 		mov		ah, DOS_WRITE_FILE_OR_DEVICE_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		err_code, ax
+		mov		dos_global_error_code, ax
 		jmp		END
 
 OK:		mov		bytes_written, ax
 
-END:		popf
+END:	popf
 		pop		ds
 	}
-#ifndef NDEBUG
-	if (err_code) {
-		fprintf(stderr, "%s file_handle=%i\n", dos_error_messages[err_code], fhandle);
-	}
-#endif
+	if (dos_global_error_code) bytes_written = EOF;
 	return bytes_written;
 }
 
@@ -278,7 +253,7 @@ END:		popf
 * @note - documented as not accepting wildcards in filename but actually does in several DOS versions
 */
 dos_error_code_t dos_delete_file(char* path_name) {
-	dos_error_code_t err_code = 0;
+	dos_global_error_code = 0;
 	__asm {
 		.8086
 		push	ds
@@ -288,17 +263,12 @@ dos_error_code_t dos_delete_file(char* path_name) {
 		mov		ah, DOS_DELETE_FILE
 		int		DOS_SERVICE
 		jnc		END
-		mov		err_code, ax
+		mov		dos_global_error_code, ax
 
-END:		popf
+END:	popf
 		pop		ds
 	}
-#ifndef NDEBUG
-	if (err_code) {
-		fprintf(stderr, "%s path name=%s\n", dos_error_messages[err_code], path_name);
-	}
-#endif
-	return err_code;
+	return dos_global_error_code;
 }
 
 /**
@@ -333,7 +303,7 @@ END:		popf
 * be grown from zero to one byte and then to the desired large size
 */
 dos_file_position_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_position_t foffset, uint8_t forigin) {
-	dos_error_code_t err_code = 0;
+	dos_global_error_code = 0;
 	dos_file_position_t fposition = foffset;
 	dos_file_position_t* fpos_ptr = &fposition;
 	__asm {
@@ -347,7 +317,7 @@ dos_file_position_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_po
 		mov		ah, DOS_MOVE_FILE_POINTER_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		err_code, ax
+		mov		dos_global_error_code, ax
 		jmp		END
 
 OK:		lds 	di, fpos_ptr						; DX:AX = new file position in bytes from start of file
@@ -356,11 +326,6 @@ OK:		lds 	di, fpos_ptr						; DX:AX = new file position in bytes from start of f
 
 END:
 	}
-#ifndef NDEBUG
-	if (err_code) {
-		fprintf(stderr, "%s file_handle=%i\n", dos_error_messages[err_code], fhandle);
-	}
-#endif
     return fposition;
 }
 
@@ -383,9 +348,9 @@ END:
 * AX = error code if CF set  (see DOS ERROR CODES)
 * CX = the attribute if AL was 00
 */
-dos_file_attributes_t dos_get_file_attributes(char* path_name) {
-	dos_file_attributes_t attributes = 0;
-	dos_error_code_t err_code = 0;
+dos_file_attributes_t dos_get_file_attributes(const char* path_name) {
+	dos_global_error_code = 0;
+    dos_file_attributes_t attributes = 0;
 	__asm {
 		.8086
 		push	ds
@@ -397,18 +362,13 @@ dos_file_attributes_t dos_get_file_attributes(char* path_name) {
 		mov		ah, DOS_CHANGE_FILE_MODE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		err_code, ax
+		mov		dos_global_error_code, ax
 		xor		ax, ax
 OK:		mov		attributes, ax
 
 END:		popf
 		pop		ds
 	}
-#ifndef NDEBUG
-	if (err_code) {
-		fprintf(stderr, "%s path name=%s\n", dos_error_messages[err_code], path_name);
-	}
-#endif
 	return attributes;
 }
 
@@ -434,10 +394,5 @@ dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t 
 END:	popf
 		pop		ds
 	}
-#ifndef NDEBUG
-	if (err_code) {
-		fprintf(stderr, "%s path name=%s\n", dos_error_messages[err_code], path_name);
-	}
-#endif
 	return err_code;
 }
