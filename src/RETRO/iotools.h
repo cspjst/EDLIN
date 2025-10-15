@@ -12,12 +12,35 @@
 
 #include "strtools.h"
 #include "../DOS/dos_services_files.h"
+#include "../DOS/dos_services_files_constants.h"
 
-typedef dos_file_handle_t FILE;
+#ifdef TFILE
+    #error "FILE is already defined!"
+#else
 
-int inline fputs(const char* s, FILE* stream) {
-    return dos_write_file(*stream, s, cstr_length(s));
+typedef struct {
+    dos_file_handle_t dos_file_handle;
+} TFILE;
+
+static TFILE _DOS_STDIN = { DOS_STDIN_HANDLE };
+static TFILE _DOS_STDOUT = { DOS_STDOUT_HANDLE };
+static TFILE _DOS_STDERR = { DOS_STDERR_HANDLE };
+
+static TFILE* tstdin = & _DOS_STDIN;
+static TFILE* tstdout = & _DOS_STDOUT;
+static TFILE* tstderr = & _DOS_STDERR;
+
+#endif
+
+int inline tfputs(const char* s, TFILE* stream) {
+    return dos_write_file(stream->dos_file_handle, s, cstr_length(s));
 }
+
+int inline tputs(const char* s) {
+    return tfputs(s, tstdout);
+}
+
+//int inline tfgets()
 
 
 

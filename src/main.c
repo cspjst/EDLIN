@@ -1,8 +1,9 @@
 #include "RETRO/iotools.h"
 
-
 int main(int argc, char* argv[]) {
-
+    char buffer[] = "hello   ";
+    tfputs(&buffer[2], tstdout);
+    tputs("world\n");
 }
 
 
