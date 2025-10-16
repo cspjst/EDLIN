@@ -13,36 +13,35 @@
 #include "strtools.h"
 #include "../DOS/dos_services_files.h"
 #include "../DOS/dos_services_files_constants.h"
+#include <stdbool.h>
+#include <stddef.h>
 
-#ifdef TFILE
+#ifdef FILE
     #error "FILE is already defined!"
 #else
 
 typedef struct {
-    dos_file_handle_t dos_file_handle;
-} TFILE;
+    dos_file_handle_t handle;
+    bool eof;
+    bool error;
+} FILE;
 
-static TFILE _DOS_STDIN = { DOS_STDIN_HANDLE };
-static TFILE _DOS_STDOUT = { DOS_STDOUT_HANDLE };
-static TFILE _DOS_STDERR = { DOS_STDERR_HANDLE };
+static FILE FILE_DOS_STDIN = { DOS_STDIN_HANDLE, false };
+static FILE FILE_DOS_STDOUT = { DOS_STDOUT_HANDLE, false };
+static FILE FILE_DOS_STDERR = { DOS_STDERR_HANDLE, false };
 
-static TFILE* tstdin = & _DOS_STDIN;
-static TFILE* tstdout = & _DOS_STDOUT;
-static TFILE* tstderr = & _DOS_STDERR;
+static FILE* stdin = & FILE_DOS_STDIN;
+static FILE* stdout = & FILE_DOS_STDOUT;
+static FILE* stderr = & FILE_DOS_STDERR;
 
 #endif
 
-int inline tfputs(const char* s, TFILE* stream) {
-    return dos_write_file(stream->dos_file_handle, s, cstr_length(s));
-}
+int fputc(int c, FILE *stream);
 
-int inline tputs(const char* s) {
-    return tfputs(s, tstdout);
-}
+int fputs(const char *s, FILE *stream);
 
-//int inline tfgets()
+int fgetc(FILE *stream);
 
-
-
+char* fgets(char *s, int n, FILE *stream);
 
 #endif

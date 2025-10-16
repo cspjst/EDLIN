@@ -9,7 +9,7 @@
 #include "dos_services_files_types.h"
 
 // 36  Get disk free space
-void dos_get_disk_free_space(uint8_t drive_number, dos_file_disk_space_info_t* info);
+dos_error_code_t dos_get_disk_free_space(uint8_t drive_number, dos_file_disk_space_info_t* info);
 
 // 37  Get/set switch character (undocumented)
 // 38  Get/set country dependent information
@@ -36,7 +36,7 @@ int16_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t n
 dos_error_code_t dos_delete_file(char* path_name);
 
 // 42  Move file pointer using handle
-dos_file_position_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_position_t foffset, uint8_t forigin);
+dos_error_code_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_position_t foffset, uint8_t forigin, dos_file_position_t* fpos);
 
 // 43  Change file mode
 dos_file_attributes_t dos_get_file_attributes(const char* path_name);

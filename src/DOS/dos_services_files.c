@@ -1,6 +1,7 @@
 #include "dos_services_files.h"
 #include "dos_error_types.h"
 #include "dos_services_constants.h"
+#include "dos_services_files_constants.h"
 
 //#include <stdio.h>
 
@@ -19,35 +20,33 @@
 * - used to determine available space on specified disk
 * - see	INT 21,1B   INT 21,1C
 */
-void dos_get_disk_free_space(uint8_t drive_number, dos_file_disk_space_info_t* info) {
-	__asm {
-		.8086
-		pushf
-
-		mov		dl, drive_number
-		mov		ah, DOS_GET_DISK_FREE_SPACE
-		int		DOS_SERVICE
-		cmp		ax, DOS_ERROR				; FFFFh invalid drive
-		jne		OK
-		cld
-		les		di, info
-		stosw								; store the error marker
-		xor ax, ax
-		stosw								; zero the rest of info struct
-		stosw
-		stosw
-		jmp		END
-OK:		lds		di, info
-		mov		[di], ax					; sectors per cluster
-		mov		[di + 2], bx				; available clusters
-		mov		[di + 4], cx				; bytes per sector
-		mov		[di + 6], dx				; clusters per drive
-END:
-        popf
-	}
-	if (info->sectors_per_cluster == 0xFFFF) {
-		dos_global_error_code = DOS_INVALID_DRIVE_SPECIFIED;
-	}
+dos_error_code_t dos_get_disk_free_space(uint8_t drive_number, dos_file_disk_space_info_t* info) {
+    errno = 0;
+    __asm {
+        .8086
+        pushf
+        mov     dl, drive_number
+        mov     ah, DOS_GET_DISK_FREE_SPACE
+        int     DOS_SERVICE
+        cmp     ax, DOS_ERROR               ; FFFFh = invalid drive
+        jne     OK
+        mov     errno, 15                   ; DOS_INVALID_DRIVE_SPECIFIED
+        les     di, info
+        cld
+        stosw                               ; AX already = DOS_ERROR
+        xor     ax, ax                      ; zero out the rest of the struct
+        stosw
+        stosw
+        stosw
+        jmp     END
+OK:     lds     di, info                    ; fill out the struct
+        mov     [di], ax                    ; sectors per cluster
+        mov     [di + 2], bx                ; available clusters
+        mov     [di + 4], cx                ; bytes per sector
+        mov     [di + 6], dx                ; clusters per drive
+END:    popf
+    }
+    return errno;
 }
 
 /**
@@ -65,7 +64,7 @@ END:
 * @note - if file already exists, it is truncated to zero bytes on opening
 */
 dos_file_handle_t dos_create_file(const char* path_name, dos_file_attributes_t create_attributes) {
-    dos_global_error_code = 0;
+    errno = 0;
 	dos_file_handle_t fhandle = 0;
 	__asm {
 		.8086
@@ -74,7 +73,7 @@ dos_file_handle_t dos_create_file(const char* path_name, dos_file_attributes_t c
 		mov		ah, DOS_CREATE_FILE_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		dos_global_error_code, ax
+		mov		errno, ax
 		xor		ax,ax
 OK:		mov		fhandle, ax
 END:
@@ -96,7 +95,7 @@ END:
 *    = error code if CF set  (see DOS ERROR CODES)
 */
 dos_file_handle_t dos_open_file(const char* path_name, uint8_t access_attributes) {
-    dos_global_error_code = 0;
+    errno = 0;
 	dos_file_handle_t fhandle = 0;
 	__asm {
 		.8086
@@ -105,7 +104,7 @@ dos_file_handle_t dos_open_file(const char* path_name, uint8_t access_attributes
 		mov		ah, DOS_OPEN_FILE_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		dos_global_error_code, ax
+		mov		errno, ax
 		xor		ax, ax
 OK:		mov		fhandle, ax
 END:
@@ -125,17 +124,17 @@ END:
 * - handle is freed
 */
 dos_error_code_t dos_close_file(dos_file_handle_t fhandle) {
-	dos_global_error_code = 0;
+	errno = 0;
 	__asm {
 		.8086
 		mov		bx, fhandle
 		mov		ah, DOS_CLOSE_FILE_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		END
-		mov		dos_global_error_code, ax
+		mov		errno, ax
 END:
 	}
-	return EOF;
+	return errno;
 }
 
 /**
@@ -154,23 +153,23 @@ END:
 * - if AX is zero, no data was read, and EOF occurred before read
 */
 int16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes) {
-    dos_global_error_code = 0;
-	uint16_t bytes_read = 0;
-	__asm {
-		.8086
-		lds		dx, buffer
-		mov		cx,	nbytes
-		mov		bx, fhandle
-		mov		ah, DOS_READ_FILE_OR_DEVICE_USING_HANDLE
-		int		DOS_SERVICE
-		jnc		OK
-		mov		dos_global_error_code, ax
-		jmp		END
-OK:		mov		bytes_read, ax
+    errno = 0;
+    uint16_t bytes_read = 0;
+    __asm {
+        .8086
+        lds     dx, buffer
+        mov     cx, nbytes
+        mov     bx, fhandle
+        mov     ah, DOS_READ_FILE_OR_DEVICE_USING_HANDLE
+        int     DOS_SERVICE
+        jnc     OK
+        mov     errno, ax
+        mov     bytes_read, 0xFFFF      ; EOF as uint16_t (-1)
+        jmp     END
+OK:     mov     bytes_read, ax
 END:
-	}
-	if (dos_global_error_code) bytes_read = EOF;
-	return bytes_read;
+    }
+    return (int16_t)bytes_read;
 }
 
 /**
@@ -188,23 +187,23 @@ END:
 * - this function can be used to truncate a file to the current file position by writing zero bytes
 */
 int16_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t nbytes) {
-	dos_global_error_code = 0;
+    errno = 0;
     uint16_t bytes_written = 0;
-	__asm {
-		.8086
-		lds		dx, buffer
-		mov		cx, nbytes
-		mov		bx, fhandle
-		mov		ah, DOS_WRITE_FILE_OR_DEVICE_USING_HANDLE
-		int		DOS_SERVICE
-		jnc		OK
-		mov		dos_global_error_code, ax
-		jmp		END
-OK:		mov		bytes_written, ax
+    __asm {
+        .8086
+        lds     dx, buffer
+        mov     cx, nbytes
+        mov     bx, fhandle
+        mov     ah, DOS_WRITE_FILE_OR_DEVICE_USING_HANDLE
+        int     DOS_SERVICE
+        jnc     OK
+        mov     errno, ax
+        mov     bytes_written, 0xFFFF      ; EOF as uint16_t (-1)
+        jmp     END
+OK:     mov     bytes_written, ax
 END:
-	}
-	if (dos_global_error_code) bytes_written = EOF;
-	return bytes_written;
+    }
+    return (int16_t)bytes_written;
 }
 
 /**
@@ -221,17 +220,17 @@ END:
 * @note - documented as not accepting wildcards in filename but actually does in several DOS versions
 */
 dos_error_code_t dos_delete_file(char* path_name) {
-	dos_global_error_code = 0;
+	errno = 0;
 	__asm {
 		.8086
 		lds		dx, path_name
 		mov		ah, DOS_DELETE_FILE
 		int		DOS_SERVICE
 		jnc		END
-		mov		dos_global_error_code, ax
+		mov		errno, ax
 END:
 	}
-	return dos_global_error_code;
+	return errno;
 }
 
 /**
@@ -265,28 +264,24 @@ END:
 * can corrupt the FAT in some versions of DOS; the file should first
 * be grown from zero to one byte and then to the desired large size
 */
-dos_file_position_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_position_t foffset, uint8_t forigin) {
-	dos_global_error_code = 0;
-	dos_file_position_t fposition = foffset;
-	dos_file_position_t* fpos_ptr = &fposition;
+dos_error_code_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_position_t foffset, uint8_t forigin, dos_file_position_t* fpos) {
+	errno = 0;
 	__asm {
 		.8086
-		lds 	si, fpos_ptr						; CX:DX = (signed) offset from origin of new file position
-		mov		dx, [si]							; DX low order word of fposition
-		mov		cx, [si + 2]						; CX hi order word of fposition
+        mov     dx, WORD PTR foffset                ; DX low order word of fposition
+        mov     cx, WORD PTR foffset + 2            ; CX hi order word of fposition
 		mov		bx, fhandle
 		mov		al, forigin							; SEEK_SET, SEEK_CUR, SEEK_END
 		mov		ah, DOS_MOVE_FILE_POINTER_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		dos_global_error_code, ax
+		mov		errno, ax
 		jmp		END
-OK:		lds 	di, fpos_ptr						; DX:AX = new file position in bytes from start of file
-		mov		[di], ax							; low order word of fposition = AX
-		mov		[di + 2], dx						; hi order word of fposition = DX
+OK:		mov     WORD PTR [fpos], ax                 ; DX:AX = new file position (32-bit)
+        mov     WORD PTR [fpos + 2], dx
 END:
 	}
-    return fposition;
+    return errno;
 }
 
 /**
@@ -309,7 +304,7 @@ END:
 * CX = the attribute if AL was 00
 */
 dos_file_attributes_t dos_get_file_attributes(const char* path_name) {
-	dos_global_error_code = 0;
+	errno = 0;
     dos_file_attributes_t attributes = 0;
 	__asm {
 		.8086
@@ -319,9 +314,9 @@ dos_file_attributes_t dos_get_file_attributes(const char* path_name) {
 		mov		ah, DOS_CHANGE_FILE_MODE
 		int		DOS_SERVICE
 		jnc		OK
-		mov		dos_global_error_code, ax
-		xor		ax, ax
-OK:		mov		attributes, ax
+		mov		errno, ax
+		xor     cx, cx                      ; ensure defined return on error
+OK:		mov		attributes, cx
 END:
 	}
 	return attributes;
@@ -332,7 +327,7 @@ END:
 * @see file::attributes_t get_file_attributes(char* path_name)
 */
 dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t attributes) {
-	dos_error_code_t err_code = 0;
+    errno = 0;
 	__asm {
 		.8086
 		lds		dx, path_name
@@ -341,8 +336,8 @@ dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t 
 		mov		ah, DOS_CHANGE_FILE_MODE
 		int		DOS_SERVICE
 		jnc		END
-		mov		err_code, ax
+		mov		errno, ax
 END:
 	}
-	return err_code;
+	return errno;
 }

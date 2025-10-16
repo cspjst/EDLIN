@@ -1,10 +1,49 @@
 #include "RETRO/iotools.h"
 
 int main(int argc, char* argv[]) {
-    char buffer[] = "hello   ";
-    tfputs(&buffer[2], tstdout);
-    tputs("world\n");
+    char buffer[] = "hello world\n\r";
+     int c;
+     fputc('.', stdout);
+     fputc('\n', stdout);
+     fputs(buffer, stdout);
+     c = fgetc(stdin);
+     fputc(c, stdout);
+     fputc('\n', stdout);
+     fputs("Read error\n\r", stderr);
+     // Echo lines from stdin to stdout until EOF or empty line
+     while (true) {
+         if (!fgets(buffer, sizeof(buffer), stdin)) {
+             if (stdin->error) {
+                 fputs("Read error\n\r", stderr);
+                 break;
+             }
+             // EOF reached
+             break;
+         }
+
+         // Check for empty line (user pressed Enter with no input)
+         if (buffer[0] == '\n' || buffer[0] == '\0') {
+             break;
+         }
+
+         // Echo back
+         if (fputs(buffer, stdout) == EOF) {
+             if (stdout->error) {
+                 fputs("Write error\n\r", stderr);
+                 break;
+             }
+         }
+
+         // Optional: echo a single char to test fputc
+         fputc('.', stdout);
+         fputc('\n', stdout);
+     }
+
+     // Final status
+     fputs("Done.\n", stdout);
+     return 0;
 }
+
 
 
 /*

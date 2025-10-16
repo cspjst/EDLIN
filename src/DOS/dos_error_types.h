@@ -5,7 +5,7 @@
 
 typedef uint16_t dos_error_code_t;
 
-static dos_error_code_t dos_global_error_code;
+static dos_error_code_t errno;
 
 /**
 * Useful for user code to raise first classic 12h codes
