@@ -12,6 +12,17 @@ typedef int32_t dos_file_position_t;            // N.B. signed offset
 
 typedef uint32_t dos_file_size_t;
 
+/**
+* DOS int 21h, 36h      Get Disk Free Space
+*/
+typedef struct {
+        int16_t sectors_per_cluster;    // 0FFFFH if the drive number is invalid
+        int16_t available_clusters;
+        int16_t bytes_per_sector;
+        int16_t clusters_per_drive;
+
+} dos_file_disk_space_info_t;
+
 typedef enum {
         FSEEK_SET,
         FSEEK_CUR,
@@ -77,16 +88,5 @@ typedef enum {
         PRIVATE = 128
 } dos_file_access_attributes_t;
 
-/**
-* DOS int 21h, 36h      Get Disk Free Space
-*/
-typedef struct {
-
-        int16_t sectors_per_cluster;    // 0FFFFH if the drive number is invalid
-        int16_t available_clusters;
-        int16_t bytes_per_sector;
-        int16_t clusters_per_drive;
-
-} dos_file_disk_space_info_t;
 
 #endif
