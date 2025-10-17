@@ -16,17 +16,35 @@ typedef uint32_t dos_file_size_t;
 * DOS int 21h, 36h      Get Disk Free Space
 */
 typedef struct {
-        int16_t sectors_per_cluster;    // 0FFFFH if the drive number is invalid
-        int16_t available_clusters;
-        int16_t bytes_per_sector;
-        int16_t clusters_per_drive;
-
+    int16_t sectors_per_cluster;    // 0FFFFH if the drive number is invalid
+    int16_t available_clusters;
+    int16_t bytes_per_sector;
+    int16_t clusters_per_drive;
 } dos_file_disk_space_info_t;
 
 typedef enum {
-        FSEEK_SET,
-        FSEEK_CUR,
-        FSEEK_END
+    GET_DEVICE_INFO = 0,   //IOCTL,0   Get Device Information
+	SET_DEVICE_INFO        // IOCTL,1   Set Device Information
+	//IOCTL,2   Read From Character Device
+	//IOCTL,3   Write to Character Device
+	//IOCTL,4   Read From Block Device
+	//IOCTL,5   Write to Block Device
+	//IOCTL,6   Get Input Status
+	//IOCTL,7   Get Output Status
+	//IOCTL,8   Device Removable Query
+	//IOCTL,9   Device Local or Remote Query
+	//IOCTL,A   Handle Local or Remote Query
+	//IOCTL,B   Set Sharing Retry Count
+	//IOCTL,C   Generic I/O for Handles
+	//IOCTL,D   Generic I/O for Block Devices (3.2+)
+	//IOCTL,E   Get Logical Drive (3.2+)
+	//IOCTL,F   Set Logical Drive (3.2+)        
+} dos_ioctl_t;
+
+typedef enum {
+    FSEEK_SET,
+    FSEEK_CUR,
+    FSEEK_END
 } dos_file_seek_attributes_t;
 
 /**
@@ -48,13 +66,13 @@ typedef enum {
 *  `--
 */
 typedef enum {
-        CREATE_READ_WRITE = 0,
-        CREATE_READ_ONLY,
-        CREATE_HIDDEN,
-        CREATE_SYSTEM = 4,
-        CREATE_VOLUME = 8,
-        CREATE_ARCHIVE = 32,
-        CREATE_SHAREABLE = 128
+    CREATE_READ_WRITE = 0,
+    CREATE_READ_ONLY,
+    CREATE_HIDDEN,
+    CREATE_SYSTEM = 4,
+    CREATE_VOLUME = 8,
+    CREATE_ARCHIVE = 32,
+    CREATE_SHAREABLE = 128
 } dos_file_create_attributes_t;
 
 /**
@@ -77,15 +95,15 @@ typedef enum {
 * @note file pointer is placed at beginning of file
 */
 typedef enum {
-        ACCESS_READ_ONLY = 0,
-        ACCESS_WRITE_ONLY,
-        ACCESS_READ_WRITE,
-        SHARE_EXCLUSIVE = 0,
-        DENY_READ_WRITE = 16,
-        DENY_WRITE = 32,
-        DENY_READ = 48,
-        SHARE_FULL = 64,
-        PRIVATE = 128
+    ACCESS_READ_ONLY = 0,
+    ACCESS_WRITE_ONLY,
+    ACCESS_READ_WRITE,
+    SHARE_EXCLUSIVE = 0,
+    DENY_READ_WRITE = 16,
+    DENY_WRITE = 32,
+    DENY_READ = 48,
+    SHARE_FULL = 64,
+    PRIVATE = 128
 } dos_file_access_attributes_t;
 
 
