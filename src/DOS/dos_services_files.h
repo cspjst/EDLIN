@@ -46,6 +46,8 @@ dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t 
 // 44  I/O control for devices (IOCTL)
 dos_error_code_t dos_set_device_mode(dos_file_handle_t handle, dos_handle_mode_t mode);
 
+//uint16_t dos_get_device_info(dos_file_handle_t handle); // returns full device data word
+
 // 45  Duplicate file handle
 // 46  Force duplicate file handle
 // 47  Get current directory
