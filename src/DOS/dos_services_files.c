@@ -341,3 +341,20 @@ END:
 	}
 	return errno;
 }
+
+dos_error_code_t dos_set_device_mode(dos_file_handle_t fhandle, dos_handle_mode_t mode) {
+    errno = 0;
+    __asm {
+        .8086
+        mov     bx, fhandle
+        mov     ah, DOS_IO_CONTROL_FOR_DEVICES
+        mov     al, SET_DEVICE_INFO
+        mov     dh, 0
+        mov     dl, mode        ; DL = 0x00 (text) or 0x80 (binary)
+        int     DOS_SERVICE
+        jnc     END
+        mov     errno, ax
+END:
+    }
+    return errno;
+}
