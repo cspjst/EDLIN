@@ -3,7 +3,7 @@
 #include "edlin_errors.h"
 #include "edlin_types.h"
 #include "edlin_yesno.h"
-#include "../RETRO/memtools.h"
+#include "../TOOLS/memtools.h"
 #include <string.h>
 #include <stdlib.h>
 

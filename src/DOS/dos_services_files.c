@@ -1,9 +1,6 @@
 #include "dos_services_files.h"
 #include "dos_error_types.h"
 #include "dos_services_constants.h"
-#include "dos_services_files_constants.h"
-
-//#include <stdio.h>
 
 /**
 * INT 21,36 - Get Disk Free Space
@@ -332,7 +329,7 @@ dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t 
 		.8086
 		lds		dx, path_name
 		mov		cx, attributes
-		mov		al, 1					; AL = 01 to set attribute
+		mov		al, 1					    ; AL = 01 to set attribute
 		mov		ah, DOS_CHANGE_FILE_MODE
 		int		DOS_SERVICE
 		jnc		END
@@ -342,18 +339,18 @@ END:
 	return errno;
 }
 
-dos_error_code_t dos_set_device_mode(dos_file_handle_t fhandle, dos_handle_mode_t mode) {
+dos_error_code_t dos_set_device_mode(dos_file_handle_t fhandle, dos_device_mode_t mode) {
     errno = 0;
     __asm {
         .8086
-        mov     bx, fhandle
-        mov     ah, DOS_IO_CONTROL_FOR_DEVICES
-        mov     al, SET_DEVICE_INFO
-        mov     dh, 0
-        mov     dl, mode        ; DL = 0x00 (text) or 0x80 (binary)
-        int     DOS_SERVICE
-        jnc     END
-        mov     errno, ax
+        // mov     bx, fhandle
+       // mov     ah, DOS_IO_CONTROL_FOR_DEVICES
+       // mov     al, SET_DEVICE_INFO
+       // mov     dh, 0
+       // mov     dl, mode                    ; DL = 0x00 (text) or 0x80 (binary)
+       // int     DOS_SERVICE
+       // jnc     END
+       // mov     errno, ax
 END:
     }
     return errno;

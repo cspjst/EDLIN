@@ -16,12 +16,5 @@
 #define DOS_DEV_NUL             4  // bit 2: NUL device
 #define DOS_DEV_CLOCK           8  // bit 3: clock device
 
-// Operational mode flags (you can set these via IOCTL 01h)
-#define DOS_DEV_TEXT            0
-#define DOS_DEV_BINARY          80h    // bit 7: 1 = binary mode, 0 = text (translated) mode
-#define DOS_DEV_CHAR            100h   // bit 8: 1 = character device (always set for CON, AUX, etc.)
-
-// Reserved bits (9–15) must be zero; bit 6 is "EOF on input" (read-only, not settable)
-
 
 #endif

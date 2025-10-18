@@ -38,8 +38,17 @@ typedef enum {
 	//IOCTL,C   Generic I/O for Handles
 	//IOCTL,D   Generic I/O for Block Devices (3.2+)
 	//IOCTL,E   Get Logical Drive (3.2+)
-	//IOCTL,F   Set Logical Drive (3.2+)        
+	//IOCTL,F   Set Logical Drive (3.2+)
 } dos_ioctl_t;
+
+// Operational mode flags (set these via IOCTL 01h)
+typedef enum {
+    DOS_DEV_TEXT      = 0,
+    //bit 6 is "EOF on input" (read-only, not settable)
+    DOS_DEV_BINARY    = 0x80,   // bit 7: 1 = binary mode, 0 = text (translated) mode
+    DOS_DEV_CHAR      = 0x100   // bit 8: 1 = character device (always set for CON, AUX, etc.)
+    // Reserved bits (9–15) must be zero
+} dos_device_mode_t;
 
 typedef enum {
     FSEEK_SET,

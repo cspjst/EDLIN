@@ -46,7 +46,7 @@ file(GLOB SOURCES
     *.c
     BIOS/*c
     DOS/*.c
-    RETRO/*.c
+    TOOLS/*.c
     EDLIN/*.c
 )
 

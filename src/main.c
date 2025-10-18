@@ -1,4 +1,4 @@
-#include "RETRO/iotools.h"
+#include "TOOLS/iotools.h"
 
 int main(int argc, char* argv[]) {
     char buffer[] = "hello world\n\r";
@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
      c = fgetc(stdin);
      fputc(c, stdout);
      fputc('\n', stdout);
-     fputs("Read error\n\r", stderr);
+     fputs("stderr some dreadful error\n\r", stderr);
      // Echo lines from stdin to stdout until EOF or empty line
      while (true) {
          if (!fgets(buffer, sizeof(buffer), stdin)) {
