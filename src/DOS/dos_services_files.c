@@ -2,6 +2,9 @@
 #include "dos_error_types.h"
 #include "dos_services_constants.h"
 
+#include <errno.h>
+#include <stdint.h>
+
 /**
 * INT 21,36 - Get Disk Free Space
 * AH = 36h
@@ -339,19 +342,115 @@ END:
 	return errno;
 }
 
-dos_error_code_t dos_set_device_mode(dos_file_handle_t fhandle, dos_device_mode_t mode) {
+/**
+ * INT 21,44,D / IOCTL,D - Generic I/O for Block Devices
+
+	AH = 44h
+	AL = 0D
+	BL = drive number (0=default, 1=A:, 2=B:, 3=C:, ...)
+	CH = device type
+	   = 08 for disk drive	(block device)
+	CL = minor function code
+	   = 40  set device parameters
+	   = 41  write track on logical device
+	   = 42  format/verify track on logical drive
+	   = 47  set access flag  (DOS 4.x)
+	   = 60  get device parameters
+	   = 61  read track on logical device
+	   = 62  verify track on logical drive
+	   = 67  get access flag  (DOS 4.x)
+	DS:DX = pointer to parameter block
+
+
+	on return
+	AX = error code if CF set  (see DOS ERROR CODES)
+
+
+	- provides device independent primitive control operations
+	- implemented from DOS 3.2
+	- see IBM DOS Technical Reference Manual for more details
+ */
+dos_error_code_t dos_set_stream_mode(dos_file_handle_t fhandle, uint16_t* mode) {
+    errno = 0;
+        __asm {
+            .8086
+            push    ds
+
+            mov     bx, fhandle
+            mov     cx, 0x44        // category: character device
+            mov     dx, 0x07        // function: set device info
+            mov     ax, 0x440D      // AH=44h, AL=0Dh (Generic IOCTL)
+            lds     si, mode        // DS:SI = far pointer to 'mode' (word)
+            int     DOS_SERVICE
+            pop     ds
+            pop     bp
+            jnc     OK
+            mov     errno, ax
+
+            pop     ds
+    OK:
+        }
+        return errno;
+}
+/*
+{
     errno = 0;
     __asm {
         .8086
-        // mov     bx, fhandle
-       // mov     ah, DOS_IO_CONTROL_FOR_DEVICES
-       // mov     al, SET_DEVICE_INFO
-       // mov     dh, 0
-       // mov     dl, mode                    ; DL = 0x00 (text) or 0x80 (binary)
-       // int     DOS_SERVICE
-       // jnc     END
-       // mov     errno, ax
+        mov     bx, fhandle
+        mov     ah, 0x44        ; IOCTL
+        mov     al, 0x01        ; Set Device Information
+        mov     dh, 0           ; DH must be zero
+        mov     dl, mode        ; DL = 0x00 (text) or 0x80 (binary)
+        int     DOS_SERVICE
+        jnc     END
+        mov     errno, ax
 END:
     }
     return errno;
 }
+*/
+
+/**
+ * On success, device data word (16 bits)
+ * Bit 0: stdin
+ * Bit 1: stdout
+ * Bit 2: NUL
+ * Bit 3: clock
+ * Bit 6: EOF on input (ie pending)
+ * Bit 7: binary mode (1 = binary)
+ * Bit 8: character device (1 = char dev)
+ */
+ dos_error_code_t dos_get_device_info(dos_file_handle_t fhandle, uint16_t* info)  {
+    __asm {
+        .8086
+        mov     cx, 0x44        // category
+        mov     dx, 0x06        // function: get device info (or 0x00?)
+        mov     ax, 0x440D
+        lds     si, info        // DS:SI = far pointer to 'info' (word)
+        int     DOS_SERVICE
+        pop     ds
+        pop     bp
+        // On success, AX = bytes returned (should be 2), info filled
+        // On error, CF set
+    }
+    return info;
+}
+
+ /* DOS legacy
+ {
+     uint16_t device_info = 0;
+     __asm {
+         .8086
+         mov     bx, fhandle
+         mov     ah, 0x44        ; IOCTL
+         mov     al, 0x00        ; Get Device Information
+         int     DOS_SERVICE
+         jnc     OK
+         xor     ax, ax          ; return 0 on error (invalid handle or not a device)
+ OK:     mov     device_info, ax
+ END:
+     }
+     return device_info;
+ }
+*/

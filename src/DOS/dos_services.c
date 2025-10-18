@@ -1,10 +1,6 @@
 #include "dos_services.h"
 #include "dos_services_constants.h"
 #include "dos_error_types.h"
-#include "dos_error_messages.h"
-#include <assert.h>
-
-#include <stdio.h>
 
 /**
 * @brief Provides a safe method for changing interrupt vectors
@@ -116,14 +112,6 @@ OK: mov     mem_seg, ax
     pop     ds
     popf
     }
-#ifndef NDEBUG
-    if (err_code) {
-        fprintf(stderr, "%s\n", dos_error_messages[err_code]);
-        if (err_code == DOS_INSUFFICIENT_MEMORY) {
-            fprintf(stderr, " largest block of memory available = %u paragraphs\n", available);    // paragraph = 16 bytes
-        }
-    }
-#endif
     return mem_seg;
 }
 
@@ -163,10 +151,5 @@ uint16_t dos_free_allocated_memory_blocks(uint16_t segment) {
         pop     ds
         popf
     }
-#ifndef NDEBUG
-    if (err_code) {
-        fprintf(stderr, "%s %X\n", dos_error_messages[err_code], segment);
-    }
-#endif
     return err_code;
 }

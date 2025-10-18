@@ -41,14 +41,25 @@ typedef enum {
 	//IOCTL,F   Set Logical Drive (3.2+)
 } dos_ioctl_t;
 
-// Operational mode flags (set these via IOCTL 01h)
+// DOS Device Data Word — bit masks (16-bit, bits 0 to 15)
+// Only bits 0–8 are defined; bits 9–15 are reserved (must be 0)
 typedef enum {
-    DOS_DEV_TEXT      = 0,
-    //bit 6 is "EOF on input" (read-only, not settable)
-    DOS_DEV_BINARY    = 0x80,   // bit 7: 1 = binary mode, 0 = text (translated) mode
-    DOS_DEV_CHAR      = 0x100   // bit 8: 1 = character device (always set for CON, AUX, etc.)
-    // Reserved bits (9–15) must be zero
-} dos_device_mode_t;
+    DOS_DEV_STDIN       = 0x0001U,  // bit 0: standard input device
+    DOS_DEV_STDOUT      = 0x0002U,  // bit 1: standard output device
+    DOS_DEV_NUL         = 0x0004U,  // bit 2: NUL device
+    DOS_DEV_CLOCK       = 0x0008U,  // bit 3: clock device
+    // bit 4: reserved
+    // bit 5: reserved
+    DOS_DEV_EOF_PENDING = 0x0040U,  // bit 6: EOF on input (read-only; set when Ctrl+Z is next char)
+    DOS_DEV_BINARY      = 0x0080U,  // bit 7: 1 = binary mode, 0 = text (translated) mode
+    DOS_DEV_CHAR        = 0x0100U   // bit 8: 1 = character device (always set for CON, AUX, etc.)
+    // bits 9–15: reserved, must be 0
+} dos_device_data_word_t;
+
+typedef enum {
+    DOS_STREAM_MODE_TEXT = 0,
+    DOS_STREAM_MODE_BINARY = 0x80
+} dos_stream_mode_t;
 
 typedef enum {
     FSEEK_SET,

@@ -1,7 +1,6 @@
 #include "memtools.h"
-#include "../DOS/dos_services_constants.h"
 #include "../DOS/dos_error_types.h"
-#include "../DOS/dos_error_messages.h"
+#include "../DOS/dos_services_constants.h"
 
 /**
  * Report DOS user available low memory
@@ -11,5 +10,21 @@
  * ignored, since DOS cannot allocate more than 640k of memory.)
  */
 uint32_t mem_available() {
-    return 0;
+    uint16_t available;
+    dos_error_code_t err_code;
+    __asm {
+    .8086
+    pushf
+    push    ds
+
+    mov     bx, 0FFFFh                  ; number requested paragraphs
+    mov     ah, DOS_ALLOCATE_MEMORY_BLOCKS  ; allocate memory
+    int     DOS_SERVICE                 ; 48h service
+    mov     err_code, ax                ; CF set, and AX = 08 (Not Enough Mem)
+    mov     available, bx               ; size in paras of the largest block of memory available
+
+    pop     ds
+    popf
+    }
+    return available;
 }

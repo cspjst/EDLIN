@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "../DOS/dos_services_files.h"
+
 edlin_file_t* edlin_new_file() {
     // 1. allocate a file struct
     edlin_file_t* file = malloc(sizeof(edlin_file_t));
@@ -96,13 +98,13 @@ bool edlin_load_file(edlin_file_t* file) {
 
 void edlin_print_file(edlin_file_t* file) {
     for(edlin_size_t i = 0; i < file->size; ++i) {
-        printf("%s", *file->lines[i]);
+        puts(*file->lines[i]);
         if (
             (i + 1) % EDLIN_PAGE_SIZE == 0
             && i + 1 < file->size
             && !edlin_yesno("Continue ")
         ) {
-            printf("\n");
+            puts("\n");
             return;
         }
     }
