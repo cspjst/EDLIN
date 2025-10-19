@@ -44,10 +44,6 @@ dos_file_attributes_t dos_get_file_attributes(const char* path_name);
 dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t attributes);
 
 // 44  I/O control for devices (IOCTL)
-dos_error_code_t dos_set_stream_mode(dos_file_handle_t fhandle, uint16_t* mode);
-
-uint16_t dos_get_device_info(dos_file_handle_t fhandle, uint16_t* info); // returns full device data word
-
 // 45  Duplicate file handle
 // 46  Force duplicate file handle
 // 47  Get current directory

@@ -2,8 +2,7 @@
 #define EDLIN_EDIT_H
 
 #include "edlin_types.h"
-#include <stdio.h>
-//#include "../TOOLS/iotools.h"
+#include "../DOS/dos_services_files.h"
 
 edlin_file_t* edlin_new_file();
 
