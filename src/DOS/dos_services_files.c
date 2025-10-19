@@ -344,73 +344,121 @@ END:
 }
 
 /**
- * @brief provides device independent primitive control operations
- * @note implemented from DOS 3.2
- * INT 21,44,D / IOCTL,D - Generic I/O for Block Devices
- * 	AH = 44h
- *	AL = 0D
- *	BL = drive number (0=default, 1=A:, 2=B:, 3=C:, ...)
- *	CH = device type
- *	   = 08 for disk drive	(block device)
- *	CL = minor function code
- *	   = 40  set device parameters
- *	   = 41  write track on logical device
- *	   = 42  format/verify track on logical drive
- *	   = 47  set access flag  (DOS 4.x)
- *	   = 60  get device parameters
- *	   = 61  read track on logical device
- *	   = 62  verify track on logical drive
- *	   = 67  get access flag  (DOS 4.x)
- *	DS:DX = pointer to parameter block
- *
- *	on return
- *	AX = error code if CF set  (see DOS ERROR CODES)
+INT 21,44,1 / IOCTL,1 - Set Device Information
+
+	AH = 44h
+	AL = 01
+	BX = handle
+	DH = must be zero
+	DL = device data low order byte  (see below)
+
+
+	on return
+	AX = error code if CF set
+	DX = device information  (see below)
+
+
+	- applicable to character devices only
+	- allows setting of device data word for character devices
+	- usually used to change from binary to translated I/O
+	- handle in BX must be an opened file or device
+
+
+Device Data Word
+
+	|F|E|D|C|B|A|9|8|7|6|5|4|3|2|1|0|  Device Data Word
+	 | | | | | | | | | | | | | | | `---- 1 = standard input device
+	 | | | | | | | | | | | | | | `---- 1 = standard output device
+	 | | | | | | | | | | | | | `---- 1 = NUL device
+	 | | | | | | | | | | | | `---- 1 = clock device
+	 | | | | | | | | | | | `---- reserved
+	 | | | | | | | | | | `---- 1 = binary mode, 0 = translated
+	 | | | | | | | | | `---- 0 = end of file on input
+	 | | | | | | | | `---- 1 = character device
+	 `------------------ reserved, must be zero
  */
 dos_error_code_t dos_set_stream_mode(dos_file_handle_t fhandle, uint16_t* mode) {
     errno = 0;
     __asm {
         .8086
-        push    ds
-
         mov     bx, fhandle
         mov     cx, 0x44        // category: character device
         mov     dx, 0x07        // function: set device info
         mov     ax, 0x440D      // AH=44h, AL=0Dh (Generic IOCTL)
-        lds     si, mode        // DS:SI = far pointer to 'mode' (word)
+        lds     dx, mode        // DS:SI = far pointer to 'mode' (word)
         int     DOS_SERVICE
-        pop     ds
-        pop     bp
         jnc     OK
         mov     errno, ax
-
-        pop     ds
 OK:
     }
     return errno;
 }
 
 /**
- * On success, device data word (16 bits)
- * Bit 0: stdin
- * Bit 1: stdout
- * Bit 2: NUL
- * Bit 3: clock
- * Bit 6: EOF on input (ie pending)
- * Bit 7: binary mode (1 = binary)
- * Bit 8: character device (1 = char dev)
+ * INT 21,44,0 / IOCTL,0 - Get Device Information
+
+	AH = 44h
+	AL = 00
+	BX = handle (must be an opened device)
+
+
+	on return
+	AX = error code if CF set  (see DOS ERROR CODES)
+	DX = device information  (see tables below)
+
+
+	|F|E|D|C|B|A-8|7|6|5-0|  DX  Block Device Information
+	 | | | | |  |  | |  `----- drive number (0=A:,1=B:)
+	 | | | | |  |  | `------- 0 = file has been written
+	 | | | | |  |  `-------- 0 = disk file; 1 = character device
+	 | | | | |  `---------- reserved, must be zero
+	 | | | | `------------ 1 = media not removable
+	 | | | `------------- 1 = network device (DOS 3.x+)
+	 | | `-------------- 1 = reserved
+	 | `--------------- 1 = don't update file time or date (DOS 4.x+)
+	 `---------------- 1 = file is remote (DOS 3.x+)
+
+	|F|E|D|C|B|A-8|7|6|5|4|3|2|1|0|  DX  Character Device Information
+	 | | | | |  |  | | | | | | | `---- 1 = standard input device
+	 | | | | |  |  | | | | | | `---- 1 = standard output device
+	 | | | | |  |  | | | | | `---- 1 = NUL device
+	 | | | | |  |  | | | | `---- 1 = clock device
+	 | | | | |  |  | | | `---- uses DOS INT 29 for fast character output
+	 | | | | |  |  | | `---- 1 = binary mode, 0 = translated
+	 | | | | |  |  | `---- 0 = end of file on input
+	 | | | | |  |  `---- 1 = character device, 0 if disk file
+	 | | | | |  `----- reserved
+	 | | | | `------ 1 = media not removable
+	 | | | `------ 1 = network device (DOS 3.x+)
+	 | | `------ reserved
+	 | `------ 1 = supports IOCTL, via functions 2 & 3
+	 `------ reserved
+
+
+	- BIT 7 of register DX can be used to detect if STDIN/STDOUT is
+	  redirected to/from disk; if a call to this function has DX BIT 7
+	  set it's not redirected from/to disk; if it's clear then it is
+	  redirected to/from disk
+	- BIT B of register DX can be used to determine if a drive is
+	  removable.
+
  */
  dos_error_code_t dos_get_device_info(dos_file_handle_t fhandle, uint16_t* info)  {
-    __asm {
+     errno = 0;
+     __asm {
         .8086
-        mov     cx, 0x44        // category
-        mov     dx, 0x06        // function: get device info (or 0x00?)
-        mov     ax, 0x440D
-        lds     si, info        // DS:SI = far pointer to 'info' (word)
+        mov     ah, 44h         ; IOCTL
+        mov     al, 00h         ; get device information
+        mov     bx, fhandle     ; handle (must be an opened device)
+        mov     cx, 2
+        mov     dx, 1
         int     DOS_SERVICE
-        pop     ds
-        pop     bp
-        // On success, AX = bytes returned (should be 2), info filled
-        // On error, CF set
+        jnc     OK              ; On error, CF set
+        mov     errno, ax       ; AX = error code if CF set
+        jmp     END
+OK:     les     di, info
+        mov     es:[di], dx     ; DX = device information
+END:
     }
-    return info;
+    return errno;
 }

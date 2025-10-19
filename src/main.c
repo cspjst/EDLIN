@@ -1,30 +1,49 @@
-//#include "DOS/dos_services_files.h"
-//#include "TOOLS/iotools.h"
-//#include "TOOLS/strtools.h"
 
+#include "TOOLS/iotools.h"
+
+int main() {
+    tputs("Type CTRL-Z: ");
+
+    int c = tfgetc(tstdin);
+
+    if (c == 0x1A) {
+        tputs("SUCCESS: Got CTRL-Z (0x1A) - not EOF!");
+    } else if (c == EOF) {
+        tputs("FAIL: CTRL-Z caused EOF");
+    } else {
+        tputs("Got something else");
+    }
+
+    tputs("Now type something after CTRL-Z: ");
+    c = tfgetc(tstdin);
+
+    if (c != EOF) {
+        tputs("SUCCESS: Can read after CTRL-Z!");
+    } else {
+        tputs("FAIL: EOF after CTRL-Z");
+    }
+
+    return 0;
+}
+
+/*
 #include "EDLIN/edlin_file.h"
 #include "EDLIN/edlin_config.h"
 #include "EDLIN/edlin_parse.h"
 #include "EDLIN/edlin_tokenize.h"
 #include "EDLIN/edlin_types.h"
 #include "EDLIN/edlin_debug.h"
-#include <stdio.h>
 
+#include <stdio.h>
 #include <fcntl.h>
 #include <io.h>
-
-#include "DOS/dos_services_files.h"
+#include <assert.h>
 
 int main(int argc, char* argv[]) {
     edlin_line_t input;
     edlin_cmd_t cmd;
     edlin_file_t* file = edlin_new_file();
-    // Set stdin to binary mode
-    printf("stdin fileno=%i\n", fileno(stdin));
-    printf("stdout fileno=%i\n", fileno(stdout));
-    printf("stderr fileno=%i\n", fileno(stderr));
     //setmode(fileno(stdin), O_BINARY);
-    dos_set_stream_mode(0, DOS_STREAM_MODE_BINARY);
     if (file && edlin_config(argc, argv, file)) {
         debug_file_t(file);
         while(file->open) {

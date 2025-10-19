@@ -15,47 +15,50 @@
 #include "../DOS/dos_services_files.h"
 #include "../DOS/dos_services_files_constants.h"
 
-#ifdef FILE
-    #error "FILE is already defined!"
+#ifdef tFILE
+    #error "tFILE is already defined!"
 #else
 typedef struct {
     dos_file_handle_t handle;
     int eof;
     int error;
-} FILE;
+} tFILE;
 
 #ifdef EOF
     #error "EOF is already defined!"
 #endif
 #define EOF (-1)
 
+#ifdef NULL
+    #error "NULL is already defined!"
+#endif
+#define NULL 0
+
 #define O_TEXT    DOS_STREAM_MODE_TEXT
 #define O_BINARY  DOS_STREAM_MODE_BINARY
 
-static FILE FILE_DOS_STDIN = { DOS_STDIN_HANDLE, 0 };
-static FILE FILE_DOS_STDOUT = { DOS_STDOUT_HANDLE, 0 };
-static FILE FILE_DOS_STDERR = { DOS_STDERR_HANDLE, 0 };
+static tFILE FILE_DOS_STDIN = { DOS_STDIN_HANDLE, 0 };
+static tFILE FILE_DOS_STDOUT = { DOS_STDOUT_HANDLE, 0 };
+static tFILE FILE_DOS_STDERR = { DOS_STDERR_HANDLE, 0 };
 
-static FILE* stdin = & FILE_DOS_STDIN;
-static FILE* stdout = & FILE_DOS_STDOUT;
-static FILE* stderr = & FILE_DOS_STDERR;
+static tFILE* tstdin = &FILE_DOS_STDIN;
+static tFILE* tstdout = &FILE_DOS_STDOUT;
+static tFILE* tstderr = &FILE_DOS_STDERR;
 
 #endif
 
-int fputc(int c, FILE *stream);
+int tfputc(int c, tFILE *stream);
 
-int fputs(const char *s, FILE *stream);
+int tfputs(const char *s, tFILE *stream);
 
-int puts(const char *s);
+int tputs(const char *s);
 
-int fgetc(FILE *stream);
+int tfgetc(tFILE *stream);
 
-char* fgets(char *s, int n, FILE *stream);
+char* tfgets(char *s, int n, tFILE *stream);
 
-int feof(FILE* stream);
+int tfeof(tFILE* stream);
 
-void clearerr(FILE* stream);
-
-int setmode(dos_file_handle_t fhandle, dos_stream_mode_t mode);
+void tclearerr(tFILE* stream);
 
 #endif
