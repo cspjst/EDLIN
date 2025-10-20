@@ -1,4 +1,5 @@
 #include "mem_arena.h"
+#include "mem_types.h"
 
 mem_arena_t* mem_arena_create(uint32_t paragraphs) {
     mem_address_t addr = {0};
