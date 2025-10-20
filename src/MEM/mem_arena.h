@@ -1,6 +1,7 @@
 #ifndef MEM_ARENA_H
 #define MEM_ARENA_H
 
+#include "mem_types.h"
 #include <stdint.h>
 
 typedef struct {
@@ -10,7 +11,7 @@ typedef struct {
     char* end;
 } mem_arena_t;
 
-mem_arena_t* mem_arena_create(uint32_t paragraphs);
+mem_arena_t* mem_arena_create(mem_size_paragraphs_t paragraphs);
 
 void mem_arena_destroy(mem_arena_t* arena);
 

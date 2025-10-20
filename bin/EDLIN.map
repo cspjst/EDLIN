@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta May  3 2025 18:23:37
 Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       25/10/20 20:38:51
+Created on:       25/10/20 21:05:34
 Executable Image: EDLIN.exe
 creating a DOS executable
 
@@ -27,11 +27,11 @@ Segment                Class          Group          Address         Size
 bios_keyboard_services_TEXT CODE      AUTO           0000:0000       0000009c
 dos_services_TEXT      CODE           AUTO           0000:009c       00000121
 dos_services_files_TEXT CODE          AUTO           0000:01bd       00000397
-mem_arena_TEXT         CODE           AUTO           0000:0554       0000018f
-mem_tools_TEXT         CODE           AUTO           0000:06e3       00000039
-main_TEXT              CODE           AUTO           0000:071c       00000025
-_TEXT                  CODE           AUTO           0000:0742       00000497
-FAR_DATA               FAR_DATA       AUTO           00bd:0009       00000000
+mem_arena_TEXT         CODE           AUTO           0000:0554       0000018c
+mem_tools_TEXT         CODE           AUTO           0000:06e0       00000039
+main_TEXT              CODE           AUTO           0000:0719       00000025
+_TEXT                  CODE           AUTO           0000:073e       00000497
+FAR_DATA               FAR_DATA       AUTO           00bd:0005       00000000
 _NULL                  BEGDATA        DGROUP         00be:0000       00000020
 _AFTERNULL             BEGDATA        DGROUP         00c0:0000       00000002
 CONST                  DATA           DGROUP         00c0:0002       00000000
@@ -80,33 +80,33 @@ Module: CMakeFiles/EDLIN.dir/DOS/dos_services_files.c.obj(/Users/jeremythornton/
 0000:04fe+     dos_set_file_attributes_
 Module: CMakeFiles/EDLIN.dir/MEM/mem_arena.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/MEM/mem_arena.c)
 0000:0554+     mem_arena_create_
-0000:061f+     mem_arena_destroy_
-0000:0661+     mem_arena_alloc_
+0000:061c+     mem_arena_destroy_
+0000:065e+     mem_arena_alloc_
 Module: CMakeFiles/EDLIN.dir/MEM/mem_tools.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/MEM/mem_tools.c)
-0000:06e3+     mem_get_low_free_
+0000:06e0+     mem_get_low_free_
 Module: CMakeFiles/EDLIN.dir/main.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/main.c)
-0000:071c      main_
+0000:0719      main_
 Module: /opt/watcom/lib286/dos/clibl.lib(stk)
-0000:0747      __STK
-0000:0767*     __STKOVERFLOW_
+0000:0743      __STK
+0000:0763*     __STKOVERFLOW_
 Module: /opt/watcom/lib286/dos/clibl.lib(cmodel)
-0000:0784      _big_code_
-0000:0784*     CodeModelMismatch
+0000:0780      _big_code_
+0000:0780*     CodeModelMismatch
 Module: /opt/watcom/lib286/dos/clibl.lib(errno)
-0000:0784      __get_errno_ptr_
+0000:0780      __get_errno_ptr_
 00be:0070+     _errno
 Module: /opt/watcom/lib286/dos/clibl.lib(cstart)
 00be:0000*     __nullarea
 00be:0028*     __ovlflag
 00be:0029*     __intno
 00be:002a*     __ovlvec
-0000:078c      _cstart_
-0000:093d      __exit_
-0000:095a      __do_exit_with_msg_
-0000:0a39      __GETDS
+0000:0788      _cstart_
+0000:0939      __exit_
+0000:0956      __do_exit_with_msg_
+0000:0a35      __GETDS
 Module: /opt/watcom/lib286/dos/clibl.lib(xmsg)
-0000:0a43*     __exit_with_msg_
-0000:0a48      __fatal_runtime_error_
+0000:0a3f*     __exit_with_msg_
+0000:0a44      __fatal_runtime_error_
 Module: /opt/watcom/lib286/dos/clibl.lib(crwdata)
 00be:002e      __curbrk
 00be:0036      __STACKLOW
@@ -126,26 +126,26 @@ Module: /opt/watcom/lib286/dos/clibl.lib(crwdata)
 00be:0034      __osmode
 00be:0035      __HShift
 Module: /opt/watcom/lib286/dos/clibl.lib(cmain086)
-0000:0a62      __CMain
+0000:0a5e      __CMain
 Module: /opt/watcom/lib286/dos/clibl.lib(initrtns)
-0000:0ab4      __InitRtns
-0000:0ab4*     __FInitRtns
-0000:0b0b      __FiniRtns
-0000:0b0b*     __FFiniRtns
+0000:0ab0      __InitRtns
+0000:0ab0*     __FInitRtns
+0000:0b07      __FiniRtns
+0000:0b07*     __FFiniRtns
 Module: /opt/watcom/lib286/dos/clibl.lib(uselfn)
 00be:0058      ___uselfn
 Module: /opt/watcom/lib286/dos/clibl.lib(dosseg)
-0000:0b6c      __DOSseg__
+0000:0b68      __DOSseg__
 Module: /opt/watcom/lib286/dos/clibl.lib(enterdb)
-0000:0b6d      __EnterWVIDEO_
+0000:0b69      __EnterWVIDEO_
 00be:005a+     __WD_Present
 Module: /opt/watcom/lib286/dos/clibl.lib(___argc)
 00be:0072      ____Argv
 00be:0076      ____Argc
 Module: /opt/watcom/lib286/dos/clibl.lib(exit)
-0000:0b91+     __null_int23_exit_
-0000:0b92      exit_
-0000:0bc1*     _exit_
+0000:0b8d+     __null_int23_exit_
+0000:0b8e      exit_
+0000:0bbd*     _exit_
 00be:005c+     ___int23_exit
 00be:0060+     ___FPE_handler_exit
 Module: /opt/watcom/lib286/dos/clibl.lib(sgdef086)
@@ -168,5 +168,5 @@ Module: /opt/watcom/lib286/dos/clibl.lib(sgdef086)
 
 Stack size:  0800 (2048.)
 Memory size:  1460 (5216.)
-Entry point address: 0000:078c
-Link time: 00:00.44
+Entry point address: 0000:0788
+Link time: 00:00.76
