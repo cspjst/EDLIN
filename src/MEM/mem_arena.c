@@ -20,7 +20,7 @@ void mem_arena_destroy(mem_arena_t* arena) {
 }
 
 void* mem_arena_alloc(mem_arena_t* arena, uint32_t size) {
-    char* ptr = arena->free_ptr;
+    void* ptr = arena->free_ptr;
     if (ptr + size <= arena->end) {
         arena->free_ptr += size;
         return ptr;
