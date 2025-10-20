@@ -1,6 +1,8 @@
 #ifndef MEM_ARENA_H
 #define MEM_ARENA_H
 
+#include <stdint.h>
+
 typedef struct {
     uint16_t segment;
     char* base;

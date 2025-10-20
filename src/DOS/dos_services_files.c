@@ -26,6 +26,8 @@ dos_error_code_t dos_get_disk_free_space(uint8_t drive_number, dos_file_disk_spa
     __asm {
         .8086
         pushf
+        push    ds
+
         mov     dl, drive_number
         mov     ah, DOS_GET_DISK_FREE_SPACE
         int     DOS_SERVICE
@@ -45,7 +47,9 @@ OK:     lds     di, info                    ; fill out the struct
         mov     [di + 2], bx                ; available clusters
         mov     [di + 4], cx                ; bytes per sector
         mov     [di + 6], dx                ; clusters per drive
-END:    popf
+
+END:    pop     ds
+        popf
     }
     return errno;
 }
@@ -69,6 +73,9 @@ dos_file_handle_t dos_create_file(const char* path_name, dos_file_attributes_t c
 	dos_file_handle_t fhandle = 0;
 	__asm {
 		.8086
+		pushf
+        push    ds
+
 		lds		dx, path_name
 		mov		cx, create_attributes
 		mov		ah, DOS_CREATE_FILE_USING_HANDLE
@@ -77,7 +84,9 @@ dos_file_handle_t dos_create_file(const char* path_name, dos_file_attributes_t c
 		mov		errno, ax
 		xor		ax,ax
 OK:		mov		fhandle, ax
-END:
+
+END:    pop     ds
+        popf
 	}
 	return fhandle;
 }
@@ -100,6 +109,9 @@ dos_file_handle_t dos_open_file(const char* path_name, uint8_t access_attributes
 	dos_file_handle_t fhandle = 0;
 	__asm {
 		.8086
+		pushf
+        push    ds
+
 		lds		dx, path_name
 		mov		al, access_attributes
 		mov		ah, DOS_OPEN_FILE_USING_HANDLE
@@ -108,7 +120,9 @@ dos_file_handle_t dos_open_file(const char* path_name, uint8_t access_attributes
 		mov		errno, ax
 		xor		ax, ax
 OK:		mov		fhandle, ax
-END:
+
+END:    pop     ds
+        popf
 	}
 	return fhandle;
 }
@@ -128,12 +142,17 @@ dos_error_code_t dos_close_file(dos_file_handle_t fhandle) {
 	errno = 0;
 	__asm {
 		.8086
+		pushf
+        push    ds
+
 		mov		bx, fhandle
 		mov		ah, DOS_CLOSE_FILE_USING_HANDLE
 		int		DOS_SERVICE
 		jnc		END
 		mov		errno, ax
-END:
+
+END:    pop     ds
+        popf
 	}
 	return errno;
 }
@@ -158,6 +177,9 @@ int16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes) 
     uint16_t bytes_read = 0;
     __asm {
         .8086
+        pushf
+        push    ds
+
         lds     dx, buffer
         mov     cx, nbytes
         mov     bx, fhandle
@@ -168,7 +190,9 @@ int16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes) 
         mov     bytes_read, 0xFFFF      ; EOF as uint16_t (-1)
         jmp     END
 OK:     mov     bytes_read, ax
-END:
+
+END:    pop     ds
+        popf
     }
     return (int16_t)bytes_read;
 }
@@ -192,6 +216,9 @@ int16_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t n
     uint16_t bytes_written = 0;
     __asm {
         .8086
+        pushf
+        push    ds
+
         lds     dx, buffer
         mov     cx, nbytes
         mov     bx, fhandle
@@ -202,7 +229,9 @@ int16_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t n
         mov     bytes_written, 0xFFFF      ; EOF as uint16_t (-1)
         jmp     END
 OK:     mov     bytes_written, ax
-END:
+
+END:    pop     ds
+        popf
     }
     return (int16_t)bytes_written;
 }
@@ -224,12 +253,17 @@ dos_error_code_t dos_delete_file(char* path_name) {
 	errno = 0;
 	__asm {
 		.8086
+		pushf
+        push    ds
+
 		lds		dx, path_name
 		mov		ah, DOS_DELETE_FILE
 		int		DOS_SERVICE
 		jnc		END
 		mov		errno, ax
-END:
+
+END:    pop     ds
+        popf
 	}
 	return errno;
 }
@@ -269,6 +303,9 @@ dos_error_code_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_posit
 	errno = 0;
 	__asm {
 		.8086
+		pushf
+        push    ds
+
         mov     dx, WORD PTR foffset                ; DX low order word of fposition
         mov     cx, WORD PTR foffset + 2            ; CX hi order word of fposition
 		mov		bx, fhandle
@@ -280,7 +317,9 @@ dos_error_code_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_posit
 		jmp		END
 OK:		mov     WORD PTR [fpos], ax                 ; DX:AX = new file position (32-bit)
         mov     WORD PTR [fpos + 2], dx
-END:
+
+END:    pop     ds
+        popf
 	}
     return errno;
 }
@@ -309,6 +348,9 @@ dos_file_attributes_t dos_get_file_attributes(const char* path_name) {
     dos_file_attributes_t attributes = 0;
 	__asm {
 		.8086
+		pushf
+        push    ds
+
 		lds		dx, path_name
 		xor		cx, cx
 		xor		al, al						; AL = 00 to get attribute
@@ -318,7 +360,9 @@ dos_file_attributes_t dos_get_file_attributes(const char* path_name) {
 		mov		errno, ax
 		xor     cx, cx                      ; ensure defined return on error
 OK:		mov		attributes, cx
-END:
+
+END:    pop     ds
+        popf
 	}
 	return attributes;
 }
@@ -331,6 +375,9 @@ dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t 
     errno = 0;
 	__asm {
 		.8086
+		pushf
+        push    ds
+
 		lds		dx, path_name
 		mov		cx, attributes
 		mov		al, 1					    ; AL = 01 to set attribute
@@ -338,7 +385,9 @@ dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t 
 		int		DOS_SERVICE
 		jnc		END
 		mov		errno, ax
-END:
+
+END:    pop     ds
+        popf
 	}
 	return errno;
 }
