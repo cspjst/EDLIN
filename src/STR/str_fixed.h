@@ -97,4 +97,28 @@ str_error_t str_itoa(int n, str_fixed_t* str, int base) {
     
     return STR_SUCCESS;
 }
+
+static const str_fixed_t ERROR_MESSAGES[] = {
+    {"Success", 7, 0},
+    {"Null pointer", 12, 0},
+    {"Buffer overflow", 15, 0},
+    {"Invalid number base", 19, 0},
+    {"I/O error", 9, 0},
+    {"Empty string", 12, 0},
+    {"Invalid pointer", 15, 0}
+};
+
+void str_fprint_error(dos_file_handle_t stream, str_error_t err) {
+    if (err >= 0 && err <= STR_ERROR_INVALID_PTR) {
+        str_fprint(stream, &ERROR_MESSAGES[err]);
+    } else {
+        str_fixed_t unknown = {"Unknown error", 13, 0};
+        str_fprint(stream, &unknown);
+    }
+}
+
+void str_print_error(str_error_t err) {
+    str_fprint_error(2, err);  // stderr
+}
+
 */
