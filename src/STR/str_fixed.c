@@ -10,9 +10,7 @@ static const str_fixed_t str_error[] = {
     {"Invalid", 7, 0}
 };
 
-static const str_fixed_t CRLF = {"\r\n", 0, 0};
-
-str_error_t str_cstr(str_fixed_t* str, const char* cstr) {
+str_size_t str_cstr(str_fixed_t* str, const char* cstr) {
     if (!str) return STR_ERROR_NULL;
     if (!cstr) return STR_ERROR_INVALID_PTR;
 

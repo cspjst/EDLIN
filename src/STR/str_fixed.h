@@ -11,11 +11,11 @@
   #error "STR_FIXED_SIZE is undefined!"
 #endif
 
-typedef uint8_t str_fixed_size_t;
+typedef uint8_t str_size_t;
 
 typedef struct {
     char text[STR_FIXED_SIZE];
-    str_fixed_size_t size;
+    str_size_t size;
     uint8_t flags;
 } str_fixed_t;
 
@@ -29,11 +29,13 @@ typedef enum {
     STR_ERROR_INVALID_PTR
 } str_error_t;
 
-str_error_t str_cstr(str_fixed_t* str, const char* cstr);
+static const str_fixed_t CRLF = {"\r\n", 0, 0};
 
-str_error_t str_int(str_fixed_t* str, int n, int base);
+str_size_t str_cstr(str_fixed_t* str, const char* cstr);
 
-str_error_t str_write(dos_file_handle_t stream, const str_fixed_t* str);
+str_size_t str_int(str_fixed_t* str, int n, int base);
+
+str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str);
 
 str_error_t str_stdout(const str_fixed_t* str);
 

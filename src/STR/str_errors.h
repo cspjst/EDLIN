@@ -1,6 +1,8 @@
 
 #include "str_types.h"
 
+static const str_size_t str_errno;
+
 static const str_fixed_t ERROR_MESSAGES[] = {
     {"Success", 7, 0},
     {"Null pointer", 12, 0},
