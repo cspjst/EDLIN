@@ -1,31 +1,25 @@
 #include "str_fixed.h"
-
-static const str_fixed_t str_error[] = {
-    {"Success", 7, 0},
-    {"Null", 4, 0},
-    {"Overflow", 8, 0},
-    {"Invalid", 7, 0},
-    {"IO fail", 7 , 0},
-    {"Empty", 5, 0},
-    {"Invalid", 7, 0}
-};
+#include "str_errors.h"
 
 str_size_t str_cstr(str_fixed_t* str, const char* cstr) {
-    if (!str) return STR_ERROR_NULL;
-    if (!cstr) return STR_ERROR_INVALID_PTR;
+    if (!str || !cstr) return 0;
 
     str_fixed_size_t len = 0;
     while (cstr[len] != '\0') {
         len++;
-        if (len >= STR_FIXED_SIZE) return STR_ERROR_OVERFLOW;
+        if (len >= STR_FIXED_SIZE) {
+            str_errno = STR_ERROR_OVERFLOW;
+            return 0;
+        }
     }
     for (str_fixed_size_t i = 0; i < len; i++) {
         str->text[i] = cstr[i];
     }
     str->text[len] = '\0';
     str->size = len;
-
-    return STR_SUCCESS;
+    
+    str_errno = STR_SUCCESS;
+    return len;
 }
 
 str_error_t str_int(str_fixed_t* str, int n, int base) {
