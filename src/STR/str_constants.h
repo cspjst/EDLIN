@@ -1,9 +1,6 @@
+#ifndef STR_CONSTANTS_H
+#define STR_CONSTANTS_H
 
 
 
-typedef enum {
-    STDIN = 0,
-    STDOUT,
-    STDERR,
-    PRN
-} str_devices_t;
+#endif
