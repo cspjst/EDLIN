@@ -1,14 +1,16 @@
+#ifndef STR_ERRORS_H
+#define STR_ERRORS_H
 
-#include "str_types.h"
+typedef enum {
+    STR_SUCCESS = 0,
+    STR_ERROR_NULL,
+    STR_ERROR_OVERFLOW,
+    STR_ERROR_INVALID_BASE,
+    STR_ERROR_IO,
+    STR_ERROR_EMPTY,
+    STR_ERROR_INVALID_PTR
+} str_error_t;
 
 static const str_size_t str_errno;
 
-static const str_fixed_t ERROR_MESSAGES[] = {
-    {"Success", 7, 0},
-    {"Null pointer", 12, 0},
-    {"Buffer overflow", 15, 0},
-    {"Invalid number base", 19, 0},
-    {"I/O error", 9, 0},
-    {"Empty string", 12, 0},
-    {"Invalid pointer", 15, 0}
-};
+#endif
