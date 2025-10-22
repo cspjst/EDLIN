@@ -2,32 +2,14 @@
 #ifndef STR_FIXED_H
 #define STR_FIXED_H
 
+#include "str_constants.h"
+#include "str_types.h" 
 #include "../DOS/dos_services_files.h"
 #include <stdint.h>
-
-#define  STR_FIXED_SIZE 253
 
 #ifndef STR_FIXED_SIZE
   #error "STR_FIXED_SIZE is undefined!"
 #endif
-
-typedef uint8_t str_size_t;
-
-typedef struct {
-    char text[STR_FIXED_SIZE];
-    str_size_t size;
-    uint8_t flags;
-} str_fixed_t;
-
-typedef enum {
-    STR_SUCCESS = 0,
-    STR_ERROR_NULL,
-    STR_ERROR_OVERFLOW,
-    STR_ERROR_INVALID_BASE,
-    STR_ERROR_IO,
-    STR_ERROR_EMPTY,
-    STR_ERROR_INVALID_PTR
-} str_error_t;
 
 static const str_fixed_t CRLF = {"\r\n", 0, 0};
 
