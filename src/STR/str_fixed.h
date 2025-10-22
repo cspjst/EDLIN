@@ -19,10 +19,10 @@ str_size_t str_int(str_fixed_t* str, int n, int base);
 
 str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str);
 
-str_error_t str_stdout(const str_fixed_t* str);
+str_size_t str_stdout(const str_fixed_t* str);
 
-str_error_t str_stderr(const str_fixed_t* str);
+str_size_t str_stderr(const str_fixed_t* str);
 
-str_error_t str_prn(const str_fixed_t* str);
+str_size_t str_prn(const str_fixed_t* str);
 
 #endif
