@@ -70,16 +70,33 @@ str_size_t str_int(str_fixed_t* str, int n, int base) {
     return size;
 }
 
-str_error_t str_write(dos_file_handle_t stream, const str_fixed_t* str) {
-    if (!str || (str->size == 0)) return 0;
-    int16_t n = dos_write_file(stream, str->text, str->size);
-    return n;
+str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str) {
+    if (!str) {
+        str_errno = STR_ERROR_NULL;
+        return 0;
+    }
+    if (str->size == 0) {
+        str_errno = STR_SUCCESS;
+        return 0;
+    }
+    int16_t result = dos_write_file(stream, str->text, str->size);
+    
+    if (result == -1) {
+        str_errno = STR_ERROR_IO;
+        return 0;
+    }
+    if (result > STR_FIXED_SIZE) {
+        str_errno = STR_ERROR_OVERFLOW;
+        return 0;
+    }
+    str_errno = STR_SUCCESS;
+    return (str_size_t)result;
 }
 
-str_error_t str_stdout(const str_fixed_t* str) {
+str_size_t str_stdout(const str_fixed_t* str) {
     return str_write(STDOUT, str);
 }
 
-str_error_t str_stderr(const str_fixed_t* str) {
-    return str_write(STDOUT, str);
+str_size_t str_stderr(const str_fixed_t* str) {
+    return str_write(STDERR, str);
 }
