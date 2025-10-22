@@ -14,15 +14,32 @@
 static const str_fixed_t CRLF = {"\r\n", 0, 0};
 
 str_size_t str_cstr(str_fixed_t* str, const char* cstr);
-
 str_size_t str_int(str_fixed_t* str, int n, int base);
 
 str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str);
+str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str);
 
 str_size_t str_stdout(const str_fixed_t* str);
-
 str_size_t str_stderr(const str_fixed_t* str);
-
 str_size_t str_prn(const str_fixed_t* str);
+
+str_size_t str_append_char(str_fixed_t* str, char c);
+str_size_t str_append_str(str_fixed_t* dest, const str_fixed_t* src);
+str_size_t str_append_cstr(str_fixed_t* str, const char* cstr);
+
+int str_compare(const str_fixed_t* str1, const str_fixed_t* str2);
+bool str_equals(const str_fixed_t* str1, const str_fixed_t* str2);
+
+str_fixed_size_t str_find_char(const str_fixed_t* str, char c);
+str_fixed_size_t str_find_str(const str_fixed_t* str, const str_fixed_t* substr);
+
+str_size_t str_to_upper(str_fixed_t* str);
+str_size_t str_to_lower(str_fixed_t* str);
+
+str_size_t str_trim_left(str_fixed_t* str);
+str_size_t str_trim_right(str_fixed_t* str);
+str_size_t str_trim(str_fixed_t* str);
+
+str_size_t str_substr(str_fixed_t* dest, const str_fixed_t* src);
 
 #endif
