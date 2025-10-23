@@ -15,6 +15,13 @@ str_size_t str_cstr(str_fixed_t* str, const char* cstr) {
     return len;
 }
 
+str_size_t str_str(str_fixed_t* dest, const str_fixed_t* src) {
+    if (!str || !cstr) return 0;
+    for (str_fixed_size_t i = 0; i < src->size; i++) dest->text[i] = src->text[i];
+    dest->size = src->size;
+    return dest->size;
+}
+
 str_size_t str_int(str_fixed_t* str, int n, int base) {
     if (!str || (base < 2 || base > 36)) return 0;
     str_fixed_size_t pos = 0;
@@ -49,10 +56,101 @@ str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str) {
     return (str_size_t)result;
 }
 
+str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str) {
+    if (!str || str->size == 0) return 0;
+    int16_t result = dos_read_file(stream, str->text, STR_FIXED_SIZE);
+    if (result == -1 || result == 0) return 0;
+    str->size = (str_size_t)result;
+    return str->size;
+}
+
+
 str_size_t str_stdout(const str_fixed_t* str) {
     return str_write(STDOUT, str);
 }
 
 str_size_t str_stderr(const str_fixed_t* str) {
     return str_write(STDERR, str);
+}
+
+str_size_t str_reverse(str_fixed_t* str) {
+    if (!str || str->size == 0) return 0;
+    str_size_t start = 0;
+    str_size_t end = str->size;
+    while (start < end) {
+        char temp = str->text[start];
+        str->text[start] = str->text[end];
+        str->text[end] = temp;
+        start++;
+        end--;
+    }
+    return str->size;
+}
+
+str_size_t str_to_upper(str_fixed_t* str) {
+    if (!str || str->size == 0) return 0;
+    for (str_fixed_size_t i = 0; i < str->size; i++) 
+        if (str->text[i] >= 'a' && str->text[i] <= 'z') 
+            str->text[i] &= ~0x20;  // Clear bit 5 to make uppercase
+    return str->size;
+}
+
+str_size_t str_to_lower(str_fixed_t* str) {
+    if (!str || str->size == 0) return 0;
+    for (str_fixed_size_t i = 0; i < str->size; i++) 
+        if (str->text[i] >= 'A' && str->text[i] <= 'Z') 
+            str->text[i] |= 0x20;  // Set bit 5 to make lowercase
+    return str->size;
+}
+
+str_size_t str_trim_left_chars(str_fixed_t* str, const char* trim_chars) {
+    if (!str || !trim_chars || str->size == 0) return 0;
+    str_fixed_size_t trim_count = 0;
+    // Find first character NOT in trim_chars using size
+    while (trim_count < str->size) {
+        const char* tc = trim_chars;
+        int should_trim = 0;        
+        // Check each trim char
+        while (*tc != '\0') {
+            if (str->text[trim_count] == *tc) {
+                should_trim = 1;
+                break;
+            }
+            tc++;
+        }
+        if (!should_trim) break;
+        trim_count++;
+    }
+    
+    if (trim_count > 0) {
+        // Shift remaining characters left
+        for (str_fixed_size_t i = 0; i < str->size - trim_count; i++) {
+            str->text[i] = str->text[i + trim_count];
+        }
+        str->size -= trim_count;
+    }
+    return str->size;
+}
+
+str_size_t str_trim_right_chars(str_fixed_t* str, const char* trim_chars) {
+    if (!str || !trim_chars || str->size == 0) return 0;
+    str_fixed_size_t trim_count = 0;
+    // Find last character NOT in trim_chars using size
+    for (str_fixed_size_t i = str->size; i > 0; i--) {
+        const char* tc = trim_chars;
+        int should_trim = 0;
+        while (*tc != '\0') {
+            if (str->text[i - 1] == *tc) {
+                should_trim = 1;
+                break;
+            }
+            tc++;
+        }     
+        if (!should_trim) break;
+        trim_count++;
+    }
+    if (trim_count > 0) {
+        str->size -= trim_count;
+    }
+    return str->size;
 }
