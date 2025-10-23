@@ -56,6 +56,19 @@ str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str) {
     return (str_size_t)result;
 }
 
+str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first, ...) {
+    va_list args;
+    va_start(args, first);
+    str_size_t count = str_write(stream, first);
+    const str_fixed_t* next;
+    
+    while ((next = va_arg(args, const str_fixed_t*)) != NULL) 
+        count += str_write(stream, next);
+    
+    va_end(args);
+    return count;
+}
+
 str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str) {
     if (!str || str->size == 0) return 0;
     int16_t result = dos_read_file(stream, str->text, STR_FIXED_SIZE);
