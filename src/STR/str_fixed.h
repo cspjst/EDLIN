@@ -11,7 +11,8 @@
   #error "STR_FIXED_SIZE is undefined!"
 #endif
 
-static const str_fixed_t CRLF = {"\r\n", 0, 0};
+static const str_fixed_t STR_CRLF = {"\r\n", 0, 0};
+static condt str_fixed_t* CRLF = &STR_CRLF;
 
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr);
 str_fixed_t* str_str(str_fixed_t* dest, const str_fixed_t* src);
