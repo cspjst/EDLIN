@@ -18,11 +18,15 @@ str_size_t str_str(str_fixed_t* dest, const str_fixed_t* src);
 str_size_t str_int(str_fixed_t* str, int n, int base);
 
 str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str);
+str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first, ...)
 str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str);
 
-str_size_t str_stdout(const str_fixed_t* str);
-str_size_t str_stderr(const str_fixed_t* str);
+// Macros
+#define str_stdout(...) str_write_v(STDOUT, __VA_ARGS__, NULL)
+#define str_stderr(...) str_write_v(STDERR, __VA_ARGS__, NULL)
+#define str_stdin(str) str_read(STDIN, str)
 //str_size_t str_prn(const str_fixed_t* str);
+#define str_stdin_prompt(prompt, str) (str_stdout(prompt) + str_stdin(str))
 
 str_size_t str_reverse(str_fixed_t* str);
 
