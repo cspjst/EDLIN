@@ -15,8 +15,8 @@ static const str_fixed_t CRLF = {"\r\n", 0, 0};
 
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr);
 str_fixed_t* str_str(str_fixed_t* dest, const str_fixed_t* src);
-str_fixed_t*  str_int(str_fixed_t* str, int n, int base);
-str_fixed_t*  str_reverse(str_fixed_t* str);
+str_fixed_t* str_int(str_fixed_t* str, int n, int base);
+str_fixed_t* str_reverse(str_fixed_t* str);
 
 str_fixed_t* str_to_upper(str_fixed_t* str);
 str_fixed_t* str_to_lower(str_fixed_t* str);
@@ -28,9 +28,8 @@ str_fixed_t* str_trim(str_fixed_t* str);
 str_size_t str_to_upper(str_fixed_t* str);
 str_size_t str_to_lower(str_fixed_t* str);
 
-str_size_t str_trim_left(str_fixed_t* str);
-str_size_t str_trim_right(str_fixed_t* str);
-str_size_t str_trim(str_fixed_t* str);
+str_fixed_t* str_trim_left(str_fixed_t* str, const char* trim_chars);
+str_fixed_t* str_trim_right(str_fixed_t* str, const char* trim_chars);
 
 //str_fixed_t* str_append_char(str_fixed_t* str, char c);
 //str_fixed_t* str_append_str(str_fixed_t* dest, const str_fixed_t* src);
@@ -50,6 +49,8 @@ str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str);
 #define str_stdin(str) str_read(STDIN, str)
 //str_size_t str_prn(const str_fixed_t* str);
 #define str_stdin_prompt(prompt, str) (str_stdout(prompt) + str_stdin(str))
+#define str_trim(str_fixed_t* str, char* trims) (str_trim_right(str, trims) + str_trim_left(str, trims))
+
 
 
 
