@@ -3,35 +3,47 @@
 #include <stddef.h>
 
 int main() {
-    str_fixed_t str;
-
-    // Test successful conversion
-    str_cstr(&str, "Testing\r\n");
-    str_print(&str);
-    str_int(&str, 12345, 10);
-    str_print(&str);
-    str_println();
-
-    str_int(&str, -6789, 10);
-    str_print(&str);
-    str_println();
-
-    str_int(&str, 255, 16);
-    str_print(&str);
-    str_println();
-
-    // Test error cases
-    str_error_t err = str_int(&str, 0xFFFF, 2);
-    str_print(&str);
-    str_println();
-    if (err != STR_SUCCESS) {
-        str_print_error(err);
-    }
-
-    err = str_int(NULL, 123, 10);
-    if (err != STR_SUCCESS) {
-        str_print_error(err);
-    }
-
+    str_fixed_t str, str2;
+    
+    // Test string creation and output
+    str_cstr(&str, "  Hello World!  ");
+    str_stdout(&str);
+    str_stdout(&CRLF);
+    
+    // Test integer conversion
+    str_int(&str, -12345, 10);
+    str_stdout(&str);
+    str_stdout(&CRLF);
+    
+    // Test case conversion
+    str_cstr(&str, "MiXeD CaSe");
+    str_stdout(&str);
+    str_stdout(&CRLF);
+    str_to_upper(&str);
+    str_stdout(&str);
+    str_stdout(&CRLF);
+    
+    // Test trimming
+    str_cstr(&str, "  spaces around  ");
+    str_stdout(&str);
+    str_stdout(&CRLF);
+    str_trim(&str);
+    str_stdout(&str);
+    str_stdout(&CRLF);
+    
+    // Test reverse
+    str_cstr(&str, "reverse");
+    str_stdout(&str);
+    str_stdout(&CRLF);
+    str_reverse(&str);
+    str_stdout(&str);
+    str_stdout(&CRLF);
+    
+    // Test copy
+    str_cstr(&str, "original");
+    str_str(&str2, &str);
+    str_stdout(&str2);
+    str_stdout(&CRLF);
+    
     return 0;
 }
