@@ -11,10 +11,10 @@ typedef struct {
     char* end;
 } mem_arena_t;
 
-mem_arena_t* mem_arena_create(mem_size_paragraphs_t paragraphs);
+mem_arena_t* mem_new_arena(mem_size_paragraphs_t paragraphs);
 
-void mem_arena_destroy(mem_arena_t* arena);
+void mem_free_arena(mem_arena_t* arena);
 
-void* mem_arena_alloc(mem_arena_t* arena, uint32_t size);
+void* mem_arena_alloc(mem_arena_t* arena, uint32_t bytes);
 
 #endif
