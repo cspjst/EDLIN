@@ -4,7 +4,7 @@
 #include "../DOS/dos_services.h"
 #include <stddef.h>
 
-mem_arena_t* mem_arena_create(mem_size_paragraphs_t paragraphs) {
+mem_arena_t* mem_new_arena(mem_size_paragraphs_t paragraphs) {
     mem_address_t addr = {0};
     addr.segoff.segment = dos_allocate_memory_blocks(paragraphs);
     if (!addr.segoff.segment) return NULL;
@@ -19,7 +19,7 @@ mem_arena_t* mem_arena_create(mem_size_paragraphs_t paragraphs) {
     return arena;
 }
 
-void mem_arena_destroy(mem_arena_t* arena) {
+void mem_free_arena(mem_arena_t* arena) {
     if(arena) dos_free_allocated_memory_blocks(arena->segment);
 }
 
