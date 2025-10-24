@@ -10,4 +10,8 @@ typedef struct {
     edlin_size_t capacity;
 } edlin_line_pool_t
 
+edlin_line_pool_t* edlin_new_line_pool(edlin_size_t capacity);
+
+//void edlin_free_line_pool(edlin_line_ppol_t* pool); // not needed if using mem_arena
+
 #endif
