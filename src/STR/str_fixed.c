@@ -154,7 +154,8 @@ str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str) {
 }
 
 str_size_t str_stdin(str_fixed_t* str) {
-    dos_read_file(STDIN, str->text, 1);
+    dos_read_file(STDIN, str->text, 1); // flush buffer
+    if(str->text[0] == '\r') return 0;
     int16_t result = dos_read_file(STDIN, str->text + 1, STR_FIXED_SIZE);
     if (result == -1 || result == 0) return 0;
     str->size = (str_size_t)result;
