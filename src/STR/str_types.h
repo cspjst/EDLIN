@@ -12,11 +12,4 @@ typedef struct {
     uint8_t flags;
 } str_fixed_t;
 
-typedef enum {
-    STDIN = 0,
-    STDOUT,
-    STDERR,
-    PRN
-} str_devices_t;
-
 #endif

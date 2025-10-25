@@ -4,6 +4,7 @@
 
 #include "str_constants.h"
 #include "str_types.h"
+#include "../DOS/dos_services_files_constants.h"
 #include "../DOS/dos_services_files.h"
 #include <stdint.h>
 
@@ -37,12 +38,13 @@ str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str);
 str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first, ...);
 str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str);
 
-#define str_stdout(...) str_write_varargs(STDOUT, __VA_ARGS__, NULL)
-#define str_stderr(...) str_write_varargs(STDERR, __VA_ARGS__, NULL)
+#define str_stdout(...) str_write_varargs(DOS_STDOUT_HANDLE, __VA_ARGS__, NULL)
+#define str_stderr(...) str_write_varargs(DOS_STDERR_HANDLE, __VA_ARGS__, NULL)
+#define str_prn(...) str_write_varargs(DOS_PRN_HANDLE, __VA_ARGS__, NULL)
 #define str_trim(str, trims) (str_trim_right(str_trim_left(str, trims), trims))
 
+str_size_t char_stdin(str_fixed_t* str);
 str_size_t str_stdin(str_fixed_t* str);
-//str_size_t str_prn(const str_fixed_t* str);
 str_size_t str_stdin_prompt(const str_fixed_t* prompt, str_fixed_t* str);
 
 #endif

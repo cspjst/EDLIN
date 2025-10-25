@@ -146,19 +146,26 @@ str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first,
 }
 
 str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str) {
-    if (!str || str->size == 0) return 0;
+    if (!str) return 0;
     int16_t result = dos_read_file(stream, str->text, STR_FIXED_SIZE);
     if (result == -1 || result == 0) return 0;
     str->size = (str_size_t)result;
     return str->size;
 }
 
+str_size_t char_stdin(str_fixed_t* str) {
+    str->size = 0;
+    int16_t n = dos_read_file(DOS_STDIN_HANDLE, str->text, 1); // flush buffer
+    if(str->text[0] == '\r' || n == -1 || n == 0) return 0;
+    str->size = n;
+    return str->size;
+}
+
 str_size_t str_stdin(str_fixed_t* str) {
-    dos_read_file(STDIN, str->text, 1); // flush buffer
-    if(str->text[0] == '\r') return 0;
-    int16_t result = dos_read_file(STDIN, str->text + 1, STR_FIXED_SIZE);
-    if (result == -1 || result == 0) return 0;
-    str->size = (str_size_t)result;
+    if(!char_stdin(str)) return 0;
+    int16_t n = dos_read_file(DOS_STDIN_HANDLE, str->text + 1, STR_FIXED_SIZE);
+    if (n == -1 || n == 0) return 0;
+    str->size = (str_size_t)n;
     return str->size + 1;
 }
 

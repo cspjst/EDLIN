@@ -4,5 +4,6 @@
 #define DOS_STDIN_HANDLE  0
 #define DOS_STDOUT_HANDLE 1
 #define DOS_STDERR_HANDLE 2
+#define DOS_PRN_HANDLE 3
 
 #endif

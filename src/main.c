@@ -8,9 +8,8 @@ int main() {
     str_fixed_t input, prompt;
 
     str_stdout(str_cstr(&prompt, "TEST2: Enter char: "));
-    str_stdin(&input);
-    str_stdout(str_cstr(&str, "Got: "), &input, CRLF);
-
+    char_stdin(&input);
+    if(input.size) str_stdout(CRLF, str_cstr(&str, "Got: "), &input, CRLF);
 
     // Chain creation and output
     str_stdout(str_cstr(&str, "Hello\r\n"));
@@ -25,7 +24,7 @@ int main() {
     str_stdout(str_to_lower(&str), CRLF);
 
     // Chain trimming
-    str_stdout(str_trim(str_cstr(&str, "  spaces  ")," "));
+    str_stdout(str_trim(str_cstr(&str, "  spaces  ")," "), str_cstr(&str2,"<"), CRLF);
 
     // Chain reverse
     str_stdout(str_reverse(str_cstr(&str, "reverse")), CRLF);
