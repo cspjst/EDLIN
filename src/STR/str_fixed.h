@@ -3,7 +3,7 @@
 #define STR_FIXED_H
 
 #include "str_constants.h"
-#include "str_types.h" 
+#include "str_types.h"
 #include "../DOS/dos_services_files.h"
 #include <stdint.h>
 
@@ -11,8 +11,8 @@
   #error "STR_FIXED_SIZE is undefined!"
 #endif
 
-static const str_fixed_t STR_CRLF = {"\r\n", 0, 0};
-static condt str_fixed_t* CRLF = &STR_CRLF;
+static const str_fixed_t STR_CRLF = {"\r\n", 2, 0};
+static const str_fixed_t* CRLF = &STR_CRLF;
 
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr);
 str_fixed_t* str_str(str_fixed_t* dest, const str_fixed_t* src);
@@ -21,13 +21,6 @@ str_fixed_t* str_reverse(str_fixed_t* str);
 
 str_fixed_t* str_to_upper(str_fixed_t* str);
 str_fixed_t* str_to_lower(str_fixed_t* str);
-
-str_fixed_t* str_trim_left(str_fixed_t* str);
-str_fixed_t* str_trim_right(str_fixed_t* str);
-str_fixed_t* str_trim(str_fixed_t* str);
-
-str_size_t str_to_upper(str_fixed_t* str);
-str_size_t str_to_lower(str_fixed_t* str);
 
 str_fixed_t* str_trim_left(str_fixed_t* str, const char* trim_chars);
 str_fixed_t* str_trim_right(str_fixed_t* str, const char* trim_chars);
@@ -41,18 +34,15 @@ str_fixed_t* str_trim_right(str_fixed_t* str, const char* trim_chars);
 //int str_compare(const str_fixed_t* str1, const str_fixed_t* str2);
 
 str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str);
-str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first, ...)
+str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first, ...);
 str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str);
 
-// Macros
 #define str_stdout(...) str_write_varargs(STDOUT, __VA_ARGS__, NULL)
 #define str_stderr(...) str_write_varargs(STDERR, __VA_ARGS__, NULL)
-#define str_stdin(str) str_read(STDIN, str)
+#define str_trim(str, trims) (str_trim_right(str_trim_left(str, trims), trims))
+
+str_size_t str_stdin(str_fixed_t* str);
 //str_size_t str_prn(const str_fixed_t* str);
-#define str_stdin_prompt(prompt, str) (str_stdout(prompt) + str_stdin(str))
-#define str_trim(str_fixed_t* str, char* trims) (str_trim_right(str, trims) + str_trim_left(str, trims))
-
-
-
+str_size_t str_stdin_prompt(const str_fixed_t* prompt, str_fixed_t* str);
 
 #endif

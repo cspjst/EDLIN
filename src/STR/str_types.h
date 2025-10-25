@@ -1,6 +1,9 @@
 #ifndef STR_TYPES_H
 #define STR_TYPES_H
 
+#include "str_constants.h"
+#include <stdint.h>
+
 typedef uint8_t str_size_t;
 
 typedef struct {

@@ -8,7 +8,7 @@ typedef struct {
     str_fixed_t* lines;
     edlin_size_t size;
     edlin_size_t capacity;
-} edlin_line_pool_t
+} edlin_line_pool_t;
 
 edlin_line_pool_t* edlin_new_line_pool(edlin_size_t capacity);
 
