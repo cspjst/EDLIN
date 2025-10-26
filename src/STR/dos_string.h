@@ -2,11 +2,12 @@
 #ifndef STR_FIXED_H
 #define STR_FIXED_H
 
-#include "str_constants.h"
-#include "str_types.h"
+#include "dos_string_constants.h"
+#include "dos_string_types.h"
 #include "../DOS/dos_services_files_constants.h"
 #include "../DOS/dos_services_files.h"
 #include <stdint.h>
+#include <stddef.h>
 
 #ifndef STR_FIXED_SIZE
   #error "STR_FIXED_SIZE is undefined!"
@@ -17,7 +18,7 @@ static const str_fixed_t* CRLF = &STR_CRLF;
 
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr);
 str_fixed_t* str_str(str_fixed_t* dest, const str_fixed_t* src);
-str_fixed_t* str_int(str_fixed_t* str, int n, int base);
+str_fixed_t* str_int(str_fixed_t* str, int32_t n, int base);
 str_fixed_t* str_reverse(str_fixed_t* str);
 
 str_fixed_t* str_to_upper(str_fixed_t* str);

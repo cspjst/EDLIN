@@ -6,7 +6,7 @@
 static mem_arena_t* edlin_arena;
 
 mem_size_bytes_t edlin_new_arena() {
-    mem_size_paragraphs_t total_free = mem_get_low_free();
+    mem_size_paragraphs_t total_free = mem_get_free_paragraphs();
     edlin_arena = mem_new_arena(total_free);
     return total_free * MEM_PARAGRAPH_SIZE;
 }

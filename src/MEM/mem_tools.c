@@ -2,6 +2,7 @@
 
 #include "../DOS/dos_error_types.h"
 #include "../DOS/dos_services_constants.h"
+#include "mem_types.h"
 
 /**
  * Report DOS user available low memory
@@ -10,7 +11,7 @@
  * available memory, which will be returned in BX. (The call will return an error, which can be
  * ignored, since DOS cannot allocate more than 640k of memory.)
  */
-mem_size_paragraphs_t mem_get_low_free() {
+mem_size_paragraphs_t mem_get_free_paragraphs() {
     mem_size_paragraphs_t low_free;
     dos_error_code_t err_code;
     __asm {
