@@ -15,14 +15,17 @@
 
 static const str_fixed_t STR_CRLF = {"\r\n", 2, 0};
 static const str_fixed_t* CRLF = &STR_CRLF;
+static str_fixed_t __temp = {"", 0, 0};
 
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr);
 str_fixed_t* str_str(str_fixed_t* dest, const str_fixed_t* src);
 str_fixed_t* str_int(str_fixed_t* str, int32_t n, int base);
-str_fixed_t* str_reverse(str_fixed_t* str);
+str_fixed_t* str_bin(str_fixed_t* str, uint32_t num);
+str_fixed_t* str_hex(str_fixed_t* str, int32_t num);
 
-str_fixed_t* str_to_upper(str_fixed_t* str);
-str_fixed_t* str_to_lower(str_fixed_t* str);
+str_fixed_t* str_reverse(str_fixed_t* str);
+str_fixed_t* str_upper(str_fixed_t* str);
+str_fixed_t* str_lower(str_fixed_t* str);
 
 str_fixed_t* str_trim_left(str_fixed_t* str, const char* trim_chars);
 str_fixed_t* str_trim_right(str_fixed_t* str, const char* trim_chars);
@@ -35,17 +38,26 @@ str_fixed_t* str_trim_right(str_fixed_t* str, const char* trim_chars);
 //str_fixed_t* str_substr(str_fixed_t* dest, const str_fixed_t* src); str_append_char(str_fixed_t* str, char c);
 //int str_compare(const str_fixed_t* str1, const str_fixed_t* str2);
 
+
+
 str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str);
 str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first, ...);
 str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str);
 
-#define str_stdout(...) str_write_varargs(DOS_STDOUT_HANDLE, __VA_ARGS__, NULL)
-#define str_stderr(...) str_write_varargs(DOS_STDERR_HANDLE, __VA_ARGS__, NULL)
+str_size_t char_in(str_fixed_t* str);
+str_size_t str_in(str_fixed_t* str);
+str_size_t str_in_prompt(const str_fixed_t* prompt, str_fixed_t* str);
+
+// macros
+#define str_out(...) str_write_varargs(DOS_STDOUT_HANDLE, __VA_ARGS__, NULL)
+#define str_err(...) str_write_varargs(DOS_STDERR_HANDLE, __VA_ARGS__, NULL)
 #define str_prn(...) str_write_varargs(DOS_PRN_HANDLE, __VA_ARGS__, NULL)
 #define str_trim(str, trims) (str_trim_right(str_trim_left(str, trims), trims))
 
-str_size_t char_stdin(str_fixed_t* str);
-str_size_t str_stdin(str_fixed_t* str);
-str_size_t str_stdin_prompt(const str_fixed_t* prompt, str_fixed_t* str);
+#define as_dec(num) str_int(&__temp, num, 10)
+#define as_bin(num) str_bin(&__temp, num)
+#define as_hex(num) str_hex(&__temp, num)
+
+#define cstr(cstr) str_cstr(&temp, cstr)
 
 #endif

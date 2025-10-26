@@ -4,7 +4,8 @@
 
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr) {
     if (!str || !cstr) return NULL;
-    str_size_t len = 0;
+    str_size_t len;
+    str->size = len = 0;
     while (cstr[len] != '\0') {
         len++;
         if (len >= STR_FIXED_SIZE) return NULL;
@@ -49,6 +50,60 @@ str_fixed_t* str_int(str_fixed_t* str, int32_t n, int base) {
     return str_reverse(str);
 }
 
+str_fixed_t* str_bin(str_fixed_t* str, uint32_t num) {
+    if (!str) return NULL;
+    // Calculate needed nybbles (minimum 4 for 16 bits)
+    uint8_t nybbles = 8;  // Start with max for 32-bit
+    while (nybbles > 4 && (num >> (nybbles * 4 - 4)) == 0) {
+        nybbles--;  // Reduce but stop at 4 nybbles (16 bits)
+    }
+    str_size_t pos = 0;
+    // Convert each nybble
+    for (int i = nybbles - 1; i >= 0; i--) {
+        uint8_t nybble = (num >> (i * 4)) & 0x0F;
+
+        // Convert nybble to binary (4 digits)
+        for (int j = 3; j >= 0; j--) {
+            str->text[pos++] = (nybble & (1 << j)) ? '1' : '0';
+        }
+
+        // Add space between nybbles (except after last one)
+        if (i > 0) {
+            str->text[pos++] = ' ';
+        }
+    }
+    str->size = pos;
+    return str;
+}
+
+str_fixed_t* str_hex(str_fixed_t* str, int32_t num) {
+    if (!str) return NULL;
+    str_size_t pos = 0;
+    uint32_t value;
+    uint8_t nybbles;
+    // Handle negative numbers
+    if (num < 0) {
+        value = (uint32_t)num;  // Use full 32-bit 2's complement
+        nybbles = 8;            // Always show 32-bit for negatives
+    } else {
+        // Positive - pad to 16 bits minimum
+        value = num;
+        nybbles = (num > 0xFFFF) ? 8 : 4;  // 32-bit if >16 bits, else 16-bit
+    }
+    // Convert each nybble
+    for (int i = nybbles - 1; i >= 0; i--) {
+        uint8_t nybble = (value >> (i * 4)) & 0x0F;
+        str->text[pos++] = (nybble < 10) ? '0' + nybble : 'A' + nybble - 10;
+
+        // Add space for 32-bit between words
+        if (nybbles == 8 && i == 4) {
+            str->text[pos++] = ' ';
+        }
+    }
+    str->size = pos;
+    return str;
+}
+
 str_fixed_t* str_reverse(str_fixed_t* str) {
     if (!str || str->size == 0) return NULL;
     str_size_t start = 0;
@@ -63,7 +118,7 @@ str_fixed_t* str_reverse(str_fixed_t* str) {
     return str;
 }
 
-str_fixed_t* str_to_upper(str_fixed_t* str) {
+str_fixed_t* str_upper(str_fixed_t* str) {
     if (!str || str->size == 0) return NULL;
     for (str_size_t i = 0; i < str->size; i++)
         if (str->text[i] >= 'a' && str->text[i] <= 'z')
@@ -71,7 +126,7 @@ str_fixed_t* str_to_upper(str_fixed_t* str) {
     return str;
 }
 
-str_fixed_t* str_to_lower(str_fixed_t* str) {
+str_fixed_t* str_lower(str_fixed_t* str) {
     if (!str || str->size == 0) return NULL;
     for (str_size_t i = 0; i < str->size; i++)
         if (str->text[i] >= 'A' && str->text[i] <= 'Z')
@@ -153,7 +208,7 @@ str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str) {
     return str->size;
 }
 
-str_size_t char_stdin(str_fixed_t* str) {
+str_size_t char_in(str_fixed_t* str) {
     str->size = 0;
     int16_t n = dos_read_file(DOS_STDIN_HANDLE, str->text, 1); // flush buffer
     if(str->text[0] == '\r' || n == -1 || n == 0) return 0;
@@ -161,8 +216,8 @@ str_size_t char_stdin(str_fixed_t* str) {
     return str->size;
 }
 
-str_size_t str_stdin(str_fixed_t* str) {
-    if(!char_stdin(str)) return 0;
+str_size_t str_in(str_fixed_t* str) {
+    if(!char_in(str)) return 0;
     int16_t n = dos_read_file(DOS_STDIN_HANDLE, str->text + 1, STR_FIXED_SIZE);
     if (n == -1 || n == 0) return 0;
     str->size = (str_size_t)n;
@@ -170,7 +225,7 @@ str_size_t str_stdin(str_fixed_t* str) {
 }
 
 str_size_t str_stdin_prompt(const str_fixed_t* prompt, str_fixed_t* str) {
-    str_size_t count = str_stdout(prompt);
-    count += str_stdin(str);
+    str_size_t count = str_out(prompt);
+    count += str_in(str);
     return count;
 }
