@@ -3,18 +3,21 @@
 #include "mem_constants.h"
 #include "../DOS/dos_services.h"
 #include <stddef.h>
+#include <stdio.h>
 
 mem_arena_t* mem_new_arena(mem_size_paragraphs_t paragraphs) {
+    if(paragraphs * MEM_PARAGRAPH_SIZE < sizeof(mem_arena_t)) return NULL;
     mem_address_t addr = {0};
     addr.segoff.segment = dos_allocate_memory_blocks(paragraphs);
-    if (!addr.segoff.segment) return NULL;
+    if(!addr.segoff.segment) return NULL;
 
     mem_arena_t* arena = (mem_arena_t*)addr.ptr;
-
+    paragraphs--;
     arena->segment = addr.segoff.segment;
     arena->base = addr.ptr + sizeof(mem_arena_t);
     arena->free_ptr = arena->base;
-    arena->end = arena->base + (paragraphs * MEM_PARAGRAPH_SIZE);
+    arena->size = paragraphs * MEM_PARAGRAPH_SIZE;
+    arena->capacity = paragraphs;
 
     return arena;
 }
@@ -23,9 +26,10 @@ void mem_free_arena(mem_arena_t* arena) {
     if(arena) dos_free_allocated_memory_blocks(arena->segment);
 }
 
-void* mem_arena_alloc(mem_arena_t* arena, mem_size_bytes_t size) {
-    char* ptr = arena->free_ptr;
-    if(ptr + size <= arena->end) {
+char* mem_arena_alloc(mem_arena_t* arena, mem_size_bytes_t size) {
+    if(size <= arena->size) {
+        char* ptr = arena->free_ptr;
+        arena->size -= size;
         arena->free_ptr += size;
         return ptr;
     }

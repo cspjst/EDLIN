@@ -5,22 +5,20 @@
 #include "../MEM/mem_arena.h"
 #include "edlin_types.h"
 
-typedef str_fixed_t edlin_line_t;
-
 typedef struct {
-    edlin_line_t* lines;
+    str_fixed_t* lines;
+    str_fixed_t* next_free;
+    str_fixed_t* last_line;
     edlin_size_t size;
     edlin_size_t capacity;
 } edlin_line_pool_t;
 
 edlin_line_pool_t* edlin_new_line_pool(mem_arena_t* arena, edlin_size_t lines);
 
-edlin_line_t* edlin_first_line(edlin_line_pool_t* pool);
+str_fixed_t* edlin_alloc_line(edlin_line_pool_t* pool);
 
-edlin_line_t* edlin_last_line(edlin_line_pool_t* pool);
+str_fixed_t* edlin_free_line(edlin_line_pool_t* pool, str_fixed_t* line);
 
-edlin_line_t* edlin_next_line(edlin_line_pool_t* pool);
-
-edlin_line_t* edlin_delete_line(edlin_line_pool_t* pool, edlin_line_t* line);
+void dump_pool(edlin_line_pool_t* pool);
 
 #endif

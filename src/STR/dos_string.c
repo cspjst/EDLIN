@@ -94,13 +94,23 @@ str_fixed_t* str_hex(str_fixed_t* str, int32_t num) {
     for (int i = nybbles - 1; i >= 0; i--) {
         uint8_t nybble = (value >> (i * 4)) & 0x0F;
         str->text[pos++] = (nybble < 10) ? '0' + nybble : 'A' + nybble - 10;
-
         // Add space for 32-bit between words
         if (nybbles == 8 && i == 4) {
             str->text[pos++] = ' ';
         }
     }
     str->size = pos;
+    return str;
+}
+
+str_fixed_t* str_ptr(str_fixed_t* str, void* p) {
+    if (!str) return NULL;
+    uint32_t addr = (uint32_t)p;
+    uint16_t seg = (addr >> 16) & 0xFFFF;
+    uint16_t off = addr & 0xFFFF;
+    str_hex(str, seg);
+    str_append_char(str, ':');
+    str_append_str(str, as_hex(off));
     return str;
 }
 
@@ -183,6 +193,37 @@ str_fixed_t* str_trim_right(str_fixed_t* str, const char* trim_chars) {
     return str;
 }
 
+str_fixed_t* str_append_char(str_fixed_t* str, char c) {
+    if (!str || str->size >= STR_FIXED_SIZE - 1) return NULL;
+    str->text[str->size] = c;
+    str->size++;
+    return str;
+}
+
+str_fixed_t* str_append_str(str_fixed_t* dest, const str_fixed_t* src) {
+    if (!dest || !src || dest->size + src->size >= STR_FIXED_SIZE) return NULL;
+    for (str_size_t i = 0; i < src->size; i++) {
+        dest->text[dest->size + i] = src->text[i];
+    }
+    dest->size += src->size;
+    return dest;
+}
+
+str_fixed_t* str_append_cstr(str_fixed_t* str, const char* cstr) {
+    if (!str || !cstr) return NULL;
+    str_size_t cstr_len = 0;
+    while (cstr[cstr_len] != '\0') {
+        cstr_len++;
+        if (str->size + cstr_len >= STR_FIXED_SIZE) return NULL;
+    }
+
+    for (str_size_t i = 0; i < cstr_len; i++) {
+        str->text[str->size + i] = cstr[i];
+    }
+    str->size += cstr_len;
+    return str;
+}
+
 str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str) {
     if (!str || str->size == 0) return 0;
     int16_t result = dos_write_file(stream, str->text, str->size);
@@ -211,20 +252,19 @@ str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str) {
 str_size_t char_in(str_fixed_t* str) {
     str->size = 0;
     int16_t n = dos_read_file(DOS_STDIN_HANDLE, str->text, 1); // flush buffer
-    if(str->text[0] == '\r' || n == -1 || n == 0) return 0;
+    if(n == -1 || n == 0) return 0;
     str->size = n;
     return str->size;
 }
 
 str_size_t str_in(str_fixed_t* str) {
-    if(!char_in(str)) return 0;
-    int16_t n = dos_read_file(DOS_STDIN_HANDLE, str->text + 1, STR_FIXED_SIZE);
+    int16_t n = dos_read_file(DOS_STDIN_HANDLE, str->text, STR_FIXED_SIZE);
     if (n == -1 || n == 0) return 0;
     str->size = (str_size_t)n;
     return str->size + 1;
 }
 
-str_size_t str_stdin_prompt(const str_fixed_t* prompt, str_fixed_t* str) {
+str_size_t str_in_prompt(const str_fixed_t* prompt, str_fixed_t* str) {
     str_size_t count = str_out(prompt);
     count += str_in(str);
     return count;
