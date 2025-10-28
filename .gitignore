@@ -11,5 +11,15 @@ CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 
+# macOS
 .DS_Store
-**/.DS_Store
+.AppleDouble
+.LSOverride
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+._*
+.Spotlight-V100
+.Trashes
