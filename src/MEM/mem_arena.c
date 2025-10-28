@@ -3,7 +3,6 @@
 #include "mem_constants.h"
 #include "../DOS/dos_services.h"
 #include <stddef.h>
-#include <stdio.h>
 
 mem_arena_t* mem_new_arena(mem_size_paragraphs_t paragraphs) {
     if(paragraphs * MEM_PARAGRAPH_SIZE < sizeof(mem_arena_t)) return NULL;
@@ -16,8 +15,8 @@ mem_arena_t* mem_new_arena(mem_size_paragraphs_t paragraphs) {
     arena->segment = addr.segoff.segment;
     arena->base = addr.ptr + sizeof(mem_arena_t);
     arena->free_ptr = arena->base;
-    arena->size = paragraphs * MEM_PARAGRAPH_SIZE;
-    arena->capacity = paragraphs;
+    arena->size = 0;
+    arena->capacity = paragraphs * MEM_PARAGRAPH_SIZE;
 
     return arena;
 }
@@ -27,9 +26,10 @@ void mem_free_arena(mem_arena_t* arena) {
 }
 
 char* mem_arena_alloc(mem_arena_t* arena, mem_size_bytes_t size) {
-    if(size <= arena->size) {
+    mem_size_bytes_t remaining = arena->capacity - arena->size;
+    if(size <= remaining) {  // ← Check against AVAILABLE space
         char* ptr = arena->free_ptr;
-        arena->size -= size;
+        arena->size += size;
         arena->free_ptr += size;
         return ptr;
     }

@@ -10,14 +10,17 @@ typedef struct { // 16bytes size ie 1 paragraph
     char* base;
     char* free_ptr;
     mem_size_bytes_t size;
-    mem_size_paragraphs_t capacity;
+    mem_size_bytes_t capacity;
 } mem_arena_t;
 #pragma pack()
 
+// Construction
 mem_arena_t* mem_new_arena(mem_size_paragraphs_t paragraphs);
 
+// Destruction
 void mem_free_arena(mem_arena_t* arena);
 
+// Mutation operation
 char* mem_arena_alloc(mem_arena_t* arena, mem_size_bytes_t bytes);
 
 #endif

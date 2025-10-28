@@ -13,12 +13,11 @@ typedef struct {
     edlin_size_t capacity;
 } edlin_line_pool_t;
 
+// Construction
 edlin_line_pool_t* edlin_new_line_pool(mem_arena_t* arena, edlin_size_t lines);
 
+// Mutation operations
 str_fixed_t* edlin_alloc_line(edlin_line_pool_t* pool);
-
 str_fixed_t* edlin_free_line(edlin_line_pool_t* pool, str_fixed_t* line);
-
-void dump_pool(edlin_line_pool_t* pool);
 
 #endif
