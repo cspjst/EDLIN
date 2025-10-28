@@ -1,7 +1,7 @@
-Open Watcom Linker Version 2.0 beta Nov 23 2024 15:34:21
-Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+Open Watcom Linker Version 2.0 beta May  3 2025 18:23:37
+Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       25/10/27 16:10:49
+Created on:       25/10/28 14:54:26
 Executable Image: EDLIN.exe
 creating a DOS executable
 
@@ -61,18 +61,18 @@ STACK                  STACK          DGROUP         05e8:0000       00000800
 Address        Symbol
 =======        ======
 
-Module: CMakeFiles/EDLIN.dir/BIOS/bios_keyboard_services.c.obj(bios_keyboard_services)
+Module: CMakeFiles/EDLIN.dir/BIOS/bios_keyboard_services.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/BIOS/bios_keyboard_services.c)
 0000:0000+     bios_wait_for_keystroke_and_read_
 0000:0030+     bios_get_keystroke_status_
 0000:006a+     bios_get_keyboard_flags_
-Module: CMakeFiles/EDLIN.dir/BIOS/bios_memory_services.c.obj(bios_memory_services)
+Module: CMakeFiles/EDLIN.dir/BIOS/bios_memory_services.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/BIOS/bios_memory_services.c)
 0000:009c+     bios_get_startup_memory_kb_
-Module: CMakeFiles/EDLIN.dir/DOS/dos_services.c.obj(dos_services)
+Module: CMakeFiles/EDLIN.dir/DOS/dos_services.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/DOS/dos_services.c)
 0000:00c8+     dos_set_interrupt_vector_
 0000:00fc+     dos_get_interrupt_vector_
 0000:014d      dos_allocate_memory_blocks_
 0000:01a5      dos_free_allocated_memory_blocks_
-Module: CMakeFiles/EDLIN.dir/DOS/dos_services_files.c.obj(dos_services_files)
+Module: CMakeFiles/EDLIN.dir/DOS/dos_services_files.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/DOS/dos_services_files.c)
 0000:01e9+     dos_get_disk_free_space_
 0000:0259+     dos_create_file_
 0000:02b0+     dos_open_file_
@@ -83,18 +83,18 @@ Module: CMakeFiles/EDLIN.dir/DOS/dos_services_files.c.obj(dos_services_files)
 0000:046a+     dos_move_file_pointer_
 0000:04d4+     dos_get_file_attributes_
 0000:052a+     dos_set_file_attributes_
-Module: CMakeFiles/EDLIN.dir/EDLIN/edlin_line_pool.c.obj(edlin_line_pool)
+Module: CMakeFiles/EDLIN.dir/EDLIN/edlin_line_pool.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/EDLIN/edlin_line_pool.c)
 0000:0580      edlin_new_line_pool_
 0000:06ee      edlin_alloc_line_
 0000:0850      edlin_free_line_
 0000:08db+     dump_pool_
-Module: CMakeFiles/EDLIN.dir/MEM/mem_arena.c.obj(mem_arena)
+Module: CMakeFiles/EDLIN.dir/MEM/mem_arena.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/MEM/mem_arena.c)
 0000:094b      mem_new_arena_
 0000:0a53      mem_free_arena_
 0000:0a95      mem_arena_alloc_
-Module: CMakeFiles/EDLIN.dir/MEM/mem_tools.c.obj(mem_tools)
+Module: CMakeFiles/EDLIN.dir/MEM/mem_tools.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/MEM/mem_tools.c)
 0000:0b3c      mem_get_free_paragraphs_
-Module: CMakeFiles/EDLIN.dir/STR/dos_string.c.obj(dos_string)
+Module: CMakeFiles/EDLIN.dir/STR/dos_string.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/STR/dos_string.c)
 0000:0b75      str_cstr_
 0000:0c65+     str_str_
 0000:0d1b      str_int_
@@ -115,7 +115,7 @@ Module: CMakeFiles/EDLIN.dir/STR/dos_string.c.obj(dos_string)
 0000:1b21+     char_in_
 0000:1b93+     str_in_
 0000:1bff+     str_in_prompt_
-Module: CMakeFiles/EDLIN.dir/main.c.obj(main)
+Module: CMakeFiles/EDLIN.dir/main.c.obj(/Users/jeremythornton/dosbox/cspjst/edlin/src/main.c)
 0000:1c58      main_
 Module: /opt/watcom/lib286/dos/clibl.lib(stk)
 0000:2565      __STK
@@ -354,4 +354,4 @@ Module: /opt/watcom/lib286/dos/clibl.lib(doserror)
 Stack size:  0800 (2048.)
 Memory size:  6680 (26240.)
 Entry point address: 0000:2850
-Link time: 00:00.76
+Link time: 00:00.37
