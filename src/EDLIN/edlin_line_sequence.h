@@ -6,8 +6,8 @@
 #include "edlin_types.h"
 
 typedef struct {
-    str_fixed_t* lines;
-    str_fixed_t* last_line;
+    str_fixed_t** line_ptrs;
+    str_fixed_t** last_ptr;
     edlin_size_t size;
     edlin_size_t capacity;
 } edlin_line_sequence_t;
