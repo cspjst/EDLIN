@@ -11,6 +11,8 @@ void test_line_pool() {
     mem_size_bytes_t start = mem_get_free_bytes();
     mem_arena_t* arena = mem_new_arena(1024); // 16KB arena
     assert(arena != NULL);
+
+    // Test 0: Confirm data structure integrity
     edlin_line_pool_t* pool = edlin_new_line_pool(arena, 5); // 5-line pool
     assert(pool != NULL);
     assert(pool->size == 0);

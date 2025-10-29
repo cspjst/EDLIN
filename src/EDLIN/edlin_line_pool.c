@@ -1,5 +1,5 @@
 #include "edlin_line_pool.h"
-#include <stdio.h>
+#include <stddef.h>
 
 edlin_line_pool_t* edlin_new_line_pool(mem_arena_t* arena, edlin_size_t max_lines) {
     // 1. allocate the pool within the arena

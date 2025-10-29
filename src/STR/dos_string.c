@@ -106,7 +106,7 @@ str_fixed_t* str_hex(str_fixed_t* str, int32_t num) {
 str_fixed_t* str_ptr(str_fixed_t* str, void* p) {
     if (!str) return NULL;
     uint32_t addr = (uint32_t)p;
-    uint16_t seg = (addr >> 16) & 0xFFFF;
+    uint16_t seg = addr >> 16;
     uint16_t off = addr & 0xFFFF;
     str_hex(str, seg);
     str_append_char(str, ':');
