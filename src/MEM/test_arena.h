@@ -15,6 +15,7 @@ void test_mem_arena() {
     assert(arena != NULL);
     assert(arena->size == 0);
     assert(arena->capacity == 9 * MEM_PARAGRAPH_SIZE); // 144 bytes after header
+    assert(arena->remaining == 9 * MEM_PARAGRAPH_SIZE); // 144 bytes after header
 
     // Test 2: Simple allocation
     char* ptr1 = mem_arena_alloc(arena, 32);
@@ -22,6 +23,7 @@ void test_mem_arena() {
     assert(ptr1 == arena->base);
     assert(arena->size == 32);
     assert(arena->free_ptr == arena->base + 32);
+    assert(arena->remaining == arena->capacity - 32);
 
     // Test 3: Sequential allocations
     char* ptr2 = mem_arena_alloc(arena, 64);
@@ -35,6 +37,7 @@ void test_mem_arena() {
     assert(ptr3 != NULL);
     assert(arena->size == 144);
     assert(arena->free_ptr == arena->base + 144);
+    assert(arena->remaining == 0);
 
     // Test 5: Over-allocation should fail
     char* ptr4 = mem_arena_alloc(arena, 1);

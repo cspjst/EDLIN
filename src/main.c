@@ -1,7 +1,8 @@
-#include "EDLIN/test_line_pool.h"
 #include "MEM/test_arena.h"
+#include "EDLIN/test_line_pool.h"
 
 int main() {
-    test_line_pool();
     test_mem_arena();
+    test_line_pool();
+
 }
