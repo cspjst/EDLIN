@@ -9,7 +9,7 @@ edlin_line_sequence_t* edlin_new_line_sequence(mem_arena_t* arena, edlin_size_t 
     seq->line_ptrs = (str_fixed_t**)mem_arena_alloc(arena, max_lines * sizeof(str_fixed_t*));
     if (!seq->line_ptrs) return NULL;
     // 3. nullify all the ptrs
-    for(str_size_t i = 0; i < max_lines; i++) seq->line_ptrs[i] = NULL;
+    for(edlin_size_t i = 0; i < max_lines; i++) seq->line_ptrs[i] = NULL;
     // 4. set up pool management pointers and counters
     seq->size = 0;                     // no lines allocated yet
     seq->capacity = max_lines;         // maximum lines this pool can hold
@@ -17,18 +17,55 @@ edlin_line_sequence_t* edlin_new_line_sequence(mem_arena_t* arena, edlin_size_t 
 }
 
 str_fixed_t* edlin_sequence_at(const edlin_line_sequence_t* seq, edlin_size_t index) {
+    if(
+        !seq                            // null sequence error
+        || index >= seq->size           // index out of bounds error
+    ) return NULL;
     return seq->line_ptrs[index];
 }
 
 // Mutation operations
-str_fixed_t* edlin_sequence_move(edlin_line_sequence_t* seq, edlin_size_t src, edlin_size_t dst, edlin_size_t size) {
-    if( !seq
-        || !size
-        || dst == src
-        || dst + size >= seq->capacity
+str_fixed_t* edlin_sequence_append(edlin_line_sequence_t* seq,str_fixed_t* ptr) {
+    if(
+        !seq                            // null sequence error
+        || !ptr                         // null ptr error
+        || seq->size >= seq->capacity   // sequence full
     ) return NULL;
-    while(size) {
-        seq->line_ptrs[dst++] = seq->line_ptrs[src];
-        seq->line_ptrs[src++] = NULL;
+    seq->line_ptrs[seq->size++] = ptr;
+    return ptr;
+}
+
+str_fixed_t* edlin_sequence_delete(edlin_line_sequence_t* seq, edlin_size_t index) {
+    if(
+        !seq                            // null sequence error
+        || index >= seq->size           // index out of bounds error
+    ) return NULL;
+    // 1. save a copy then nullify the deletee
+    str_fixed_t* deleted_ptr = seq->line_ptrs[index];
+    seq->line_ptrs[index] = NULL;
+    seq->size--;
+    // 2. ripple left any line ptrs to right of the deletee
+    while(index < seq->size) {
+        seq->line_ptrs[index] = seq->line_ptrs[index + 1];
+        seq->line_ptrs[index + 1] = NULL;
+        index++;
     }
+    return deleted_ptr;
+}
+
+str_fixed_t* edlin_sequence_insert(edlin_line_sequence_t* seq, edlin_size_t index, str_fixed_t* ptr) {
+    if(
+        !seq                            // null sequence error
+        || !ptr                         // null ptr error
+        || seq->size >= seq->capacity   // sequence full
+        || index > seq->size            // index out of bounds error
+    )  return NULL;
+    // 1. ripple right any line ptrs to make space for the insertee
+    for(edlin_size_t i = seq->size; i > index; i--) {
+        seq->line_ptrs[i] = seq->line_ptrs[i-1];
+    }
+    // 2. insert the new ptr
+    seq->line_ptrs[index] = ptr;
+    seq->size++;
+    return ptr;
 }

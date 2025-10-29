@@ -2,6 +2,11 @@
 #include <stddef.h>
 #include <stdarg.h>
 
+typedef union {
+    void* ptr;
+    uint16_t parts[2];
+} str_addr_t;
+
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr) {
     if (!str || !cstr) return NULL;
     str_size_t len;
@@ -105,12 +110,11 @@ str_fixed_t* str_hex(str_fixed_t* str, int32_t num) {
 
 str_fixed_t* str_ptr(str_fixed_t* str, void* p) {
     if (!str) return NULL;
-    uint32_t addr = (uint32_t)p;
-    uint16_t seg = addr >> 16;
-    uint16_t off = addr & 0xFFFF;
-    str_hex(str, seg);
+    str_addr_t addr;
+    addr.ptr = p;
+    str_hex(str, addr.parts[1]);
     str_append_char(str, ':');
-    str_append_str(str, as_hex(off));
+    str_append_str(str, as_hex(addr.parts[0]));
     return str;
 }
 

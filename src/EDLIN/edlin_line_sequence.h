@@ -18,6 +18,8 @@ edlin_line_sequence_t* edlin_new_line_sequence(mem_arena_t* arena, edlin_size_t 
 str_fixed_t* edlin_sequence_at(const edlin_line_sequence_t* seq, edlin_size_t index);
 
 // Mutation operations
-str_fixed_t* edlin_sequence_move(edlin_line_sequence_t* seq, edlin_size_t src, edlin_size_t dst, edlin_size_t size);
+str_fixed_t* edlin_sequence_append(edlin_line_sequence_t* seq,str_fixed_t* ptr);
+str_fixed_t* edlin_sequence_delete(edlin_line_sequence_t* seq, edlin_size_t index);
+str_fixed_t* edlin_sequence_insert(edlin_line_sequence_t* seq, edlin_size_t index, str_fixed_t* ptr);
 
 #endif
