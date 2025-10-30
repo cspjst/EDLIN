@@ -1,13 +1,14 @@
-//#include "MEM/test_arena.h"
-//#include "EDLIN/test_line_pool.h"
-//#include "EDLIN/test_line_sequence.h"
-//#include "STR/dos_string.h"
-//#include "MEM/mem_tools.h"
-
+#include "EDLIN/edlin_document.h"
+#include "MEM/mem_arena.h"
+#include "MEM/mem_tools.h"
 
 int main() {
-    //test_mem_arena();
-    //test_line_pool();
-    //test_line_sequence();
-    //str_out(as_dec(mem_get_free_bytes()), CRLF);
+    str_out(as_dec(mem_get_free_bytes()), CRLF);
+    mem_arena_t* arena = mem_new_arena(mem_get_free_paragraphs());
+    str_out(as_dec(mem_get_free_bytes()), CRLF);
+
+    edlin_document_t* doc = edlin_new_document(arena);
+
+    mem_free_arena(arena);
+    str_out(as_dec(mem_get_free_bytes()), CRLF);
 }

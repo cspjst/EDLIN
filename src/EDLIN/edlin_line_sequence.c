@@ -1,18 +1,18 @@
 #include "edlin_line_sequence.h"
 #include <stddef.h>
 
-edlin_line_sequence_t* edlin_new_line_sequence(mem_arena_t* arena, edlin_size_t max_lines) {
+edlin_line_sequence_t* edlin_new_line_sequence(mem_arena_t* arena, edlin_size_t capacity) {
     // 1. allocate the sequence within the arena
     edlin_line_sequence_t* seq = (edlin_line_sequence_t*)mem_arena_alloc(arena, sizeof(edlin_line_sequence_t));
     if(!seq) return NULL;
     // 2. allocate the array of ptrs to str_fixed_t lines
-    seq->line_ptrs = (str_fixed_t**)mem_arena_alloc(arena, max_lines * sizeof(str_fixed_t*));
+    seq->line_ptrs = (str_fixed_t**)mem_arena_alloc(arena, capacity * sizeof(str_fixed_t*));
     if (!seq->line_ptrs) return NULL;
     // 3. nullify all the ptrs
-    for(edlin_size_t i = 0; i < max_lines; i++) seq->line_ptrs[i] = NULL;
+    for(edlin_size_t i = 0; i < capacity; i++) seq->line_ptrs[i] = NULL;
     // 4. set up pool management pointers and counters
     seq->size = 0;                     // no lines allocated yet
-    seq->capacity = max_lines;         // maximum lines this pool can hold
+    seq->capacity = capacity;         // maximum lines this pool can hold
     return seq;  // ready for line allocation via edlin_alloc_line()
 }
 

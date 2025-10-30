@@ -1,23 +1,23 @@
 #include "edlin_line_pool.h"
 #include <stddef.h>
 
-edlin_line_pool_t* edlin_new_line_pool(mem_arena_t* arena, edlin_size_t max_lines) {
+edlin_line_pool_t* edlin_new_line_pool(mem_arena_t* arena, edlin_size_t capacity) {
     // 1. allocate the pool within the arena
     edlin_line_pool_t* pool = (edlin_line_pool_t*)mem_arena_alloc(arena, sizeof(edlin_line_pool_t));
     if(!pool) return NULL;
     // 2. allocate the array of fixed-size strings (the actual line storage)
-    pool->lines = (str_fixed_t*)mem_arena_alloc(arena, max_lines * sizeof(str_fixed_t));
+    pool->lines = (str_fixed_t*)mem_arena_alloc(arena, capacity * sizeof(str_fixed_t));
     if (!pool->lines) return NULL;
     // 3. initialize all lines to empty state (size=0 means line is free/available)
-    for (edlin_size_t i = 0; i < max_lines; i++) {
+    for (edlin_size_t i = 0; i < capacity; i++) {
         pool->lines[i].size = 0;    // size 0
         pool->lines[i].flags = 0;   // Mark line as free
     }
     // 4. set up pool management pointers and counters
     pool->next_free = &pool->lines[0];  // start allocation from first line
-    pool->last_line = &pool->lines[max_lines - 1];  // ease of bounds checking
+    pool->last_line = &pool->lines[capacity - 1];  // ease of bounds checking
     pool->size = 0;                     // no lines allocated yet
-    pool->capacity = max_lines;         // maximum lines this pool can hold
+    pool->capacity = capacity;         // maximum lines this pool can hold
     return pool;  // ready for line allocation via edlin_alloc_line()
 }
 

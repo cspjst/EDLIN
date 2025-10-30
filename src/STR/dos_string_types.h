@@ -6,10 +6,12 @@
 
 typedef uint8_t str_size_t;
 
+#pragma pack(1)
 typedef struct {
     char text[STR_FIXED_SIZE];
     str_size_t size;
     uint8_t flags;
 } str_fixed_t;
+#pragma pack()
 
 #endif

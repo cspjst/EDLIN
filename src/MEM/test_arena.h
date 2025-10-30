@@ -10,6 +10,7 @@
 
 void test_mem_arena() {
     mem_size_bytes_t start = mem_get_free_bytes();
+    str_out(as_dec(start), CRLF);
     // Test 1: Basic creation
     mem_arena_t* arena = mem_new_arena(10); // 10 paragraphs = 160 bytes
     assert(arena != NULL);
@@ -59,6 +60,7 @@ void test_mem_arena() {
 
     mem_free_arena(arena);
     assert(start == mem_get_free_bytes());
+    str_out(as_dec(mem_get_free_bytes()), CRLF);
     str_out(cstr("mem_arena - all tests passed!"), CRLF);
 }
 

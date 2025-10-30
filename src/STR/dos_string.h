@@ -15,7 +15,8 @@
 
 static const str_fixed_t STR_CRLF = {"\r\n", 2, 0};
 static const str_fixed_t* CRLF = &STR_CRLF;
-static str_fixed_t __temp = {"", 0, 0};
+static str_fixed_t __temp_str = {"", 0, 0};
+static str_fixed_t __temp_num = {"", 0, 0};
 
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr);
 str_fixed_t* str_str(str_fixed_t* dest, const str_fixed_t* src);
@@ -55,12 +56,12 @@ str_size_t str_in_prompt(const str_fixed_t* prompt, str_fixed_t* str);
 #define str_prn(...) str_write_varargs(DOS_PRN_HANDLE, __VA_ARGS__, NULL)
 #define str_trim(str, trims) (str_trim_right(str_trim_left(str, trims), trims))
 
-#define as_dec(num) str_int(&__temp, num, 10)
-#define as_bin(num) str_bin(&__temp, num)
-#define as_hex(num) str_hex(&__temp, num)
-#define as_ptr(ptr) str_ptr(&__temp, ptr)
+#define as_dec(num) str_int(&__temp_num, num, 10)
+#define as_bin(num) str_bin(&__temp_num, num)
+#define as_hex(num) str_hex(&__temp_num, num)
+#define as_ptr(ptr) str_ptr(&__temp_num, ptr)
 
-#define cstr(cstr) str_cstr(&__temp, cstr)
+#define cstr(cstr) str_cstr(&__temp_str, cstr)
 #define crlf_trim(str) str_trim_right(str, "\r\n");
 
 #endif
