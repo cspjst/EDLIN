@@ -21,6 +21,21 @@ typedef struct {
     int16_t clusters_per_drive;
 } dos_file_disk_space_info_t;
 
+/**
+ *  |5|4|3|2|1|0|  CX  valid file attributes
+	 | | | | | `---- 1 = read only
+	 | | | | `----- 1 = hidden
+	 | | | `------ 1 = system
+	 | `--------- not used for this call
+	 `---------- 1 = archive
+ */
+typedef enum {
+    ATTR_READ_ONLY = 1,
+    ATTR_HIDDEN,
+    ATTR_SYSTEM = 4,
+    ATTR_ARCHIVE = 32
+} dos_valid_file_attributes_t;
+
 typedef enum {
     GET_DEVICE_INFO = 0,   //IOCTL,0   Get Device Information
 	SET_DEVICE_INFO        // IOCTL,1   Set Device Information

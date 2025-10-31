@@ -32,7 +32,7 @@ add_compile_options(
     -zld                # Link only referenced functions
     #-zu                 # Smart library elimination
     #-zs                 # Strip debug info from linked libraries
-    #-zq                 # Quiet mode (cleaner output)
+    -zq                 # Quiet mode (cleaner output)
     #-dNDEBUG
 )
 add_definitions(

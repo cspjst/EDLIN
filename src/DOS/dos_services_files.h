@@ -8,6 +8,8 @@
 #include "dos_error_types.h"
 #include "dos_services_files_types.h"
 
+dos_error_code_t dos_errno();
+
 // 36  Get disk free space
 dos_error_code_t dos_get_disk_free_space(uint8_t drive_number, dos_file_disk_space_info_t* info);
 

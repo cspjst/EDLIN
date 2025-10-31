@@ -1,29 +1,14 @@
-#include "EDLIN/edlin_document.h"
-#include "EDLIN/edlin_file_buffer.h"
-#include "MEM/mem_arena.h"
-#include "MEM/mem_tools.h"
+#include "DOS/dos_services_files_types.h"
 #include "STR/dos_string.h"
-#include "STR/dos_string_types.h"
-#include <assert.h>
+#include "DOS/dos_services_files.h"
 
 int main() {
     str_fixed_t file_path;
     str_in_prompt(cstr("Enter file name: "), &file_path);
-    str_out(as_dec(mem_get_free_bytes()), CRLF);
-    mem_arena_t* arena = mem_new_arena(mem_get_free_paragraphs());
-    str_out(as_dec(mem_get_free_bytes()), CRLF);
 
-    //edlin_document_t* doc = edlin_new_document(arena, &file_path);
+    str_out(as_hex(dos_get_file_attributes(file_path.text)), CRLF);
+    str_out(as_dec(dos_errno()), CRLF);
 
-    edlin_file_buffer_t* buf = edlin_new_file_buffer(
-        file_path.text,
-        mem_arena_alloc(arena, 1024),
-        1024
-    );
-    assert(buf);
-    str_out(as_dec(sizeof(edlin_file_buffer_t)), CRLF);
-    str_out(as_dec(buf->capacity), CRLF);
-
-    mem_free_arena(arena);
-    str_out(as_dec(mem_get_free_bytes()), CRLF);
+    str_out(as_hex(dos_set_file_attributes(file_path.text, 0)), CRLF);
+    str_out(as_dec(dos_errno()), CRLF);
 }
