@@ -107,7 +107,7 @@ typedef enum {
 * 654                                                                    210
 * 000  compatibility mode (exclusive)    000  read access
 * 001  deny others read/write access     001  write access
-* 010  deny others write access                  010  read/write access
+* 010  deny others write access          010  read/write access
 * 011  deny others read access
 * 100  full access permitted to all
 *

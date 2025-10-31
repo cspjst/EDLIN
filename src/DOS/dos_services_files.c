@@ -3,9 +3,6 @@
 #include "dos_services_constants.h"
 #include "dos_services_files_types.h"
 
-#include <errno.h>
-#include <stdint.h>
-
 /**
 * INT 21,36 - Get Disk Free Space
 * AH = 36h
