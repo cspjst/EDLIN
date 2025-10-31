@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-
 typedef uint16_t dos_file_handle_t;
 
 typedef uint16_t dos_file_attributes_t;

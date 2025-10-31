@@ -40,8 +40,6 @@ str_fixed_t* str_append_cstr(str_fixed_t* str, const char* cstr);
 //str_fixed_t* str_substr(str_fixed_t* dest, const str_fixed_t* src); str_append_char(str_fixed_t* str, char c);
 //int str_compare(const str_fixed_t* str1, const str_fixed_t* str2);
 
-
-
 str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str);
 str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first, ...);
 str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str);

@@ -169,7 +169,7 @@ END:    pop     ds
 * - when AX is not equal to CX then a partial read occurred due to end of file
 * - if AX is zero, no data was read, and EOF occurred before read
 */
-int16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes) {
+uint16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes) {
     errno = 0;
     uint16_t bytes_read = 0;
     __asm {
@@ -191,7 +191,7 @@ OK:     mov     bytes_read, ax
 END:    pop     ds
         popf
     }
-    return (int16_t)bytes_read;
+    return bytes_read;
 }
 
 /**
@@ -208,7 +208,7 @@ END:    pop     ds
 * - if AX is not equal to CX on return, a partial write occurred
 * - this function can be used to truncate a file to the current file position by writing zero bytes
 */
-int16_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t nbytes) {
+uint16_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t nbytes) {
     errno = 0;
     uint16_t bytes_written = 0;
     __asm {
@@ -384,6 +384,36 @@ dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t 
 		mov		errno, ax
 
 END:    pop     ds
+        popf
+	}
+	return errno;
+}
+
+/**
+ * INT 21,56 - Rename File
+ *	AH = 56h
+ *	DS:DX = pointer to old ASCIIZ path/filename
+ *	ES:DI = pointer to new ASCIIZ path/filename
+ * on return:
+ *	AX = error code if CF set
+ */
+dos_error_code_t dos_rename_file(const char* old_path, const char* new_path) {
+errno = 0;
+	__asm {
+		.8086
+		pushf
+        push    ds
+        push    es
+
+		lds		dx, old_path
+		les     di, new_path
+		mov		ah, DOS_RENAME_FILE
+		int		DOS_SERVICE
+		jnc		END
+		mov		errno, ax
+
+END:    pop     es
+        pop     ds
         popf
 	}
 	return errno;

@@ -10,8 +10,8 @@ edlin_line_pool_t* edlin_new_line_pool(mem_arena_t* arena, edlin_size_t capacity
     if (!pool->lines) return NULL;
     // 3. initialize all lines to empty state (size=0 means line is free/available)
     for (edlin_size_t i = 0; i < capacity; i++) {
-        pool->lines[i].size = 0;    // size 0
-        pool->lines[i].flags = 0;   // Mark line as free
+        pool->lines[i].size = 0;                // size 0
+        pool->lines[i].flags = STR_UNDEFINED;   // Mark line as free
     }
     // 4. set up pool management pointers and counters
     pool->next_free = &pool->lines[0];  // start allocation from first line
@@ -28,7 +28,7 @@ str_fixed_t* edlin_alloc_line(edlin_line_pool_t* pool) {
     ) return NULL;                      // return fail state
     // 1. allocate a line
     str_fixed_t* new_line = pool->next_free;    // allocate the next free slot
-    new_line->flags = 1;                // bit 0 set = allocated line
+    new_line->flags = STR_VALID;        // bit 0 set = allocated line
     pool->size++;                       // grow the pool
     // 2. find next free line for future allocations - if there is one
     do {
@@ -37,7 +37,7 @@ str_fixed_t* edlin_alloc_line(edlin_line_pool_t* pool) {
         } else {
             pool->next_free++;
         }
-        if (pool->next_free->flags == 0) return new_line; // found a free line, update next_free and return
+        if (pool->next_free->flags == STR_UNDEFINED) return new_line; // found a free line, update next_free and return
     } while (pool->next_free != new_line);          // stop if we searched entire pool
     // 3. no free lines (pool is full after this allocation)
     return new_line;
@@ -48,11 +48,11 @@ str_fixed_t* edlin_free_line(edlin_line_pool_t* pool, str_fixed_t* line) {
         !line                           // null line error
         || line < pool->lines           // line ptr out of bounds
         || line > pool->last_line       // line ptr out of bounds
-        || line->flags == 0             // line flag not allocated
+        || line->flags == STR_UNDEFINED // line flag not allocated
     ) return NULL;
     // 1. free the line
     line->size = 0;                     // zero size
-    line->flags = 0;                    // flag as free: clear all flags
+    line->flags = STR_UNDEFINED;        // flag as free: clear all flags
     pool->size--;                       // shrink the pool
     pool->next_free = line;             // next free line is now this one
     return line;

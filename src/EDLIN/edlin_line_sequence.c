@@ -53,19 +53,20 @@ str_fixed_t* edlin_sequence_delete(edlin_line_sequence_t* seq, edlin_size_t inde
     return deleted_ptr;
 }
 
-str_fixed_t* edlin_sequence_insert(edlin_line_sequence_t* seq, edlin_size_t index, str_fixed_t* ptr) {
+str_fixed_t* edlin_sequence_insert(edlin_line_sequence_t* seq, edlin_size_t index, str_fixed_t* str) {
     if(
         !seq                            // null sequence error
-        || !ptr                         // null ptr error
+        || !str                         // null ptr error
         || seq->size >= seq->capacity   // sequence full
         || index > seq->size            // index out of bounds error
+        || str->flags == STR_UNDEFINED  // string must be valid
     )  return NULL;
     // 1. ripple right any line ptrs to make space for the insertee
     for(edlin_size_t i = seq->size; i > index; i--) {
         seq->line_ptrs[i] = seq->line_ptrs[i-1];
     }
     // 2. insert the new ptr
-    seq->line_ptrs[index] = ptr;
+    seq->line_ptrs[index] = str;
     seq->size++;
-    return ptr;
+    return str;
 }

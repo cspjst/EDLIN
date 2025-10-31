@@ -27,10 +27,10 @@ dos_file_handle_t dos_open_file(const char* path_name, uint8_t access_attributes
 dos_error_code_t dos_close_file(dos_file_handle_t fhandle);
 
 // 3F  Read file or device using handle
-int16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes);
+uint16_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t nbytes);
 
 // 40  Write file or device using handle
-int16_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t nbytes);
+uint16_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t nbytes);
 
 // 41  Delete file
 dos_error_code_t dos_delete_file(char* path_name);
@@ -47,5 +47,8 @@ dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t 
 // 45  Duplicate file handle
 // 46  Force duplicate file handle
 // 47  Get current directory
+
+// 56  Rename file
+dos_error_code_t dos_rename_file(const char* old_path, const char* new_path);
 
 #endif
