@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta May  3 2025 18:23:37
 Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       25/10/31 11:52:59
+Created on:       25/10/31 12:04:38
 Executable Image: EDLIN.exe
 creating a DOS executable
 
@@ -29,9 +29,9 @@ bios_memory_services_TEXT CODE        AUTO           0000:0092       00000028
 dos_services_TEXT      CODE           AUTO           0000:00ba       000000ff
 dos_services_files_TEXT CODE          AUTO           0000:01b9       000002f3
 edlin_document_TEXT    CODE           AUTO           0000:04ac       0000000f
-edlin_line_pool_TEXT   CODE           AUTO           0000:04bb       000001b5
-edlin_line_sequence_TEXT CODE         AUTO           0000:0670       0000022f
-edlin_load_buffer_TEXT CODE           AUTO           0000:089f       00000044
+edlin_file_buffer_TEXT CODE           AUTO           0000:04bb       00000044
+edlin_line_pool_TEXT   CODE           AUTO           0000:04ff       000001b5
+edlin_line_sequence_TEXT CODE         AUTO           0000:06b4       0000022f
 mem_arena_TEXT         CODE           AUTO           0000:08e3       000000f9
 mem_tools_TEXT         CODE           AUTO           0000:09dc       00000035
 dos_string_TEXT        CODE           AUTO           0000:0a11       00000895
@@ -88,18 +88,18 @@ Module: CMakeFiles/EDLIN.dir/DOS/dos_services_files.c.obj(dos_services_files)
 0000:046b*     dos_set_file_attributes_
 Module: CMakeFiles/EDLIN.dir/EDLIN/edlin_document.c.obj(edlin_document)
 0000:04ac*     edlin_new_document_
+Module: CMakeFiles/EDLIN.dir/EDLIN/edlin_file_buffer.c.obj(edlin_file_buffer)
+0000:04bb      edlin_new_file_buffer_
 Module: CMakeFiles/EDLIN.dir/EDLIN/edlin_line_pool.c.obj(edlin_line_pool)
-0000:04bb*     edlin_new_line_pool_
-0000:0591*     edlin_alloc_line_
-0000:062a*     edlin_free_line_
+0000:04ff*     edlin_new_line_pool_
+0000:05d5*     edlin_alloc_line_
+0000:066e*     edlin_free_line_
 Module: CMakeFiles/EDLIN.dir/EDLIN/edlin_line_sequence.c.obj(edlin_line_sequence)
-0000:0670*     edlin_new_line_sequence_
-0000:0706*     edlin_sequence_at_
-0000:0739*     edlin_sequence_append_
-0000:0785*     edlin_sequence_delete_
-0000:0813*     edlin_sequence_insert_
-Module: CMakeFiles/EDLIN.dir/EDLIN/edlin_load_buffer.c.obj(edlin_load_buffer)
-0000:089f      edlin_new_load_buffer_
+0000:06b4*     edlin_new_line_sequence_
+0000:074a*     edlin_sequence_at_
+0000:077d*     edlin_sequence_append_
+0000:07c9*     edlin_sequence_delete_
+0000:0857*     edlin_sequence_insert_
 Module: CMakeFiles/EDLIN.dir/MEM/mem_arena.c.obj(mem_arena)
 0000:08e3      mem_new_arena_
 0000:0982      mem_free_arena_
@@ -366,4 +366,4 @@ Module: /opt/watcom/lib286/dos/clibl.lib(doserror)
 Stack size:  0800 (2048.)
 Memory size:  5cf0 (23792.)
 Entry point address: 0000:1748
-Link time: 00:00.35
+Link time: 00:00.68

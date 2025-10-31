@@ -1,5 +1,5 @@
 #include "EDLIN/edlin_document.h"
-#include "EDLIN/edlin_load_buffer.h"
+#include "EDLIN/edlin_file_buffer.h"
 #include "MEM/mem_arena.h"
 #include "MEM/mem_tools.h"
 #include "STR/dos_string.h"
@@ -15,13 +15,13 @@ int main() {
 
     //edlin_document_t* doc = edlin_new_document(arena, &file_path);
 
-    edlin_load_buffer_t* buf = edlin_new_load_buffer(
+    edlin_file_buffer_t* buf = edlin_new_file_buffer(
         file_path.text,
         mem_arena_alloc(arena, 1024),
         1024
     );
     assert(buf);
-    str_out(as_dec(sizeof(edlin_load_buffer_t)), CRLF);
+    str_out(as_dec(sizeof(edlin_file_buffer_t)), CRLF);
     str_out(as_dec(buf->capacity), CRLF);
 
     mem_free_arena(arena);
