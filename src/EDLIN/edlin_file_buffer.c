@@ -2,10 +2,10 @@
 #include "edlin_types.h"
 #include <stddef.h>
 
-edlin_file_buffer_t* edlin_new_file_buffer(char* file_path, char* mem_ptr, edlin_size_t capacity) {
+edlin_file_buffer_t* edlin_new_file_buffer(dos_file_handle_t fhandle, char* mem_ptr, edlin_size_t capacity) {
     // 0. check preconditions
     if(
-        !file_path
+        !fhandle
         ||!mem_ptr
         ||!capacity
     ) return NULL;
@@ -13,10 +13,8 @@ edlin_file_buffer_t* edlin_new_file_buffer(char* file_path, char* mem_ptr, edlin
     // 1. place the buffer struct in buffer as once used to load the file it can be freed along with the buffer itself
     fbuffer = (edlin_file_buffer_t*)mem_ptr;
     mem_ptr += sizeof(edlin_file_buffer_t);
-    // 2. open the file
-    fbuffer->fhandle = dos_open_file(file_path, ACCESS_READ_ONLY);
-    if(!fbuffer->fhandle) return NULL;
-    // 3. initialize struct
+    // 2. initialize struct
+    fbuffer->fhandle = fhandle;
     fbuffer->bytes = mem_ptr;
     fbuffer->capacity = capacity - sizeof(edlin_file_buffer_t);
     return fbuffer;
@@ -24,7 +22,10 @@ edlin_file_buffer_t* edlin_new_file_buffer(char* file_path, char* mem_ptr, edlin
 
 edlin_size_t edlin_file_buffer_load(edlin_file_buffer_t* fbuffer) {
     if(!fbuffer) return 0;
-    return dos_read_file(fbuffer->fhandle, fbuffer->bytes, fbuffer->capacity);
+    edlin_size_t nbytes = 0;
+    // TODO error handling
+    dos_read_file(fbuffer->fhandle, fbuffer->bytes, fbuffer->capacity, &nbytes);
+    return nbytes 
 }
 
 str_fixed_t* edlin_file_buffer_next_string(edlin_file_buffer_t* fbuffer, str_fixed_t* str) {
