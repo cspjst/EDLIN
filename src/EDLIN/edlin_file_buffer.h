@@ -11,7 +11,7 @@ typedef struct {
     edlin_size_t capacity;
 } edlin_file_buffer_t;
 
-edlin_file_buffer_t* edlin_new_file_buffer(char* file_path, char* mem_ptr, edlin_size_t capacity);
+edlin_file_buffer_t* edlin_new_file_buffer(dos_file_handle_t fhandle, char* mem_ptr, edlin_size_t capacity);
 
 edlin_size_t edlin_file_buffer_load(edlin_file_buffer_t* fbuffer);
 
