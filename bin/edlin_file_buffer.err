@@ -1,6 +1,0 @@
-/Users/jeremythornton/dosbox/cspjst/edlin/src/EDLIN/edlin_file_buffer.c(17): Error! E1151: Parameter count does not agree with previous definition
-/Users/jeremythornton/dosbox/cspjst/edlin/src/EDLIN/edlin_file_buffer.c(17): Note! I2002: 'dos_open_file' defined in: /Users/jeremythornton/dosbox/cspjst/edlin/src/EDLIN/../STR/../DOS/dos_services_files.h(24)
-/Users/jeremythornton/dosbox/cspjst/edlin/src/EDLIN/edlin_file_buffer.c(27): Warning! W102: Parameter 3: Type mismatch (warning)
-/Users/jeremythornton/dosbox/cspjst/edlin/src/EDLIN/edlin_file_buffer.c(27): Note! I2003: source conversion type is 'unsigned short'
-/Users/jeremythornton/dosbox/cspjst/edlin/src/EDLIN/edlin_file_buffer.c(27): Note! I2004: target conversion type is 'unsigned short *'
-/Users/jeremythornton/dosbox/cspjst/edlin/src/EDLIN/edlin_file_buffer.c(27): Note! I2002: 'dos_read_file' defined in: /Users/jeremythornton/dosbox/cspjst/edlin/src/EDLIN/../STR/../DOS/dos_services_files.h(30)

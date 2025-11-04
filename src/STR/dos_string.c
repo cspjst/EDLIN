@@ -1,6 +1,7 @@
 #include "dos_string.h"
 #include <stddef.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 typedef union {
     void* ptr;
@@ -230,9 +231,10 @@ str_fixed_t* str_append_cstr(str_fixed_t* str, const char* cstr) {
 
 str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str) {
     if (!str || str->size == 0) return 0;
-    int16_t result = dos_write_file(stream, str->text, str->size);
-    if (result == -1 || result > STR_FIXED_SIZE) return 0;
-    return (str_size_t)result;
+    uint16_t nbytes = str->size;
+    dos_write_file(stream, str->text, &nbytes);
+    if (nbytes > STR_FIXED_SIZE) return 0;
+    return nbytes;
 }
 
 str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first, ...) {
@@ -247,24 +249,24 @@ str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first,
 
 str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str) {
     if (!str) return 0;
-    int16_t result = dos_read_file(stream, str->text, STR_FIXED_SIZE);
-    if (result == -1 || result == 0) return 0;
-    str->size = (str_size_t)result;
+    uint16_t nbytes = STR_FIXED_SIZE;
+    dos_read_file(stream, str->text, &nbytes);
+    str->size = nbytes;
     return str->size;
 }
 
 str_size_t char_in(str_fixed_t* str) {
     str->size = 0;
-    int16_t n = dos_read_file(DOS_STDIN_HANDLE, str->text, 1); // flush buffer
-    if(n == -1 || n == 0) return 0;
-    str->size = n;
+    uint16_t nbytes = 1;
+    dos_read_file(DOS_STDIN_HANDLE, str->text, &nbytes); // flush buffer
+    str->size = nbytes;
     return str->size;
 }
 
 str_size_t str_in(str_fixed_t* str) {
-    int16_t n = dos_read_file(DOS_STDIN_HANDLE, str->text, STR_FIXED_SIZE);
-    if (n == -1 || n == 0) return 0;
-    str->size = (str_size_t)n;
+    uint16_t nbytes = STR_FIXED_SIZE;
+    dos_read_file(DOS_STDIN_HANDLE, str->text, &nbytes);
+    str->size = nbytes;
     return str->size + 1;
 }
 
