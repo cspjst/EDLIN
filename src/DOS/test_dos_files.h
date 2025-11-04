@@ -63,13 +63,15 @@ void test_dos_files() {
     dos_file_position_t new_pos;
     
     // Seek to beginning
-    err = dos_move_file_pointer(fh, 0, 0, &new_pos); // SEEK_SET
+    err = dos_move_file_pointer(fh, 0, FSEEK_SET, &new_pos); // SEEK_SET
+    printf("err = %i\n", err);
     assert(err == 0);
     assert(new_pos == 0);
     printf("Seek to beginning successful\n");
     
     // Seek to position 7
-    err = dos_move_file_pointer(fh, 7, 0, &new_pos);
+    err = dos_move_file_pointer(fh, 7, FSEEK_SET, &new_pos);
+    printf("err = %i\n", err);
     assert(err == 0);
     assert(new_pos == 7);
     printf("Seek to position 7 successful\n");
