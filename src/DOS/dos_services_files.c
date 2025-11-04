@@ -294,16 +294,15 @@ END:    pop     ds
 * can corrupt the FAT in some versions of DOS; the file should first
 * be grown from zero to one byte and then to the desired large size
 */
-dos_error_code_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_position_t foffset, uint8_t forigin, dos_file_position_t* fpos) {
+dos_error_code_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_position_t foffset, uint8_t forigin, dos_file_position_t* new_pos) {
     dos_error_code_t errno = 0;
 	__asm {
 		.8086
 		pushf
         push    ds
 
-        lds     si, foffset
-        mov     dx, [si]                            ; DX low order word of fposition
-        mov     cx, [si + 2]                        ; CX hi order word of fposition
+        mov     dx, WORD PTR [foffset]              ; DX low order word of fposition
+        mov     cx, WORD PTR [foffset + 2]          ; CX hi order word of fposition
 		mov		bx, fhandle
 		mov		al, forigin							; SEEK_SET, SEEK_CUR, SEEK_END
 		mov		ah, DOS_MOVE_FILE_POINTER_USING_HANDLE
@@ -311,7 +310,9 @@ dos_error_code_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_posit
 		jnc		OK
 		mov		errno, ax
 		jmp		END
-OK:		mov     [si], ax                            ; DX:AX = new file position (32-bit)
+
+OK:		lds     si, new_pos
+        mov     [si], ax                            ; DX:AX = new file position (32-bit)
         mov     [si + 2], dx
 
 END:    pop     ds
@@ -366,7 +367,7 @@ END:    pop     ds
 * @note DOSBOX does not allow
 * @see file::attributes_t get_file_attributes(char* path_name)
 */
-dos_error_code_t dos_set_file_attributes(char* path_name, dos_file_attributes_t attributes) {
+dos_error_code_t dos_set_file_attributes(const char* path_name, dos_file_attributes_t attributes) {
     dos_error_code_t errno = 0;
     __asm {
 		.8086
