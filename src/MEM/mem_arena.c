@@ -20,7 +20,7 @@ mem_arena_t* mem_new_arena(mem_size_paragraphs_t paragraphs) {
     arena->free_ptr = arena->base;                      // free arena memory starts at the base
     arena->size = 0;                                    // empty
     arena->capacity = paragraphs * MEM_PARAGRAPH_SIZE;  // capacity (bytes)
-    arena->remaining = arena->capacity;
+    arena->free = arena->capacity;
     return arena;
 }
 
@@ -29,11 +29,11 @@ void mem_free_arena(mem_arena_t* arena) {
 }
 
 char* mem_arena_alloc(mem_arena_t* arena, mem_size_bytes_t size) {
-    if(size <= arena->remaining) {      // check against available space
+    if(size <= arena->free) {      // check against available space
         char* ptr = arena->free_ptr;    // start of the block
         arena->size += size;            // increase the size
         arena->free_ptr += size;        // adjust the free ptr
-        arena->remaining -= size;       // shrink the remaining
+        arena->free -= size;       // shrink the remaining
         return ptr;
     }
     return NULL;
