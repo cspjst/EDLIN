@@ -1,6 +1,7 @@
 #ifndef DOS_SERVICES_FILES_H
 #define DOS_SERVICES_FILES_H
 
+#include <stdint.h>
 #ifndef __LARGE__
     //#error "This module requires large memory model (ie far data pointers)"
 #endif
@@ -27,13 +28,13 @@ dos_error_code_t dos_open_file(const char* path_name, uint8_t access_attributes,
 dos_error_code_t dos_close_file(dos_file_handle_t fhandle);
 
 // 3F  Read file or device using handle
-dos_error_code_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t* nbytes);
+dos_error_code_t dos_read_file(dos_file_handle_t fhandle, uint16_t do_bytes, char* buffer, uint16_t* done_bytes);
 
 // 40  Write file or device using handle
-dos_error_code_t dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t* nbytes);
+dos_error_code_t dos_write_file(dos_file_handle_t fhandle, uint16_t do_bytes, const char* buffer, uint16_t* done_bytes);
 
 // 41  Delete file
-dos_error_code_t dos_delete_file(char* path_name);
+dos_error_code_t dos_delete_file(const char* path_name);
 
 // 42  Move file pointer using handle
 dos_error_code_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_position_t foffset, uint8_t forigin, dos_file_position_t* new_pos);

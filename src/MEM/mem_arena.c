@@ -29,7 +29,7 @@ void mem_free_arena(mem_arena_t* arena) {
 }
 
 char* mem_arena_alloc(mem_arena_t* arena, mem_size_bytes_t size) {
-    if(size <= arena->free) {      // check against available space
+    if(size <= arena->free_size) {      // check against available space
         char* ptr = arena->free_ptr;    // start of the block
         arena->size += size;            // increase the size
         arena->free_ptr += size;        // adjust the free ptr

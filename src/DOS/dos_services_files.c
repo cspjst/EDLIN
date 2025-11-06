@@ -169,7 +169,7 @@ END:    pop     ds
 * - when AX is not equal to CX then a partial read occurred due to end of file
 * - if AX is zero, no data was read, and EOF occurred before read
 */
-dos_error_code_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t* nbytes) {
+dos_error_code_t dos_read_file(dos_file_handle_t fhandle, uint16_t do_bytes, char* buffer, uint16_t* done_bytes) {
     dos_error_code_t errno = 0;
     __asm {
         .8086
@@ -177,15 +177,19 @@ dos_error_code_t dos_read_file(dos_file_handle_t fhandle, char* buffer, uint16_t
         push    ds
 
         lds     dx, buffer
-        les     bx, nbytes
-        mov     cx, es:[bx]
+        mov     cx, do_bytes
         mov     bx, fhandle
         mov     ah, DOS_READ_FILE_OR_DEVICE_USING_HANDLE
         int     DOS_SERVICE
         jnc     OK
         mov     errno, ax
         mov     ax, 0xFFFF                          ; EOF as uint16_t (-1)
-OK:     mov     es:[bx], ax
+
+OK:     lds     di, done_bytes
+        mov     cx, ds
+        add     cx, si
+        jcxz    END                                 ; skip NULL return address
+        mov     [di], ax
 
 END:    pop     ds
         popf
@@ -207,7 +211,7 @@ END:    pop     ds
 * - if AX is not equal to CX on return, a partial write occurred
 * - this function can be used to truncate a file to the current file position by writing zero bytes
 */
-dos_error_code_t  dos_write_file(dos_file_handle_t fhandle, const char* buffer, uint16_t* nbytes) {
+dos_error_code_t  dos_write_file(dos_file_handle_t fhandle, uint16_t do_bytes, const char* buffer, uint16_t* done_bytes) {
     dos_error_code_t errno = 0;
     __asm {
         .8086
@@ -215,15 +219,19 @@ dos_error_code_t  dos_write_file(dos_file_handle_t fhandle, const char* buffer, 
         push    ds
 
         lds     dx, buffer
-        les     bx, nbytes
-        mov     cx, es:[bx]
+        mov     cx, do_bytes
         mov     bx, fhandle
         mov     ah, DOS_WRITE_FILE_OR_DEVICE_USING_HANDLE
         int     DOS_SERVICE
         jnc     OK
         mov     errno, ax
         mov     ax, 0xFFFF                          ; EOF as uint16_t (-1)
-OK:     mov     es:[bx], ax
+
+OK:     lds     di, done_bytes
+        mov     cx, ds
+        add     cx, si
+        jcxz    END                                 ; skip NULL return address
+        mov     [di], ax
 
 END:    pop     ds
         popf
@@ -244,7 +252,7 @@ END:    pop     ds
 * - FAT pointers are returned to DOS
 * @note - documented as not accepting wildcards in filename but actually does in several DOS versions
 */
-dos_error_code_t dos_delete_file(char* path_name) {
+dos_error_code_t dos_delete_file(const char* path_name) {
     dos_error_code_t errno = 0;
 	__asm {
 		.8086
@@ -272,8 +280,6 @@ END:    pop     ds
 *      02 = end of file plus offset  (SEEK_END)
 * BX = file handle
 * CX:DX = (signed) offset from origin of new file position
-* CX = high order word of number of bytes to move
-* DX = low order word of number of bytes to move
 *
 * on return:
 * CF clear if successful
@@ -312,6 +318,9 @@ dos_error_code_t dos_move_file_pointer(dos_file_handle_t fhandle, dos_file_posit
 		jmp		END
 
 OK:		lds     si, new_pos
+        mov     cx, ds
+        add     cx, si
+        jcxz    END                                 ; skip NULL return address
         mov     [si], ax                            ; DX:AX = new file position (32-bit)
         mov     [si + 2], dx
 

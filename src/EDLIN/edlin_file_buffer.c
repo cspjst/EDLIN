@@ -22,9 +22,9 @@ edlin_file_buffer_t* edlin_new_file_buffer(dos_file_handle_t fhandle, char* mem_
 
 edlin_size_t edlin_file_buffer_load(edlin_file_buffer_t* fbuffer) {
     if(!fbuffer) return 0;
-    edlin_size_t nbytes = fbuffer->capacity;
+    edlin_size_t nbytes;
     // TODO error handling
-    dos_read_file(fbuffer->fhandle, fbuffer->bytes, &nbytes);
+    dos_read_file(fbuffer->fhandle, fbuffer->capacity, fbuffer->bytes, &nbytes);
     return nbytes;
 }
 

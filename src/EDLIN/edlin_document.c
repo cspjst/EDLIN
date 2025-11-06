@@ -16,7 +16,7 @@ edlin_document_t* edlin_new_document(mem_arena_t* arena, str_fixed_t* str) {
     // 4. create pool with 75% capacity (as EDLIN did) 25% will be used for the load buffer
     capacity = (capacity / 4) * 3;
     doc->pool = edlin_new_line_pool(arena, capacity);
-    // 5. initialise file buffer with remaining 25% 
-    doc->fbuffer = arena->mem_arena_alloc(arena, capacity / 3);
+    // 5. initialise file buffer with remaining 25%
+    doc->fbuffer = NULL;//edlin_new_file_buffer(fhandle, char* mem_ptr, edlin_size_t capacity);
     return doc;
 }

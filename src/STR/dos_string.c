@@ -231,8 +231,8 @@ str_fixed_t* str_append_cstr(str_fixed_t* str, const char* cstr) {
 
 str_size_t str_write(dos_file_handle_t stream, const str_fixed_t* str) {
     if (!str || str->size == 0) return 0;
-    uint16_t nbytes = str->size;
-    dos_write_file(stream, str->text, &nbytes);
+    uint16_t nbytes;
+    dos_write_file(stream, str->size, str->text, &nbytes);
     if (nbytes > STR_FIXED_SIZE) return 0;
     return nbytes;
 }
@@ -249,23 +249,23 @@ str_size_t str_write_varargs(dos_file_handle_t stream, const str_fixed_t* first,
 
 str_size_t str_read(dos_file_handle_t stream, str_fixed_t* str) {
     if (!str) return 0;
-    uint16_t nbytes = STR_FIXED_SIZE;
-    dos_read_file(stream, str->text, &nbytes);
+    uint16_t nbytes;
+    dos_read_file(stream, STR_FIXED_SIZE, str->text, &nbytes);
     str->size = nbytes;
     return str->size;
 }
 
 str_size_t char_in(str_fixed_t* str) {
     str->size = 0;
-    uint16_t nbytes = 1;
-    dos_read_file(DOS_STDIN_HANDLE, str->text, &nbytes); // flush buffer
+    uint16_t nbytes;
+    dos_read_file(DOS_STDIN_HANDLE, 1, str->text, &nbytes); // flush buffer
     str->size = nbytes;
     return str->size;
 }
 
 str_size_t str_in(str_fixed_t* str) {
-    uint16_t nbytes = STR_FIXED_SIZE;
-    dos_read_file(DOS_STDIN_HANDLE, str->text, &nbytes);
+    uint16_t nbytes;
+    dos_read_file(DOS_STDIN_HANDLE, STR_FIXED_SIZE, str->text, &nbytes);
     str->size = nbytes;
     return str->size + 1;
 }

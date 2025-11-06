@@ -5,6 +5,8 @@
 #include "dos_services_files.h"
 #include "dos_error_types.h"
 #include "dos_services_files_types.h"
+#include "dos_file_tools.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -28,8 +30,9 @@ void test_dos_files() {
     uint16_t bytes_to_write = strlen(test_data);
     uint16_t bytes_written = bytes_to_write;
 
-    err = dos_write_file(fh, test_data, &bytes_written);
+    err = dos_write_file(fh, bytes_to_write, test_data, &bytes_written);
     assert(err == 0);
+    printf("%u %u\n", bytes_to_write, bytes_written);
     assert(bytes_written == bytes_to_write);
     printf("Write successful, wrote %u bytes\n", bytes_written);
 
@@ -52,7 +55,7 @@ void test_dos_files() {
     uint16_t bytes_to_read = sizeof(buffer) - 1;
     uint16_t bytes_read = bytes_to_read;
 
-    err = dos_read_file(fh, buffer, &bytes_read);
+    err = dos_read_file(fh, bytes_to_read, buffer, &bytes_read);
     assert(err == 0);
     assert(bytes_read > 0);
     assert(bytes_read <= bytes_to_read);
@@ -86,7 +89,7 @@ void test_dos_files() {
     // Read from new position
     bytes_to_read = 5;
     bytes_read = bytes_to_read;
-    err = dos_read_file(fh, buffer, &bytes_read);
+    err = dos_read_file(fh, bytes_to_read, buffer, &bytes_read);
     assert(err == 0);
     assert(bytes_read == 5);
     buffer[bytes_read] = '\0';
@@ -166,7 +169,7 @@ void test_dos_files() {
     // Test write 0 bytes (should succeed)
     bytes_to_write = 0;
     bytes_written = 0;
-    err = dos_write_file(fh, buffer, &bytes_written);
+    err = dos_write_file(fh, bytes_to_write, buffer, &bytes_written);
     assert(err == 0);
     assert(bytes_written == 0);
     printf("Zero-byte write successful\n");
@@ -174,7 +177,7 @@ void test_dos_files() {
     // Test read 0 bytes (should succeed)
     bytes_to_read = 0;
     bytes_read = 0;
-    err = dos_read_file(fh, buffer, &bytes_read);
+    err = dos_read_file(fh, bytes_to_read, buffer, &bytes_read);
     assert(err == 0);
     assert(bytes_read == 0);
     printf("Zero-byte read successful\n");
@@ -190,7 +193,7 @@ void test_dos_files() {
     dos_close_file(fh);
 
     // Set read-only attribute
-    err = dos_set_file_attributes("ATTRTEST.TXT", ATTR_READ_ONLY); 
+    err = dos_set_file_attributes("ATTRTEST.TXT", ATTR_READ_ONLY);
     assert(err == 0);
     printf("Read-only attribute set\n");
 
@@ -202,7 +205,7 @@ void test_dos_files() {
 
     // Try to open read-only file for writing (should fail)
     // not work on DOSBOX
-    //err = dos_open_file("ATTRTEST.TXT", ACCESS_WRITE_ONLY, &fh); 
+    //err = dos_open_file("ATTRTEST.TXT", ACCESS_WRITE_ONLY, &fh);
     //assert(err != 0);
     //printf("Read-only file write protection working (error: %d)\n", err);
 
@@ -220,7 +223,7 @@ void test_dos_files() {
     for (int i = 0; i < 10; i++) {
         bytes_to_write = strlen(chunk);
         bytes_written = bytes_to_write;
-        err = dos_write_file(fh, chunk, &bytes_written);
+        err = dos_write_file(fh, bytes_to_write, chunk, &bytes_written);
         assert(err == 0);
         assert(bytes_written == bytes_to_write);
     }
@@ -241,7 +244,7 @@ void test_dos_files() {
     // Try operations with invalid handle
     bytes_to_read = 10;
     bytes_read = bytes_to_read;
-    err = dos_read_file(0xFFFF, buffer, &bytes_read);
+    err = dos_read_file(0xFFFF, bytes_to_read, buffer, &bytes_read);
     assert(err != 0);
     printf("Invalid handle detection working (error: %d)\n", err);
 
@@ -250,75 +253,71 @@ void test_dos_files() {
     printf("Invalid handle close detection working (error: %d)\n", err);
 
     printf("16. Testing file tools...\n");
-    dos_file_sise_t size = 0xFFFF;
-    dos_file_sise_t bytes = 0xFFFF;
+    dos_file_size_t size = 0xFFFF;
+    uint16_t bytes = 0;
     err = dos_create_file("TOOLS.TXT", CREATE_READ_WRITE, &fh);
     assert(err == 0);
 
     // empty file tests
     assert(dos_file_exists("TOOLS.TXT"));
     assert(dos_file_is_eof(fh));
-    assert(dos_file_size(fh, &size) == 0); 
-    printf("size = %i", size);
+    assert(dos_file_size(fh, &size) == 0);
     assert(size == 0);
-    printf("size = %i", size);
+    printf("Empty size, exists and eof working.\n");
 
     // write to file
-    assert(dos_write_file(fh, test_data, &bytes) == 0);
+    assert(dos_write_file(fh, strlen(test_data), test_data, &bytes) == 0);
     assert(bytes == strlen(test_data));
-    assert(dos_file_size(fh, &size) == 0); 
+    assert(dos_file_size(fh, &size) == 0);
     assert(dos_file_exists("TOOLS.TXT"));
     assert(dos_file_is_eof(fh));
     assert(size == bytes);
-    printf("bytes = %i", bytes);
-    printf("size = %i", size);
     assert(dos_close_file(fh) == 0);
     assert(dos_file_exists("TOOLS.TXT"));
+    printf("Write size, exists and eof working.\n");
 
-    // reopen file 
-    assert(dos_open_file("TOOLS.TXT", ACCESS_READ_ONLY, &fh) == 0);
-    assert(dos_file_size(fh, &size) == 0); 
+    // reopen file
+    assert(dos_open_file("TOOLS.TXT", ACCESS_READ_WRITE, &fh) == 0);
+    assert(dos_file_size(fh, &size) == 0);
     assert(dos_file_exists("TOOLS.TXT"));
     assert(!dos_file_is_eof(fh));
     assert(size == bytes);
-    bytes = 1;
-    assert(dos_read_file(&fh, buffer, &bytes) == 0);
-    assert(bytes == 1); 
+    bytes = 0;
+    assert(dos_read_file(fh, 1, buffer, &bytes) == 0);
+    assert(bytes == 1);
     assert(!dos_file_is_eof(fh));
     bytes = size;
-    assert(dos_read_file(&fh, buffer, &bytes) == 0);
+    assert(dos_read_file(fh, size, buffer, &bytes) == 0);
     assert(bytes = size - 1);
     assert(dos_file_is_eof(fh));
-    printf("bytes = %i", bytes);
-    printf("size = %i", size);
+    printf("Reopen size, exists and eof working.\n");
 
     // Write at EOF (should extend file)
     const char* append = " - APPENDED";
-    size = strlen(append);
-    bytes = size;
-    err = dos_write_file(fh, append, &bytes);
-    assert(err == 0);
-    assert(!dos_file_is_eof(fh)); // No longer at EOF after write
-
-    // Seek to end
-    dos_file_position_t pos;
-    err = dos_move_file_pointer(fh, 0, FSEEK_END, &pos); 
+    err = dos_write_file(fh, strlen(append), append, &bytes);
     assert(err == 0);
     assert(dos_file_is_eof(fh));
-    
-    dos_close_file(fh);
-    
+    printf("Extended working.\n");
+
+    // Seek back
+    dos_file_position_t pos;
+    err = dos_move_file_pointer(fh, -12, FSEEK_END, &pos);
+    assert(err == 0);
+    assert(!dos_file_is_eof(fh));
+    printf("Seek back working.\n");
+
     // Verify file grew
-    assert(dos_file_size("TOOLS.TXT") == (strlen(test_data) + bytes));
-    
+    assert(dos_file_size(fh, &size) == 0);
+    assert(size == strlen(test_data) + bytes);
     assert(dos_close_file(fh) == 0);
-    
+    printf("File grow working.\n");
+
     // edge cases
-    assert(dos_file_size(fh, &size) != 0); 
-    printf("size = %i", size);
-    assert(dos_file_size(0xFFFF, &size) != 0); 
-    printf("size = %i", size);
-    
+    assert(dos_file_size(fh, &size) != 0);
+    assert(dos_file_size(0xFFFF, &size) != 0);
+    printf("Edge cases working.\n");
+
+    printf("17. Testing file ext...\n");
     assert(dos_delete_file("TOOLS.TXT") == 0);
     assert(!dos_file_exists("TOOLS.TXT"));
     assert(!dos_file_exists(""));
@@ -328,13 +327,30 @@ void test_dos_files() {
     assert(strcmp(dos_file_ext("PROGRAM.EXE"), "EXE") == 0);
     // Multiple dots
     assert(strcmp(dos_file_ext("ARCHIVE.TAR.GZ"), "GZ") == 0);
+    printf("Multiple dots 'ARCHIVE.TAR.GZ' -> 'GZ'\n");
+
     // Path with extensions
     assert(strcmp(dos_file_ext("C:\\DIR\\SUBDIR\\FILE.DAT"), "DAT") == 0);
+    printf("Path with extension 'C:\\\\DIR\\\\FILE.DAT' -> 'DAT'\n");
     // No extension
-    assert(dos_file_ext("NOEXT") == NULL);  
-    assert(dos_file_ext("C:\\PATH\\NOEXT") == NULL);  
+    assert(dos_file_ext("NOEXT") == NULL);
+    printf("No extension 'NOEXT' -> NULL\n");
+    assert(dos_file_ext("C:\\PATH\\NOEXT") == NULL);
+    printf("Path with no extension -> NULL\n");
     // Empty extension
     assert(dos_file_ext("FILE.") == NULL);
+    printf("Empty extension 'FILE.' -> NULL\n");
+    // Dot in directory but not filename
+    assert(dos_file_ext("C:\\DIR.OLD\\FILE") == NULL);
+    printf("Dot in directory only -> NULL\n");
+    // Mixed case
+    assert(strcmp(dos_file_ext("File.Txt"), "Txt") == 0);
+    printf("Mixed case preserved 'File.Txt' -> 'Txt'\n");
+    // Edge cases
+    assert(dos_file_ext("") == NULL);
+    printf("Empty string -> NULL\n");
+    assert(dos_file_ext(NULL) == NULL);
+    printf("NULL -> NULL\n");
 
     printf("ALL TESTS PASSED\n");
 }
