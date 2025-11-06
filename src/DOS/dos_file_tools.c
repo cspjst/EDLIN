@@ -16,14 +16,16 @@ uint8_t dos_file_is_eof(dos_file_handle_t fhandle) {
     return (p >= file_size);                                                      // dual-seek method for reliable EOF detection
 }
 
-dos_file_size_t dos_file_size(dos_file_handle_t fhandle) {
-    dos_file_size_t size = 0;
+dos_error_code_t dos_dos_file_size(dos_file_handle_t fhandle,  dos_file_size_t* size) {
+    size = 0;
     dos_file_position_t p;
-    dos_move_file_pointer(fhandle, 0, FSEEK_CUR, &p);                             // save current position
-    dos_error_code_t err = dos_move_file_pointer(fhandle, 0, FSEEK_END, &size);   // seek to the end
-    if (err != 0) size = 0;                                                       // error size = 0
-    dos_move_file_pointer(fhandle, p, FSEEK_SET, NULL);                           // restore original position
-    return size;
+    dos_error_code_t err = dos_move_file_pointer(fhandle, 0, FSEEK_CUR, &p);      // save current position
+    if(err) return err;
+    err = dos_error_code_t err = dos_move_file_pointer(fhandle, 0, FSEEK_END, size);   // seek to the end
+    if(err) return err;                                                   
+    err = dos_move_file_pointer(fhandle, p, FSEEK_SET, NULL);                    // restore original position
+    if(err) return err;
+    return 0;
 }
 
 char* dos_file_ext(const char* path_name) {
