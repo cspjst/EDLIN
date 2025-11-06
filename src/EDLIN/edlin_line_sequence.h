@@ -24,4 +24,6 @@ str_fixed_t* edlin_sequence_append(edlin_line_sequence_t* seq,str_fixed_t* ptr);
 str_fixed_t* edlin_sequence_delete(edlin_line_sequence_t* seq, edlin_size_t index);
 str_fixed_t* edlin_sequence_insert(edlin_line_sequence_t* seq, edlin_size_t index, str_fixed_t* ptr);
 
+void edlin_sequence_dump(edlin_line_sequence_t* seq);
+
 #endif

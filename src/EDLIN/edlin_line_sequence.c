@@ -25,14 +25,15 @@ str_fixed_t* edlin_sequence_at(const edlin_line_sequence_t* seq, edlin_size_t in
 }
 
 // Mutation operations
-str_fixed_t* edlin_sequence_append(edlin_line_sequence_t* seq,str_fixed_t* ptr) {
+str_fixed_t* edlin_sequence_append(edlin_line_sequence_t* seq,str_fixed_t* str) {
     if(
         !seq                            // null sequence error
-        || !ptr                         // null ptr error
+        || !str                         // null ptr error
         || seq->size >= seq->capacity   // sequence full
+        //|| str->flags == STR_UNDEFINED  // string must be valid
     ) return NULL;
-    seq->line_ptrs[seq->size++] = ptr;
-    return ptr;
+    seq->line_ptrs[seq->size++] = str;
+    return str;
 }
 
 str_fixed_t* edlin_sequence_delete(edlin_line_sequence_t* seq, edlin_size_t index) {
@@ -69,4 +70,12 @@ str_fixed_t* edlin_sequence_insert(edlin_line_sequence_t* seq, edlin_size_t inde
     seq->line_ptrs[index] = str;
     seq->size++;
     return str;
+}
+
+void edlin_sequence_dump(edlin_line_sequence_t* seq) {
+    for(int i = 0; i < seq->capacity; ++i) {
+        if(seq->line_ptrs[i]->size)
+            str_out(seq->line_ptrs[i]);
+    }
+    str_out(CRLF);
 }
