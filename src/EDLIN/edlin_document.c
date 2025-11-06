@@ -4,7 +4,7 @@
 
 edlin_document_t* edlin_new_document(mem_arena_t* arena, str_fixed_t* str) {
     // 1. calculate space free after sequence and pool type structs
-    mem_size_bytes_t capacity = arena->remaining - (sizeof(edlin_line_sequence_t) + sizeof(edlin_line_pool_t));
+    mem_size_bytes_t capacity = arena->free_size - (sizeof(edlin_line_sequence_t) + sizeof(edlin_line_pool_t));
 
     // 2. calculate shared capacity between sequence and pool
     capacity /= (sizeof(str_fixed_t*) + sizeof(str_fixed_t));
