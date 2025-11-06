@@ -17,7 +17,7 @@ void test_dos_files() {
     dos_file_handle_t fh;
     dos_error_code_t err;
 
-    err = dos_create_file("TESTFILE.TXT", 0, &fh);
+    err = dos_create_file("TESTFILE.TXT",CREATE_READ_WRITE , &fh);
     assert(err == 0);
     assert(fh != 0xFFFF);
     printf("File created successfully, handle: 0x%04X\n", fh);
@@ -41,7 +41,7 @@ void test_dos_files() {
 
     // Test 4: File opening
     printf("4. Testing file opening...\n");
-    err = dos_open_file("TESTFILE.TXT", 0, &fh); // Read-only
+    err = dos_open_file("TESTFILE.TXT", ACCESS_READ_ONLY, &fh);
     assert(err == 0);
     assert(fh != 0xFFFF);
     printf("File opened successfully, handle: 0x%04X\n", fh);
@@ -136,7 +136,7 @@ void test_dos_files() {
     printf("10. Testing error conditions...\n");
 
     // Try to open non-existent file
-    err = dos_open_file("NONEXISTENT.FIL", 0, &fh);
+    err = dos_open_file("NONEXISTENT.FIL",ACCESS_READ_ONLY , &fh);
     assert(err != 0);
     printf("Non-existent file handling correct (error: %d)\n", err);
 
@@ -160,7 +160,7 @@ void test_dos_files() {
     printf("12. Testing boundary conditions...\n");
 
     // Create empty file
-    err = dos_create_file("EMPTY.TXT", 0, &fh);
+    err = dos_create_file("EMPTY.TXT", CREATE_READ_WRITE, &fh);
     assert(err == 0);
 
     // Test write 0 bytes (should succeed)
@@ -190,7 +190,7 @@ void test_dos_files() {
     dos_close_file(fh);
 
     // Set read-only attribute
-    err = dos_set_file_attributes("ATTRTEST.TXT", ATTR_READ_ONLY); // Read-only
+    err = dos_set_file_attributes("ATTRTEST.TXT", ATTR_READ_ONLY); 
     assert(err == 0);
     printf("Read-only attribute set\n");
 
@@ -202,7 +202,7 @@ void test_dos_files() {
 
     // Try to open read-only file for writing (should fail)
     // not work on DOSBOX
-    //err = dos_open_file("ATTRTEST.TXT", ACCESS_WRITE_ONLY, &fh); // Write-only
+    //err = dos_open_file("ATTRTEST.TXT", ACCESS_WRITE_ONLY, &fh); 
     //assert(err != 0);
     //printf("Read-only file write protection working (error: %d)\n", err);
 
@@ -250,17 +250,91 @@ void test_dos_files() {
     printf("Invalid handle close detection working (error: %d)\n", err);
 
     printf("16. Testing file tools...\n");
+    dos_file_sise_t size = 0xFFFF;
+    dos_file_sise_t bytes = 0xFFFF;
     err = dos_create_file("TOOLS.TXT", CREATE_READ_WRITE, &fh);
     assert(err == 0);
-    assert(dos_file_exists("TOOLS.TXT"));
 
+    // empty file tests
+    assert(dos_file_exists("TOOLS.TXT"));
+    assert(dos_file_is_eof(fh));
+    assert(dos_file_size(fh, &size) == 0); 
+    printf("size = %i", size);
+    assert(size == 0);
+    printf("size = %i", size);
+
+    // write to file
+    assert(dos_write_file(fh, test_data, &bytes) == 0);
+    assert(bytes == strlen(test_data));
+    assert(dos_file_size(fh, &size) == 0); 
+    assert(dos_file_exists("TOOLS.TXT"));
+    assert(dos_file_is_eof(fh));
+    assert(size == bytes);
+    printf("bytes = %i", bytes);
+    printf("size = %i", size);
     assert(dos_close_file(fh) == 0);
     assert(dos_file_exists("TOOLS.TXT"));
 
+    // reopen file 
+    assert(dos_open_file("TOOLS.TXT", ACCESS_READ_ONLY, &fh) == 0);
+    assert(dos_file_size(fh, &size) == 0); 
+    assert(dos_file_exists("TOOLS.TXT"));
+    assert(!dos_file_is_eof(fh));
+    assert(size == bytes);
+    bytes = 1;
+    assert(dos_read_file(&fh, buffer, &bytes) == 0);
+    assert(bytes == 1); 
+    assert(!dos_file_is_eof(fh));
+    bytes = size;
+    assert(dos_read_file(&fh, buffer, &bytes) == 0);
+    assert(bytes = size - 1);
+    assert(dos_file_is_eof(fh));
+    printf("bytes = %i", bytes);
+    printf("size = %i", size);
+
+    // Write at EOF (should extend file)
+    const char* append = " - APPENDED";
+    size = strlen(append);
+    bytes = size;
+    err = dos_write_file(fh, append, &bytes);
+    assert(err == 0);
+    assert(!dos_file_is_eof(fh)); // No longer at EOF after write
+
+    // Seek to end
+    dos_file_position_t pos;
+    err = dos_move_file_pointer(fh, 0, FSEEK_END, &pos); 
+    assert(err == 0);
+    assert(dos_file_is_eof(fh));
+    
+    dos_close_file(fh);
+    
+    // Verify file grew
+    assert(dos_file_size("TOOLS.TXT") == (strlen(test_data) + bytes));
+    
+    assert(dos_close_file(fh) == 0);
+    
+    // edge cases
+    assert(dos_file_size(fh, &size) != 0); 
+    printf("size = %i", size);
+    assert(dos_file_size(0xFFFF, &size) != 0); 
+    printf("size = %i", size);
+    
     assert(dos_delete_file("TOOLS.TXT") == 0);
     assert(!dos_file_exists("TOOLS.TXT"));
+    assert(!dos_file_exists(""));
 
-
+    // file extension
+    assert(strcmp(dos_file_ext("FILE.TXT"), "TXT") == 0);
+    assert(strcmp(dos_file_ext("PROGRAM.EXE"), "EXE") == 0);
+    // Multiple dots
+    assert(strcmp(dos_file_ext("ARCHIVE.TAR.GZ"), "GZ") == 0);
+    // Path with extensions
+    assert(strcmp(dos_file_ext("C:\\DIR\\SUBDIR\\FILE.DAT"), "DAT") == 0);
+    // No extension
+    assert(dos_file_ext("NOEXT") == NULL);  
+    assert(dos_file_ext("C:\\PATH\\NOEXT") == NULL);  
+    // Empty extension
+    assert(dos_file_ext("FILE.") == NULL);
 
     printf("ALL TESTS PASSED\n");
 }
