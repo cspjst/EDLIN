@@ -11,7 +11,7 @@ typedef struct { // 16bytes size ie 1 paragraph
     char* free_ptr;
     mem_size_bytes_t size;
     mem_size_bytes_t capacity;
-    mem_size_bytes_t free;
+    mem_size_bytes_t free_size;
 } mem_arena_t;
 #pragma pack()
 
