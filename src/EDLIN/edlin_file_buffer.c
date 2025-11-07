@@ -15,8 +15,10 @@ edlin_file_buffer_t* edlin_new_file_buffer(dos_file_handle_t fhandle, char* mem_
     mem_ptr += sizeof(edlin_file_buffer_t);
     // 2. initialize struct
     fbuffer->fhandle = fhandle;
-    fbuffer->bytes = mem_ptr;
+    fbuffer->begin = mem_ptr;
+    fbuffer->pos = fbuffer->begin;
     fbuffer->capacity = capacity - sizeof(edlin_file_buffer_t);
+    fbuffer->end = fbuffer->begin + fbuffer->capacity;
     return fbuffer;
 }
 
@@ -24,21 +26,26 @@ edlin_size_t edlin_file_buffer_load(edlin_file_buffer_t* fbuffer) {
     if(!fbuffer) return 0;
     edlin_size_t nbytes;
     // TODO error handling
-    dos_read_file(fbuffer->fhandle, fbuffer->capacity, fbuffer->bytes, &nbytes);
+    dos_read_file(fbuffer->fhandle, fbuffer->capacity, fbuffer->begin, &nbytes);
     return nbytes;
 }
 
 str_fixed_t* edlin_file_buffer_next_string(edlin_file_buffer_t* fbuffer, str_fixed_t* str) {
-    edlin_size_t size = 0;
-    char* b = fbuffer->bytes;
-    char* s = str->text;
-    while(*b != '\r' && *b != '\n' && size < STR_FIXED_SIZE) {
-        *s = *b;
-        b++;
-        s++;
-        size++;
-    }
-    if(size == STR_FIXED_SIZE) str->flags |= STR_OVERSIZED;
-    str->size = size;
+    if(str->flag != STR_UNDEFINED) return NULL; 
+    char* p = str->text;
+    while(
+        *fbuffer->pos != '\r' 
+        && *fbuffer->pos != '\n' 
+        && str->size < STR_FIXED_SIZE
+    ) {
+        *p = *fbuffer->pos;
+        fbuffer->pos++;
+        p++;
+        str->size++;
+    } 
+    // if partial line do not set valid line flag so that caller can call load and return the same string 
+    // TODO
+    if(str->size == STR_FIXED_SIZE) str->flags |= STR_OVERSIZED;
+    str->flags |= STR_VALID;
     return str;
 }
