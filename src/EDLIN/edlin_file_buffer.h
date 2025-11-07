@@ -7,8 +7,9 @@
 
 typedef struct {
     dos_file_handle_t fhandle;
+    char* begin
     char* pos;
-    edlin_size_t capacity;
+    char* end;
 } edlin_file_buffer_t;
 
 edlin_file_buffer_t* edlin_new_file_buffer(dos_file_handle_t fhandle, char* mem_ptr, edlin_size_t capacity);
