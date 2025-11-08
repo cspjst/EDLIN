@@ -9,10 +9,10 @@
 #include <stdio.h>
 
 void test_file_buffer() {
-    printf("Test edlin file buffer");
-    mem_arena_t arena = mem_new_arena(4); // 64 bytes
-    prtinf("arena free mem = %li", arena->free_size);
-    
+    printf("Test edlin file buffer\n");
+    mem_arena_t* arena = mem_new_arena(4); // 64 bytes
+    printf("arena free mem = %li\n", arena->free_size);
+
 }
 
 #endif
