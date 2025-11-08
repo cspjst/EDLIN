@@ -21,9 +21,10 @@ str_fixed_t* edlin_sequence_at(const edlin_line_sequence_t* seq, edlin_size_t in
 
 // Mutation operations
 str_fixed_t* edlin_sequence_append(edlin_line_sequence_t* seq,str_fixed_t* ptr);
-str_fixed_t* edlin_sequence_delete(edlin_line_sequence_t* seq, edlin_size_t index);
 str_fixed_t* edlin_sequence_insert(edlin_line_sequence_t* seq, edlin_size_t index, str_fixed_t* ptr);
+str_fixed_t* edlin_sequence_remove(edlin_line_sequence_t* seq, edlin_size_t index);
+void edlin_sequence_remove_all(edlin_line_sequence_t* seq);
 
-void edlin_sequence_dump(edlin_line_sequence_t* seq);
+void edlin_sequence_dump(const edlin_line_sequence_t* seq);
 
 #endif

@@ -3,9 +3,12 @@
 
 #define STR_FIXED_SIZE  250
 
-// str_fixed_t flags bits 0,1 used bits 3..7 user definable
-#define STR_UNDEFINED   0
-#define STR_VALID       1
-#define STR_OVERSIZED   2
+#define STR_UNDEFINED       0
+
+// flags
+#define STR_FLAG_VALID      0
+#define STR_FLAG_ALLOCATED  1
+#define STR_FLAG_DIRTY      2
+#define STR_FLAG_OVERSIZED  3
 
 #endif

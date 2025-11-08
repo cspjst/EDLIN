@@ -31,7 +31,10 @@ edlin_size_t edlin_file_buffer_load(edlin_file_buffer_t* fbuffer) {
 }
 
 str_fixed_t* edlin_file_buffer_next_string(edlin_file_buffer_t* fbuffer, str_fixed_t* str) {
-    if(str->flags != STR_UNDEFINED) return NULL;
+    if(
+        str->flags != STR_UNDEFINED
+        || str_test(str, STR_FLAG_DIRTY)
+    ) return NULL;
     char* p = str->text;
     while(
         *fbuffer->pos != '\r'
@@ -45,7 +48,7 @@ str_fixed_t* edlin_file_buffer_next_string(edlin_file_buffer_t* fbuffer, str_fix
     }
     // if partial line do not set valid line flag so that caller can call load and return the same string
     // TODO
-    if(str->size == STR_FIXED_SIZE) str->flags |= STR_OVERSIZED;
-    str->flags |= STR_VALID;
+    if(str->size == STR_FIXED_SIZE) str_set(str, STR_FLAG_OVERSIZED);
+    str_set(str, STR_FLAG_DIRTY);
     return str;
 }

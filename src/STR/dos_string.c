@@ -8,6 +8,21 @@ typedef union {
     uint16_t parts[2];
 } str_addr_t;
 
+void str_set(str_fixed_t* str, uint8_t flag_bit) {
+    if (str == NULL || flag_bit > 7) return;
+    str->flags |= (1 << flag_bit);
+}
+
+void str_unset(str_fixed_t* str, uint8_t flag_bit) {
+    if (str == NULL || flag_bit > 7) return;
+    str->flags &= ~(1 << flag_bit);
+}
+
+uint8_t str_test(const str_fixed_t* str, uint8_t flag_bit) {
+    if (str == NULL || flag_bit > 7) return 0; // Validate input
+    return (str->flags & (1 << flag_bit)) ? 1 : 0;
+}
+
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr) {
     if (!str || !cstr) return NULL;
     str_size_t len;

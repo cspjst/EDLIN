@@ -18,6 +18,10 @@ static const str_fixed_t* CRLF = &STR_CRLF;
 static str_fixed_t __temp_str = {"", 0, 0};
 static str_fixed_t __temp_num = {"", 0, 0};
 
+void str_set(str_fixed_t* str, uint8_t flag_bit);
+void str_unset(str_fixed_t* str, uint8_t flag_bit);
+uint8_t str_test(const str_fixed_t* str, uint8_t flag_bit);
+
 str_fixed_t* str_cstr(str_fixed_t* str, const char* cstr);
 str_fixed_t* str_str(str_fixed_t* dest, const str_fixed_t* src);
 str_fixed_t* str_int(str_fixed_t* str, int32_t n, int base);
