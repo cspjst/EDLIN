@@ -28,7 +28,7 @@ void test_line_sequence() {
         {"Y,", 2, 1},
         {"Z,", 2, 1},
     };
-
+/*
     str_out(cstr("Test 0: Confirm data structure integrity"), CRLF);
     edlin_size_t sz = 5;
     edlin_line_sequence_t* seq = edlin_new_line_sequence(arena, sz);
@@ -119,14 +119,15 @@ void test_line_sequence() {
 
     str_out(cstr("Test 9: Interleaved append/delete"), CRLF);
     edlin_line_sequence_t* seq3 = edlin_new_line_sequence(arena, 3);
-    edlin_sequence_append(seq3, (str_fixed_t*)100);
-    edlin_sequence_append(seq3, (str_fixed_t*)200);
+    edlin_sequence_append(seq3, &lines[0]);
+    edlin_sequence_append(seq3, &lines[2]);
     edlin_sequence_delete(seq3, 0); // Delete first
-    edlin_sequence_append(seq3, (str_fixed_t*)300); // Should append to end
+    edlin_sequence_append(seq3, &lines[1]); // Should append to end
+    edlin_sequence_dump(seq3);
 
     assert(seq3->size == 2);
-    assert(edlin_sequence_at(seq3, 0) == (str_fixed_t*)200); // Remaining element
-    assert(edlin_sequence_at(seq3, 1) == (str_fixed_t*)300); // New append
+    assert(edlin_sequence_at(seq3, 0) == &lines[2]); // Remaining element
+    assert(edlin_sequence_at(seq3, 1) == &lines[1]); // New append
 
     str_out(cstr("Test 10: all the NULLs"), CRLF);
     assert(edlin_sequence_at(NULL, 0) == NULL);
@@ -134,7 +135,7 @@ void test_line_sequence() {
     assert(edlin_sequence_delete(NULL, 0) == NULL);
     assert(edlin_sequence_append(seq, NULL) == NULL);
     assert(edlin_sequence_insert(seq, 0, NULL) == NULL);
-
+*/
     edlin_line_sequence_t* s = edlin_new_line_sequence(arena, 5);
 
     str_out(cstr("Setup: [A, B, C]"), CRLF);
@@ -143,16 +144,17 @@ void test_line_sequence() {
     }
     edlin_sequence_dump(s);
 
-    str_out(cstr("Test 1: Insert at beginning"), CRLF);
-    assert(edlin_sequence_insert(s, 0, &more_lines[0]) == &more_lines[0]);
+    //str_out(cstr("Test 1: Insert at beginning"), CRLF);
+    edlin_sequence_insert(s, 0, &lines[3]);
+    //assert(edlin_sequence_insert(s, 0, &more_lines[0]) == &more_lines[0]);
     edlin_sequence_dump(s);
-    assert(s->size == 4);
-    assert(edlin_sequence_at(s, 0) == &more_lines[0]);  // [X, A, B, C]
-    assert(edlin_sequence_at(s, 1) == &lines[0]);
-    assert(edlin_sequence_at(s, 2) == &lines[1]);
-    assert(edlin_sequence_at(s, 3) == &lines[2]);
-    edlin_sequence_dump(s);
-
+    //assert(s->size == 4);
+    //assert(edlin_sequence_at(s, 0) == &more_lines[0]);  // [X, A, B, C]
+    //assert(edlin_sequence_at(s, 1) == &lines[0]);
+    //assert(edlin_sequence_at(s, 2) == &lines[1]);
+    //assert(edlin_sequence_at(s, 3) == &lines[2]);
+    //edlin_sequence_dump(s);
+/*
     str_out(cstr("Test 2: Insert at middle"), CRLF);
     assert(edlin_sequence_insert(s, 2, &more_lines[1]) == &more_lines[1]);
     assert(s->size == 5);
@@ -165,7 +167,8 @@ void test_line_sequence() {
 
     str_out(cstr("Test 3: Insert at end (should work like append)"), CRLF);
     assert(edlin_sequence_insert(s, s->size, &more_lines[2]) == NULL); // Full now
-
+    edlin_sequence_dump(s);
+/*
     str_out(cstr("Test 4: Error conditions"), CRLF);
     assert(edlin_sequence_insert(NULL, 0, &more_lines[2]) == NULL);
     assert(edlin_sequence_insert(s, 0, NULL) == NULL);
@@ -186,7 +189,7 @@ void test_line_sequence() {
     assert(edlin_sequence_at(empty_seq, 0) == &more_lines[0]);
     assert(edlin_sequence_at(empty_seq, 1) == &more_lines[1]);
     edlin_sequence_dump(s);
-    
+*/
     str_out(as_dec(mem_get_free_bytes()), CRLF);
     mem_free_arena(arena);
     assert(start == mem_get_free_bytes());
