@@ -28,7 +28,7 @@ str_fixed_t* edlin_alloc_line(edlin_line_pool_t* pool) {
     ) return NULL;                      // return fail state
     // 1. allocate a line
     str_fixed_t* new_line = pool->next_free;    // allocate the next free slot
-    str_set(new_line, STR_FLAG_VALID);       // bit 0 set = allocated line
+    str_set(new_line, STR_FLAG_POOLED);       // bit 0 set = allocated line
     pool->size++;                       // grow the pool
     // 2. find next free line for future allocations - if there is one
     do {

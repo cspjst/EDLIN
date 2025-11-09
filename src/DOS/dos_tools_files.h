@@ -1,5 +1,5 @@
-#ifndef DOS_FILE_TOOLS_H
-#define DOS_FILE_TOOLS_H
+#ifndef DOS_TOOLS_FILES_H
+#define DOS_TOOLS_FILES_H
 
 #include "dos_services_files_types.h"
 #include "dos_error_types.h"

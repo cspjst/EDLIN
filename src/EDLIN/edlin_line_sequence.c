@@ -32,10 +32,10 @@ str_fixed_t* edlin_sequence_append(edlin_line_sequence_t* seq,str_fixed_t* str) 
         || !str                         // null ptr error
         || seq->size >= seq->capacity   // sequence full
         || str->flags == STR_UNDEFINED  // string must be valid
-        || str_test(str, STR_FLAG_ALLOCATED) // already in the sequence
+        || str_test(str, STR_FLAG_SEQUENCED) // already in the sequence
     ) return NULL;
     seq->line_ptrs[seq->size++] = str;
-    str_set(str, STR_FLAG_ALLOCATED);
+    str_set(str, STR_FLAG_SEQUENCED);
     return str;
 }
 
@@ -46,7 +46,7 @@ str_fixed_t* edlin_sequence_insert(edlin_line_sequence_t* seq, edlin_size_t inde
         || seq->size >= seq->capacity   // sequence full
         || index > seq->size            // index out of bounds error
         || str->flags == STR_UNDEFINED  // string must be valid
-        || str_test(str, STR_FLAG_ALLOCATED) // already in the sequence
+        || str_test(str, STR_FLAG_SEQUENCED) // already in the sequence
     )  return NULL;
     // 1. ripple right any line ptrs to make space for the insertee
     for(edlin_size_t i = seq->size; i > index; i--) {
@@ -55,7 +55,7 @@ str_fixed_t* edlin_sequence_insert(edlin_line_sequence_t* seq, edlin_size_t inde
     // 2. insert the new ptr
     seq->line_ptrs[index] = str;
     seq->size++;
-    str_set(str, STR_FLAG_ALLOCATED);
+    str_set(str, STR_FLAG_SEQUENCED);
     return str;
 }
 
@@ -74,7 +74,7 @@ str_fixed_t* edlin_sequence_remove(edlin_line_sequence_t* seq, edlin_size_t inde
         seq->line_ptrs[index + 1] = NULL;
         index++;
     }
-    str_unset(p, STR_FLAG_ALLOCATED);
+    str_unset(p, STR_FLAG_SEQUENCED);
     return p;
 }
 
