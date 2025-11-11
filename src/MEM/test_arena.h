@@ -12,7 +12,7 @@ void test_mem_arena() {
     mem_size_bytes_t start = mem_get_free_bytes();
     str_out(as_dec(start), CRLF);
     // Test 1: Basic creation
-    mem_arena_t* arena = mem_new_arena(10); // 10 paragraphs = 160 bytes
+    mem_arena_t* arena = mem_new_dos_arena(10); // 10 paragraphs = 160 bytes
     assert(arena != NULL);
     assert(arena->used_size == 0);
     assert(arena->capacity == 10 * MEM_PARAGRAPH_SIZE);
@@ -52,13 +52,13 @@ void test_mem_arena() {
     assert(strcmp(ptr2, "World") == 0);
 
     // Test 7: Cleanup
-    mem_free_arena(arena);
+    mem_free_dos_arena(arena);
 
     // Test 8: Insufficient memory on creation
-    mem_arena_t* small_arena = mem_new_arena(0);
+    mem_arena_t* small_arena = mem_new_dos_arena(0);
     assert(small_arena == NULL);
 
-    mem_free_arena(arena);
+    mem_free_dos_arena(arena);
     assert(start == mem_get_free_bytes());
     str_out(as_dec(mem_get_free_bytes()), CRLF);
     str_out(cstr("mem_arena - all tests passed!"), CRLF);

@@ -4,7 +4,7 @@
 #include "../DOS/dos_services.h"
 #include <stddef.h>
 
-mem_arena_t* mem_new_arena(mem_size_paragraphs_t paragraphs) {
+mem_arena_t* mem_new_dos_arena(mem_size_paragraphs_t paragraphs) {
     if(!paragraphs) return NULL;
     // 1. allocate memory + 16bytes for the mem_arena_t
     mem_address_t addr = {0};
@@ -16,12 +16,12 @@ mem_arena_t* mem_new_arena(mem_size_paragraphs_t paragraphs) {
     arena->base = addr.ptr + sizeof(mem_arena_t);       // start the base above the arena struct
     arena->free_ptr = arena->base;                      // free arena memory starts at the base
     arena->used_size = 0;                               // none used
-     arena->free_size = paragraphs * MEM_PARAGRAPH_SIZE; // all free
+    arena->free_size = paragraphs * MEM_PARAGRAPH_SIZE; // all free
     arena->capacity = arena->free_size;                 // capacity (bytes)
     return arena;
 }
 
-void mem_free_arena(mem_arena_t* arena) {
+void mem_free_dos_arena(mem_arena_t* arena) {
     if(arena) dos_free_allocated_memory_blocks(arena->segment);
 }
 

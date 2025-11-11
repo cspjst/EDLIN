@@ -24,7 +24,8 @@ void test_file_buffer() {
         dos_close_file(fh);
     }
 
-    mem_arena_t* arena = mem_new_arena(sz / 16); // 64 bytes
+    mem_arena_t* arena = mem_new_dos_arena(sz / 16); // 64 bytes
+
     assert(arena->free_size == sz);
     assert(arena->used_size == 0);
     char* mem = (char*)mem_arena_alloc(arena, sz);
@@ -37,6 +38,8 @@ void test_file_buffer() {
     assert(fb->begin == mem);
     assert(fb->pos == fb->begin);
     assert(fb->end == arena->free_ptr);
+
+    mem_free_dos_arena(arena);
 
     dos_delete_file("TEST.TXT");
     printf("edlin_file_buffer - all tests passed!\n");
