@@ -10,7 +10,7 @@ typedef struct {
     uint16_t capacity;  
 } edlin_line_stack_t;
 
-edlin_line_stack_t* edlin_new_line_stack(char* mem_ptr, edlin_size_t capacity);
+edlin_line_stack_t* edlin_new_line_stack(void* mem_ptr, edlin_size_t capacity);
 
 void edlin_line_stack_push(edlin_line_stack_t* stack, str_fixed_t* str);
 
