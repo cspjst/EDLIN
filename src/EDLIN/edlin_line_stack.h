@@ -16,4 +16,10 @@ void edlin_line_stack_push(edlin_line_stack_t* stack, str_fixed_t* str);
 
 void* edlin_line_stack_pop(edlin_line_stack_t* stack);
 
+uint8_t edlin_line_stack_is_empty(edlin_line_stack_t* stack);
+
+uint8_t edlin_line_stack_is_full(edlin_line_stack_t* stack);
+
+edlin_size_t edlin_line_stack_size(edlin_line_stack_t* stack);
+
 #endif
