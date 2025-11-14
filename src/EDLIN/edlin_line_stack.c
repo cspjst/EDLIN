@@ -9,11 +9,21 @@ edlin_line_stack_t* edlin_new_line_stack(void* mem_ptr, edlin_size_t capacity) {
 }
 
 void edlin_line_stack_push(edlin_line_stack_t* stack, str_fixed_t* str) {
-    *(stack->top) = ptr;
-    stack->top++;
+    *(stack->top++) = ptr;
 }
 
 void* edlin_line_stack_pop(edlin_line_stack_t* stack) {
-    stack->top--;
-    return *(stack->top);
+    return *(--stack->top);
+}
+
+uint8_t edlin_line_stack_is_empty(edlin_line_stack_t* stack) {
+    return stack->top == stack->base
+}
+
+uint8_t edlin_line_stack_is_full(edlin_line_stack_t* stack) {
+    return stack->top == stack->base + stack->capacity
+}
+
+edlin_size_t edlin_line_stack_size(edlin_line_stack_t* stack) {
+    return stack->top - stack->base;
 }
