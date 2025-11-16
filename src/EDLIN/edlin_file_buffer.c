@@ -1,5 +1,6 @@
 #include "edlin_file_buffer.h"
 #include "edlin_types.h"
+#include "edlin_constants.h"
 #include <stddef.h>
 
 edlin_file_buffer_t* edlin_new_file_buffer(dos_file_handle_t fhandle, char* mem_ptr, edlin_size_t capacity) {
@@ -37,8 +38,8 @@ edlin_size_t edlin_file_buffer_load(edlin_file_buffer_t* fbuffer) {
 
 str_fixed_t* edlin_file_buffer_next_string(edlin_file_buffer_t* fbuffer, str_fixed_t* str) {
     if(
-        !str_test(str, STR_FLAG_POOLED)         // not pooled
-        || !str_test(str, STR_FLAG_SEQUENCED)   // not sequenced
+        !str_flag_test(str, STR_FLAG_POOLED)         // not pooled
+        || !str_flag_test(str, STR_FLAG_SEQUENCED)   // not sequenced
     ) return NULL;
     char* p = str->text;
     while(
@@ -52,7 +53,7 @@ str_fixed_t* edlin_file_buffer_next_string(edlin_file_buffer_t* fbuffer, str_fix
         str->size++;                            // string size
     }
     if(fbuffer->pos == fbuffer->end) return str;// partially filled
-    if(str->size == STR_FIXED_SIZE) str_set(str, STR_FLAG_OVERSIZED);
-    str_set(str, STR_FLAG_ALLOCATED);
+    if(str->size == STR_FIXED_SIZE) str_flag_set(str, STR_FLAG_OVERSIZED);
+    str_flag_set(str, STR_FLAG_ALLOCATED);
     return str;
 }

@@ -1,7 +1,7 @@
 #ifndef EDLIN_FILE_BUFFER_H
 #define EDLIN_FILE_BUFFER_H
 
-#include "../STR/dos_string.h"
+#include "../STR/str_fixed.h"
 #include "../DOS/dos_services_files.h"
 #include "edlin_types.h"
 

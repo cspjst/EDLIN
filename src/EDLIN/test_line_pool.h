@@ -3,13 +3,13 @@
 
 #include "../MEM/mem_arena.h"
 #include "../MEM/mem_tools.h"
-#include "../STR/dos_string.h"
+#include "../STR/str_fixed.h"
 #include "edlin_line_pool.h"
 #include <assert.h>
 
 void test_line_pool() {
     mem_size_bytes_t start = mem_get_free_bytes();
-    mem_arena_t* arena = mem_new_arena(1024); // 16KB arena
+    mem_arena_t* arena = mem_new_dos_arena(1024); // 16KB arena
     assert(arena != NULL);
 
     // Test 0: Confirm data structure integrity
@@ -194,7 +194,7 @@ void test_line_pool() {
     assert(same_line->size == 0);  // Should be reset
     assert(same_line->flags == 1);
 
-    mem_free_arena(arena);
+    mem_free_dos_arena(arena);
     assert(start == mem_get_free_bytes());
     str_out(cstr("edlin_line_pool - all tests passed!"), CRLF);
 }

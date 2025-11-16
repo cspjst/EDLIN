@@ -1,0 +1,7 @@
+#ifndef EDLIN_CONSTANTS_H
+#define EDLIN_CONSTANTS_H
+
+#define STR_FLAG_POOLED     2
+#define STR_FLAG_SEQUENCED  3
+
+#endif

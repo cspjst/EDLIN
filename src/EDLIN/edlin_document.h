@@ -1,7 +1,7 @@
 #ifndef EDLIN_DOCUMENT_H
 #define EDLIN_DOCUMENT_H
 
-#include "../STR/dos_string.h"
+#include "../STR/str_fixed.h"
 #include "../MEM/mem_arena.h"
 #include "edlin_line_pool.h"
 #include "edlin_line_sequence.h"

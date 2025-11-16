@@ -1,4 +1,5 @@
 #include "edlin_line_pool.h"
+#include "edlin_constants.h"
 #include <stddef.h>
 
 edlin_line_pool_t* edlin_new_line_pool(mem_arena_t* arena, edlin_size_t capacity) {
@@ -28,7 +29,7 @@ str_fixed_t* edlin_alloc_line(edlin_line_pool_t* pool) {
     ) return NULL;                      // return fail state
     // 1. allocate a line
     str_fixed_t* new_line = pool->next_free;    // allocate the next free slot
-    str_set(new_line, STR_FLAG_POOLED);       // bit 0 set = allocated line
+    str_flag_set(new_line, STR_FLAG_POOLED);       // bit 0 set = allocated line
     pool->size++;                       // grow the pool
     // 2. find next free line for future allocations - if there is one
     do {

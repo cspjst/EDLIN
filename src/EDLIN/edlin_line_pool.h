@@ -1,7 +1,7 @@
 #ifndef EDLIN_LINE_BUFFER_H
 #define EDLIN_LINE_BUFFER_H
 
-#include "../STR/dos_string.h"
+#include "../STR/str_fixed.h"
 #include "../MEM/mem_arena.h"
 #include "edlin_types.h"
 

@@ -48,9 +48,10 @@ file(GLOB SOURCES
     *.c
     BIOS/*c
     DOS/*.c
-    MEM/*.c
-    STR/*.c
-    EDLIN/*.c
+    STD/*.c
+    #MEM/*.c
+    #STR/*.c
+    #EDLIN/*.c
 )
 
 # message(Source list="${SOURCES}")

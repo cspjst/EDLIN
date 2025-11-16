@@ -1,6 +1,7 @@
 #include "edlin_document.h"
 #include "edlin_line_pool.h"
 #include "edlin_line_sequence.h"
+#include <stddef.h>
 
 edlin_document_t* edlin_new_document(mem_arena_t* arena, str_fixed_t* str) {
     if(!arena || !str) return NULL;
