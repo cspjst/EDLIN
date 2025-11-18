@@ -139,7 +139,7 @@ void test_printf_error_conditions() {
 }
 */
 void test_stdio() {
-    printf("=== Testing Tiny stdio.h ===\n");
+    printf(" Testing Tiny stdio.h \n");
 
     test_stdio_basic();
     //test_printf_basic();
