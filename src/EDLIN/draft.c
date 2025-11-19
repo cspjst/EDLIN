@@ -73,6 +73,48 @@ int fclose(FILE* stream) {
     return 0;  // Success
 }
 
+int fgetc(FILE* stream);
+
+FILE* fopen(const char* filename, const char* mode) {
+    dos_file_handle_t fh = 0xFFFF;
+    dos_error_code_t err = DOS_SUCCESS;
+    uint16_t mode_val = *(const uint16_t*)mode;
+    
+    switch (mode_val) {
+        case 'r':  // 0x0072 - "r" (read only)
+            err = dos_open_file(filename, ACCESS_READ_ONLY, &fh;
+            break;
+            
+        case 0x2B72:  // "r+" (read/write)
+            err = dos_open_file(filename, ACCESS_READ_WRITE, &fh;
+            break;
+            
+        case 'w':  // 0x0077 - "w" (write only)   // For "w" mode, DOS only able create with read/write or read only
+        case 0x2B77:  // "w+" (read/write)
+            dos_delete_file(filename);  // Truncate by deleting
+            err = dos_create_file(filename, CREATE_READ_WRITE, &fh;
+            break;
+            
+        case 'a':  // 0x0061 - "a" (write only, append)  // For "a" mode, DOS only able create with read/write or read only 
+        case 0x2B61:  // "a+" (read/write, append)
+            err = dos_open_file(filename, ACCESS_READ_WRITE, &fh;
+            if (err != DOS_SUCCESS) err = dos_create_file(filename, CREATE_READ_WRITE, &fh;
+            if (err == DOS_SUCCESS) dos_move_file_pointer(handle, 0, FSEEK_END, NULL);
+            break;
+            
+        default:
+            err = DOS_INVALID_FUNCTION_NUMBER;
+            break;
+    }
+    
+    if (err != DOS_SUCCESS || fh == 0xFFFF) {
+        errno = dos_to_errno(err);
+        return NULL;
+    }
+    
+    return (FILE*)handle; // re-interpret cast uint16_t to FILE* 
+}
+
 int fputc(int c, FILE* stream) {
     dos_file_handle_t handle = (dos_file_handle_t)(uintptr_t)stream;
     dos_error_code_t dos_err = 0;  
@@ -116,47 +158,6 @@ DONE:
     return (unsigned char)c;
 }
 
-FILE* fopen(const char* filename, const char* mode) {
-    dos_file_handle_t fh = 0xFFFF;
-    dos_error_code_t err = DOS_SUCCESS;
-    uint16_t mode_val = *(const uint16_t*)mode;
-    
-    switch (mode_val) {
-        case 'r':  // 0x0072 - "r" (read only)
-            err = dos_open_file(filename, ACCESS_READ_ONLY, &fh;
-            break;
-            
-        case 0x2B72:  // "r+" (read/write)
-            err = dos_open_file(filename, ACCESS_READ_WRITE, &fh;
-            break;
-            
-        case 'w':  // 0x0077 - "w" (write only)   // For "w" mode, DOS only able create with read/write or read only
-        case 0x2B77:  // "w+" (read/write)
-            dos_delete_file(filename);  // Truncate by deleting
-            err = dos_create_file(filename, CREATE_READ_WRITE, &fh;
-            break;
-            
-        case 'a':  // 0x0061 - "a" (write only, append)  // For "a" mode, DOS only able create with read/write or read only 
-        case 0x2B61:  // "a+" (read/write, append)
-            err = dos_open_file(filename, ACCESS_READ_WRITE, &fh;
-            if (err != DOS_SUCCESS) err = dos_create_file(filename, CREATE_READ_WRITE, &fh;
-            if (err == DOS_SUCCESS) dos_move_file_pointer(handle, 0, FSEEK_END, NULL);
-            break;
-            
-        default:
-            err = DOS_INVALID_FUNCTION_NUMBER;
-            break;
-    }
-    
-    if (err != DOS_SUCCESS || fh == 0xFFFF) {
-        errno = dos_to_errno(err);
-        return NULL;
-    }
-    
-    return (FILE*)handle; // re-interpret cast uint16_t to FILE* 
-}
-
-int fputc(int c, FILE* stream);
 
 int fputs(const char* str, FILE* stream) {
     while (*str) {
