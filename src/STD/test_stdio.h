@@ -3,102 +3,102 @@
 
 #include "tiny_stdio.h"
 #include "tiny_errno.h"
-
-//#include <assert.h>
-//#include <string.h>
-//#include <stdarg.h>
+#include "tiny_stdlib.h"
+#include "tiny_assert.h"
 
 void test_stdio_basic() {
 
-    fputc('A', stdout);
+    fputc(fputc('a', stdout) + 2, stdout);
+    assert(putc('b', stdout) == 'b');
+    fputc('e', stderr);
+    putc('E', stderr);
 
-    /*
-    printf("Testing stdio basic functions...\n");
-
-    // Test 1: Basic putchar output
-    printf("1. Testing putchar...\n");
-    int result = putchar('A');
+    // Test basic character output
+    putchar('A');
     putchar('B');
-    putchar('\n');
-    printf("putchar returned: %d (expected: %d)\n", result, 'A');
-    assert(result == 'A');
+    putchar('C');
     putchar('\n');
 
-    // Test 2: Multiple characters
-    printf("2. Testing multiple putchars...\n");
-    putchar('H'); putchar('e'); putchar('l'); putchar('l'); putchar('o');
+    // Test numeric values
+    for (int i = 0; i < 10; i++) {
+        putchar('0' + i);
+    }
     putchar('\n');
 
-    printf("Basic stdio tests passed!\n");
-    */
+    // Test special characters
+    putchar('\t');
+    putchar('X');
+    putchar('\n');
+
+    // Test basic string output
+    puts("Hello, DOS!");
+    puts("");
+    puts("This\nis\na\ntest\tstring");
+    puts("Test 123");
+    puts("Special chars: !@#$%^&*()");
+    puts(NULL);
+}
+void test_printf_integers(void) {
+    printf("Testing printf integers...\n");
+
+    // Test basic signed integers
+    printf("Signed: %d %d %d\n", 0, 42, -17);
+
+    // Test unsigned integers
+    printf("Unsigned: %u %u\n", 4294967254U, 12345U);
+
+    // Test long integers
+    printf("Long: %ld %ld\n", 123456L, -987654L);
+
+    // Test zero and boundary values
+    printf("Zero: %d %u\n", 0, 0U);
+    printf("Max int: %d\n", 32767);  // Assuming 16-bit int
+    printf("Min int: %d\n", -32768);
+
+    printf("Integer test complete\n");
 }
 
-// Helper to capture output (simplified - would need real capture in DOS)
-/*
-static int test_printf(const char* format, ...) {
-    // In real test, you'd capture output to buffer
-    // For now, just verify it doesn't crash and returns 0
-    va_list args;
-    va_start(args, format);
-    int result = printf(format, args);
-    va_end(args);
-    return result;
+void test_printf_strings(void) {
+    printf("Testing printf strings...\n");
+
+    // Test basic string
+    printf("String: %s\n", "Hello");
+
+    // Test empty string
+    printf("Empty: '%s'\n", "");
+
+    // Test string with spaces
+    printf("Spaces: '%s'\n", "hello world");
+
+    // Test null string (if handled)
+    char* null_str = NULL;
+    printf("Null: %s\n", null_str ? null_str : "(null)");
+
+    // Test string with special characters
+    printf("Special: %s\n", "test!@#$%");
+
+    printf("String test complete\n");
 }
 
-void test_printf_basic() {
-    printf("Testing printf basic formats...\n");
+void test_printf_hex(void) {
+    printf("Testing printf hex...\n");
 
-    // Test 1: Basic strings and chars
-    printf("1. Basic strings: %s\n", "Hello");
-    printf("2. Chars: %c%c%c\n", 'A', 'B', 'C');
-    printf("3. Mixed: %s %c %s\n", "Letter", 'X', "test");
+    // Test lowercase hex
+    printf("Lower hex: %x %x %x\n", 0, 255, 4096);
 
-    // Test 2: Integers
-    printf("4. Decimal: %d\n", 42);
-    printf("5. Negative: %d\n", -123);
-    printf("6. Zero: %d\n", 0);
-    printf("7. Large: %d\n", 32767);
-    printf("8. Large negative: %d\n", -32768);
+    // Test uppercase hex
+    printf("Upper hex: %X %X %X\n", 0, 255, 4096);
 
-    // Test 3: Unsigned
-    printf("9. Unsigned: %u\n", 65535);
-    printf("10. Unsigned zero: %u\n", 0);
+    // Test mixed case
+    printf("Mixed: %x %X\n", 0xDEAD, 0xBEEF);
 
-    // Test 4: Hex
-    printf("11. Hex lower: %x\n", 0xDEAD);
-    printf("12. Hex upper: %X\n", 0xBEEF);
-    printf("13. Hex zero: %x\n", 0);
+    // Test boundary values
+    printf("Boundaries: %x %X\n", 0xFFFF, 0x8000);
 
-    // Test 5: Octal
-    printf("14. Octal: %o\n", 511); // 777 in octal
-    printf("15. Octal zero: %o\n", 0);
-}
+    // Test with long values
+    printf("Long hex: %lx %lX\n", 0x12345678UL, 0x87654321UL);
 
-void test_printf_edge_cases() {
-    printf("Testing printf edge cases...\n");
-
-    // Test 1: Format specifier edge cases
-    printf("1. Empty string: '%s'\n", "");
-    printf("2. Null string: '%s'\n", NULL);
-    printf("3. Percent literal: 100%% complete\n");
-    printf("4. Multiple percents: %% %% %%\n");
-
-    // Test 2: Number edge cases
-    printf("5. Max int: %d\n", 2147483647);
-    printf("6. Max unsigned: %u\n", 4294967295U);
-    printf("7. Single digit: %d\n", 7);
-
-    // Test 3: Long modifiers (should work due to our simplification)
-    printf("8. Long decimal: %ld\n", 123456789L);
-    printf("9. Long unsigned: %lu\n", 4000000000UL);
-
-    // Test 4: Boundary values
-    printf("10. Hex boundary: %x\n", 0xFFFFFFFF);
-    printf("11. Octal boundary: %o\n", 077777777);
-
-    // Test 5: Special characters in strings
-    printf("12. Special chars: %s\n", "Tab\tNewline\nCR\r");
-    printf("13. Format chars: %s\n", "Percent% Slash\\ Quote\"");
+    printf("Hex test complete\n");
 }
 
 void test_printf_recursive() {
@@ -127,7 +127,7 @@ void test_printf_error_conditions() {
     // Test 1: Unknown format specifiers
     printf("1. Unknown specifier: %q (should show %q)\n");
     printf("2. Incomplete format: % (should show % )\n");
-    printf("3. Double percent: %%d should show %d literally\n");
+    printf("3. Double percent: %%d should show % d literally\n");
 
     // Test 2: Empty format string
     printf("4. Empty format:\n", 42); // Extra arg should be ignored
@@ -137,17 +137,65 @@ void test_printf_error_conditions() {
     printf("6. Missing string: %s\n"); // Will show garbage but not crash
     printf("7. Missing number: %d\n"); // Will show garbage but not crash
 }
-*/
+
+void test_fputc_file_ops(void) {
+    printf("Testing fputc file operations...\n");
+
+    // Test character output to stdout (handle 1)
+    FILE* stdout_handle = (FILE*)(uintptr_t)1;
+    fputc('A', stdout_handle);
+    fputc('B', stdout_handle);
+    fputc('\n', stdout_handle);
+
+    // Test newline handling
+    fputc('X', stdout_handle);
+    fputc('\n', stdout_handle);
+
+    // Test numeric character output
+    for (int i = 0; i < 5; i++) {
+        fputc('0' + i, stdout_handle);
+    }
+    fputc('\n', stdout_handle);
+
+    printf("fputc test complete\n");
+}
+
+void test_fputs_file_ops(void) {
+    printf("Testing fputs file operations...\n");
+
+    // Test string output to stdout (handle 1)
+    FILE* stdout_handle = (FILE*)(uintptr_t)1;
+    fputs("Hello from fputs\n", stdout_handle);
+
+    // Test empty string
+    fputs("", stdout_handle);
+    fputs("After empty\n", stdout_handle);
+
+    // Test string with spaces
+    fputs("Test string with spaces\n", stdout_handle);
+
+    // Test short strings
+    fputs("A\n", stdout_handle);
+    fputs("AB\n", stdout_handle);
+    fputs("ABC\n", stdout_handle);
+
+    // Test special characters
+    fputs("Special: !@#$%\n", stdout_handle);
+
+    printf("fputs test complete\n");
+}
+
 void test_stdio() {
-    printf(" Testing Tiny stdio.h \n");
 
     test_stdio_basic();
-    //test_printf_basic();
-    //test_printf_edge_cases();
-    //test_printf_recursive();
-    //test_printf_error_conditions();
+    test_printf_integers();
+    test_printf_strings();
+    test_printf_hex();
+    test_printf_recursive();
+    test_printf_error_conditions();
+    test_fputc_file_ops();
+    test_fputs_file_ops();
 
-    printf("=== All printf tests completed (visual inspection required) ===\n");
 }
 
 #endif

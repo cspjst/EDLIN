@@ -51,6 +51,8 @@ FILE* fopen(const char* filename, const char* mode);
 
 int fputc(int c, FILE* stream);
 
+int fputs(const char* str, FILE* stream);
+
 size_t fread(void* ptr, size_t size, size_t count, FILE* stream);
 
 int fseek(FILE* stream, long offset, int origin);
@@ -64,5 +66,7 @@ int printf(const char* format, ...);
 #define putc(c, stream) fputc(c, stream)
 
 #define putchar(c) fputc(c, stdout)
+
+#define puts(str) (fputs(str, stdout), fputc('\n', stdout))
 
 #endif

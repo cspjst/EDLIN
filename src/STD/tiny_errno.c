@@ -27,7 +27,7 @@ static const int dos_to_errno_table[] = {
 
 static const int MAX_ERROR = (sizeof(dos_to_errno_table) / sizeof(dos_to_errno_table[0])) - 1;
 
-int dos_error_to_errno(dos_error_code_t dos_err) {
+int dos_to_errno(dos_error_code_t dos_err) {
     if(dos_err > MAX_ERROR) return EINVAL;
     return dos_to_errno_table[dos_err];
 }
