@@ -1,7 +1,7 @@
-#include "dos_tools_files.h"
+#include "dos_file_tools.h"
 #include "dos_error_types.h"
-#include "dos_services_files.h"
-#include "dos_services_files_types.h"
+#include "dos_file_services.h"
+#include "dos_files_types.h"
 #include <stddef.h>
 
 uint8_t dos_file_exists(const char* path_name) {
