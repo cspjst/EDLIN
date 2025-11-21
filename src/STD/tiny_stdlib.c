@@ -25,7 +25,7 @@ void* calloc(size_t n, size_t size) {
             
             mov     ax, size         
             shl     ax, 3
-            mov     cx, ax          ; CX = paragrpahs * 8 = number of WORDS needed
+            mov     cx, ax          ; CX = paragraphs * 8 = number of WORDS needed
             xor     ax, ax          
             cld     
             les     di, addr
