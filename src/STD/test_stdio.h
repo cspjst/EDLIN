@@ -185,6 +185,99 @@ void test_fputs_file_ops(void) {
     printf("fputs test complete\n");
 }
 
+void test_printf_float_basic(void) {
+    printf("Testing printf %%f (basic)...\n");
+    
+    // Test positive values
+    printf("  %%f: %f\n", 0.0);
+    printf("  %%f: %f\n", 1.0);
+    printf("  %%f: %f\n", 123.456);
+    printf("  %%f: %f\n", 0.123);
+    printf("  %%f: %f\n", 0.0001);
+    printf("  %%f: %f\n", 999.999);
+    
+    // Test negative values
+    printf("  %%f: %f\n", -0.0);
+    printf("  %%f: %f\n", -1.0);
+    printf("  %%f: %f\n", -123.456);
+    printf("  %%f: %f\n", -0.123);
+    printf("  %%f: %f\n", -0.0001);
+    
+    // Test edge cases
+    printf("  %%f: %f\n", 1.0 / 3.0); // Approx 0.333
+    printf("  %%f: %f\n", 2.0 / 3.0); // Approx 0.667
+    printf("  %%f: %f\n", 1.0 / 1000.0); // 0.001
+    
+    printf("printf %%f (basic) test complete.\n\n");
+}
+
+void test_printf_scientific_basic(void) {
+    printf("Testing printf %%e and %%E (basic)...\n");
+    
+    // Test positive values
+    printf("  %%e: %e\n", 0.0);
+    printf("  %%e: %e\n", 1.0);
+    printf("  %%e: %e\n", 123.456);
+    printf("  %%e: %e\n", 0.123);
+    printf("  %%e: %e\n", 0.0001);
+    printf("  %%e: %e\n", 999.999);
+    printf("  %%e: %e\n", 1.0 / 3.0); // Approx 3.333e-1
+    printf("  %%e: %e\n", 1.0 / 1000.0); // 1.000e-3
+    
+    // Test negative values
+    printf("  %%e: %e\n", -0.0);
+    printf("  %%e: %e\n", -1.0);
+    printf("  %%e: %e\n", -123.456);
+    printf("  %%e: %e\n", -0.123);
+    printf("  %%e: %e\n", -0.0001);
+    
+    // Test large number
+    printf("  %%e: %e\n", 1234567.0); // 1.235e+06
+    
+    // Test %%E
+    printf("  %%E: %E\n", 0.0);
+    printf("  %%E: %E\n", 1.0);
+    printf("  %%E: %E\n", 123.456);
+    printf("  %%E: %E\n", 0.123);
+    printf("  %%E: %E\n", 0.0001);
+    printf("  %%E: %E\n", 999.999);
+    printf("  %%E: %E\n", 1.0 / 3.0); // Approx 3.333E-1
+    printf("  %%E: %E\n", 1.0 / 1000.0); // 1.000E-3
+    printf("  %%E: %E\n", 1234567.0); // 1.235E+06
+    
+    printf("printf %%e and %%E (basic) test complete.\n\n");
+}
+
+void test_printf_float_edge_cases(void) {
+    printf("Testing printf %%f, %%e, %%E (edge cases)...\n");
+    
+    // Very small positive number (should be 1.000e-04)
+    printf("  %%f: %f\n", 0.00001); // 0.000
+    printf("  %%e: %e\n", 0.00001); // 1.000e-04
+    printf("  %%E: %E\n", 0.00001); // 1.000E-04
+    
+    // Very small negative number
+    printf("  %%f: %f\n", -0.00001); // -0.000
+    printf("  %%e: %e\n", -0.00001); // -1.000e-04
+    printf("  %%E: %E\n", -0.00001); // -1.000E-04
+    
+    // Very large number (should be 1.235e+06)
+    printf("  %%f: %f\n", 1234567.0); // 1234567.000
+    printf("  %%e: %e\n", 1234567.0); // 1.235e+06
+    printf("  %%E: %E\n", 1234567.0); // 1.235E+06
+    
+    // Zero with negative sign
+    printf("  %%f: %f\n", -0.0); // -0.000
+    printf("  %%e: %e\n", -0.0); // -0.000e+00
+    printf("  %%E: %E\n", -0.0); // -0.000E+00
+    
+    // Large number with fractional part
+    printf("  %%f: %f\n", 1234567.890); // 1234567.890
+    printf("  %%e: %e\n", 1234567.890); // 1.235e+06
+    printf("  %%E: %E\n", 1234567.890); // 1.235E+06
+    
+    printf("printf %%f, %%e, %%E (edge cases) test complete.\n\n");
+
 void test_stdio() {
 
     test_stdio_basic();
@@ -195,7 +288,10 @@ void test_stdio() {
     test_printf_error_conditions();
     test_fputc_file_ops();
     test_fputs_file_ops();
-
+    test_printf_float_basic();
+    test_printf_scientific_basic();
+    test_printf_float_edge_cases();
+    
 }
 
 #endif
