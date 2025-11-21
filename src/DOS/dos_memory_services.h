@@ -5,10 +5,13 @@
 
 #define DOS_PARAGRAPH_SIZE  16UL
 
+
+#pragma pack(1)
 typedef struct {
     uint16_t offset;
     uint16_t segment;       // reverse order as Intel is little-endian
 } dos_segoff_t;
+#pragma pack()
 
 typedef union {
     void* ptr;
