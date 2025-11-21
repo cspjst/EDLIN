@@ -11,7 +11,7 @@ typedef struct {
 } dos_segoff_t;
 
 typedef union {
-    char* ptr;
+    void* ptr;
     uint32_t memloc;
     mem_segoff_t segoff;
     uint16_t words[2];
