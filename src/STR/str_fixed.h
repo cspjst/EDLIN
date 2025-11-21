@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 // constants
-#define STR_FIXED_SIZE  250
+#define STR_FIXED_SIZE  254
 #define STR_UNDEFINED       0
 
 // flags bits 2..7 are availble to user
