@@ -16,8 +16,9 @@ void free(void* p) {
 }
 
 void* calloc(size_t n, size_t size) {
+    if(n > MAX_SIZE / size) return NULL;         // overflow
     dos_address_t addr = {0};
-    size = (uint16_t)(((size * n) + 15) >> 4); // size x n then convert to paragraphs (roundup) 
+    size = (uint16_t)(((size * n) + 15) >> 4);   // size x n then convert to paragraphs (roundup) 
     if(dos_allocate_memory_blocks(size, &addr.segoff.segment) == 0)) {
         __asm {
             .8086                   
