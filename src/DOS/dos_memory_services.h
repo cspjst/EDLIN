@@ -20,10 +20,10 @@ typedef union {
     uint8_t bytes[4];
 } dos_address_t;
 
-uint16_t dos_allocate_memory_blocks(uint16_t paragraphs);
+dos_error_t dos_allocate_memory_blocks(uint16_t paragraphs, uint16_t* segment);
 
-uint16_t dos_free_allocated_memory_blocks(uint16_t segment);
+dos_error_t dos_free_allocated_memory_blocks(uint16_t segment);
 
-uint16_t dos_get_free_memory_paragraphs();
+dos_error_t dos_get_free_memory_paragraphs();
 
 #endif
