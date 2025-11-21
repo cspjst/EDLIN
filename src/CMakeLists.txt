@@ -20,26 +20,33 @@ set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 # watcom compiler options
 # https://users.pja.edu.pl/~jms/qnx/help/watcom/compiler-tools/cpopts.html
 if(WATCOM)
-add_compile_options(
-    -0                  # Generate 8086/8088 instructions ONLY (no 286+)
-    -d0                 # no debug info
-    #-e0                 # no fp
-    #-os                 # optimize for space
-    -za99               # enable partial C99 compatibility
-    -ml                 # memory model options - large model
-    -bt=dos             # Target DOS
-    -w1                 # Mild warnings (avoid /w3 due to 8086 quirks)
-    -zld                # Link only referenced functions
-    #-zu                 # Smart library elimination
-    #-zs                 # Strip debug info from linked libraries
-    -zq                 # Quiet mode (cleaner output)
-    #-dNDEBUG
-)
-add_definitions(
-    -D__DOS__
-    -D__8086__  # Explicit 8086 target
-  )
+    add_compile_options(
+        -0                  # Generate 8086/8088 instructions ONLY (no 286+)
+        -d0                 # no debug info
+        #-e0                 # no fp
+        #-os                 # optimize for space
+        -za99               # enable partial C99 compatibility
+        -ml                 # memory model options - large model
+        -bt=dos             # Target DOS
+        -w1                 # Mild warnings (avoid /w3 due to 8086 quirks)
+        -zld                # Link only referenced functions
+        #-zu                 # Smart library elimination
+        #-zs                 # Strip debug info from linked libraries
+        -zq                 # Quiet mode (cleaner output)
+        #-dNDEBUG
+    )
+    add_compile_definitions(
+        __DOS__
+        __8086__  # Explicit 8086 target
+        # custom tiny stdio policies here
+        TINY_POLICY_STDIO_PRINTF_CAN_FLOAT
+        TINY_POLICY_STDIO_PRINTF_CAN_SCIENTIFIC
+    )
 endif()
+
+# Add definitions
+add_compile_definitions(TINY_POLICY_STDIO_PRINTF_CAN_FLOAT)
+add_compile_definitions(TINY_POLICY_STDIO_PRINTF_CAN_SCIENTIFIC)
 
 # WARNING: Using GLOB for convenience. If adding new files, rerun:
 #   ./cmk.sh
