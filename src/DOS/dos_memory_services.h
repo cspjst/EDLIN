@@ -5,7 +5,6 @@
 
 #define DOS_PARAGRAPH_SIZE  16UL
 
-
 #pragma pack(1)
 typedef struct {
     uint16_t offset;
@@ -20,6 +19,10 @@ typedef union {
     uint16_t words[2];
     uint8_t bytes[4];
 } dos_address_t;
+
+uint16_t dos_allocate_memory_blocks(uint16_t paragraphs);
+
+uint16_t dos_free_allocated_memory_blocks(uint16_t segment);
 
 uint16_t dos_get_free_memory_paragraphs();
 
