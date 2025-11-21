@@ -36,28 +36,27 @@
 * @param       segment* pointer to segment variable
 * @return      the segment address of the reserved memory or 0 if request failed
 */
-uint16_t dos_allocate_memory_blocks(uint16_t paragraphs) {
-    uint16_t available, mem_seg;
+uint16_t dos_allocate_memory_blocks(uint16_t paragraphs, uint16_t* segment) {
     dos_error_code_t err_code;
     available = mem_seg = err_code = 0;
     __asm {
-    .8086
-    pushf
-    push    ds
-
-    mov     bx, paragraphs              ; number requested paragraphs
-    mov     ah, DOS_ALLOCATE_MEMORY_BLOCKS  ; allocate memory
-    int     DOS_SERVICE                 ; 48h service
-    jnc     OK                          ; success CF = 0
-    mov     err_code, ax                ; CF set, and AX = 08 (Not Enough Mem)
-    mov     available, bx               ; size in paras of the largest block of memory available
-    xor     ax, ax
-OK: mov     mem_seg, ax
-
-    pop     ds
-    popf
+        .8086
+        pushf
+        push    ds
+    
+        mov     bx, paragraphs              ; number requested paragraphs
+        mov     ah, DOS_ALLOCATE_MEMORY_BLOCKS  ; allocate memory
+        int     DOS_SERVICE                 ; 48h service
+        jnc     OK                          ; success CF = 0
+        mov     err_code, ax                ; CF set, and AX = 08 (Not Enough Mem)
+        xor     ax, ax
+OK:     les     di, segment
+        stosw
+    
+        pop     ds
+        popf
     }
-    return mem_seg;
+    return err_code;
 }
 
 /**
