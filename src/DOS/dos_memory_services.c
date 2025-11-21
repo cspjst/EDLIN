@@ -36,7 +36,7 @@
 * @param       segment* pointer to segment variable
 * @return      the segment address of the reserved memory or 0 if request failed
 */
-uint16_t dos_allocate_memory_blocks(uint16_t paragraphs, uint16_t* segment) {
+dos_error_t dos_get_free_memory_paragraphs(uint16_t* free); dos_allocate_memory_blocks(uint16_t paragraphs, uint16_t* segment) {
     dos_error_code_t err_code;
     available = mem_seg = err_code = 0;
     __asm {
@@ -105,8 +105,7 @@ uint16_t dos_free_allocated_memory_blocks(uint16_t segment) {
  * available memory, which will be returned in BX. (The call will return an error, which can be
  * ignored, since DOS cannot allocate more than 640k of memory.)
  */
-uint16_t dos_get_free_memory_paragraphs() {
-    uint16_t low_free;
+dos_error_t dos_get_free_memory_paragraphs(uint16_t* free) {
     dos_error_code_t err_code;
     __asm {
         .8086
@@ -117,11 +116,11 @@ uint16_t dos_get_free_memory_paragraphs() {
         mov     ah, DOS_ALLOCATE_MEMORY_BLOCKS  ; allocate memory
         int     DOS_SERVICE                 ; 48h service
         mov     err_code, ax                ; CF set, and AX = 08 (Not Enough Mem)
-        mov     low_free, bx                ; size in paras of the largest block of low memory available
+        les     di, free
+        mov     es:[di], bx                ; size in paras of the largest block of low memory available
 
         pop     ds
         popf
     }
-//  assert(err_code == DOS_INSUFFICIENT_MEMORY);
-    return low_free;
+    return err_code; 
 }
