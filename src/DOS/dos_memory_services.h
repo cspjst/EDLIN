@@ -1,6 +1,7 @@
 #ifndef DOS_MEMORY_SERVICES_H
 #define DOS_MEMORY_SERVICES_H
 
+#include "dos_error_types.h"
 #include <stdint.h>
 
 #define DOS_PARAGRAPH_SIZE  16UL
@@ -24,6 +25,6 @@ dos_error_t dos_allocate_memory_blocks(uint16_t paragraphs, uint16_t* segment);
 
 dos_error_t dos_free_allocated_memory_blocks(uint16_t segment);
 
-dos_error_t dos_get_free_memory_paragraphs();
+dos_error_t dos_get_free_memory_paragraphs(uint16_t* free);
 
 #endif
