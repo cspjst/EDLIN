@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define DOS_PARAGRAPH_SIZE  16UL
+
 typedef struct {
     uint16_t offset;
     uint16_t segment;       // reverse order as Intel is little-endian
