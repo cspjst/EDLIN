@@ -84,15 +84,11 @@ void* dos_get_interrupt_vector(uint8_t vec_num);
 // 45  Duplicate file handle
 // 46  Force duplicate file handle
 // 47  Get current directory
-
 // 48  Allocate memory blocks
-uint16_t dos_allocate_memory_blocks(uint16_t paragraphs);
-
 // 49  Free allocated memory blocks
-uint16_t dos_free_allocated_memory_blocks(uint16_t segment);
-
 // 4A  Modify allocated memory blocks
 // 4B  EXEC load and execute program (func 1 undocumented)
+
 // 4C  Terminate process with return code
 void dos_terminate_process_with_return_code(uint8_t return_code);
 
