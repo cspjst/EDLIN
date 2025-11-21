@@ -94,6 +94,8 @@ uint16_t dos_free_allocated_memory_blocks(uint16_t segment);
 // 4A  Modify allocated memory blocks
 // 4B  EXEC load and execute program (func 1 undocumented)
 // 4C  Terminate process with return code
+void dos_terminate_process_with_return_code(uint8_t return_code);
+
 // 4D  Get return code of a sub-process
 // 4E  Find first matching file
 // 4F  Find next matching file

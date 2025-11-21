@@ -153,3 +153,26 @@ uint16_t dos_free_allocated_memory_blocks(uint16_t segment) {
     }
     return err_code;
 }
+
+/**
+ * @brief INT 21,4C - Terminate Process With Return Code
+ *
+ * AH = 4C
+ * AL = return code (for batch files)
+ * returns nothing
+ * - approved method of program termination
+ * - restores the terminate, Ctrl-Break, and critical error exit
+ * 	 addresses, flushes all buffers, frees memory and returns to
+ * 	 DOS via the termination handler address
+ * - does not close FCBs
+ * - this function is not supported in versions of DOS before 2.x
+ */
+void dos_terminate_process_with_return_code(uint8_t return_code) {
+    __asm {
+        .8086
+        mov     al, return_code
+        mov     ah, DOS_TERMINATE_PROCESS_WITH_RETURN_CODE
+        int     DOS_SERVICE
+        // program ends here - no return
+    }
+}

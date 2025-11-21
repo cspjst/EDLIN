@@ -15,5 +15,6 @@ int main() {
     //test_line_sequence();
     //test_file_buffer();
 
+    printf("sizeof size_t = %i", sizeof(size_t));
 
 }
