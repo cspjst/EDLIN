@@ -1,6 +1,7 @@
 #include "tiny_stdio.h"
 #include "tiny_errno.h"
 #include "../DOS/dos_services_constants.h"
+#include "../DOS/dos_file_constants.h"
 #include <stdarg.h>
 #include <stdbool.h>
 #include <limits.h>
@@ -220,10 +221,41 @@ int printf(const char* format, ...) {
 
 // character input
 int fgetc(FILE* stream) {
+    char buffer;
+    uint16_t bytes_read = 0;
+    dos_error_code_t err;
 
+    err = dos_read_file((dos_file_handle_t)(uintptr_t)stream, 1, &buffer, &bytes_read);
+
+    if (err != DOS_SUCCESS || bytes_read == 0) return EOF;
+    return (unsigned char)buffer;   // unsigned char cast to int (per C standard)
 }
 
 // string input
-char* fgets(char* s, int size, FILE* stream){
+char* fgets(char* s, int size, FILE* stream) {
+    if (!s || !stream || size <= 0) return NULL;
 
+    dos_file_handle_t handle = (dos_file_handle_t)(uintptr_t)stream;
+    char* p = s;
+    uint16_t bytes_read = 0;
+    dos_error_code_t err;
+    size--;
+
+    if (handle == DOS_STDIN_HANDLE) { // character by character input
+        char c;
+        while (size) {
+            err = dos_read_file(handle, 1, &c, &bytes_read);
+            if (err != DOS_SUCCESS && p == s) return NULL;
+            if (err != DOS_SUCCESS) break;
+            *p++ = c;
+            if (c == '\n') break;
+            size--;
+        }
+    } else {
+        dos_error_code_t err = dos_read_file(handle, size, s, &bytes_read);
+        if (bytes_read == 0) return NULL;
+        while(*p++ != '\n' && p != s + bytes_read);
+    }
+    *p = '\0';
+    return s;
 }

@@ -280,6 +280,74 @@ void test_printf_float_edge_cases(void) {
 
 }
 
+// test_fgets.c
+#include "tiny_stdio.h"
+#include "tiny_assert.h"
+
+#define TEST_BUF_SIZE 64
+
+void test_fgets_stdin(void) {
+    char buf[TEST_BUF_SIZE];
+    printf("=== Testing fgets from stdin ===\n");
+    printf("Enter a line (max %d chars): ", TEST_BUF_SIZE - 1);
+    char* result = fgets(buf, TEST_BUF_SIZE, stdin);
+    if (result == NULL) {
+        printf("fgets returned NULL (EOF or error)\n");
+        return;
+    }
+    printf("You entered: '%s'\n", buf);
+    // Verify null termination
+    assert(buf[TEST_BUF_SIZE - 1] == '\0' || strlen(buf) < TEST_BUF_SIZE);
+    printf("stdin test passed\n\n");
+}
+
+void test_fgets_file(void) {
+    FILE* f = fopen("test.txt", "w");
+    if (!f) {
+        printf("Failed to create test.txt\n");
+        return;
+    }
+    fputs("Hello, DOS!\nSecond line\n", f);
+    fclose(f);
+
+    f = fopen("test.txt", "r");
+    if (!f) {
+        printf("Failed to open test.txt for reading\n");
+        return;
+    }
+
+    char buf[TEST_BUF_SIZE];
+    printf("=== Testing fgets from file ===\n");
+
+    // First line
+    char* result = fgets(buf, TEST_BUF_SIZE, f);
+    printf("Line 1: '%s'\n", buf);
+    assert(result != NULL);
+    assert(strcmp(buf, "Hello, DOS!\n") == 0);
+
+    // Second line
+    result = fgets(buf, TEST_BUF_SIZE, f);
+    printf("Line 2: '%s'\n", buf);
+    assert(result != NULL);
+    assert(strcmp(buf, "Second line\n") == 0);
+
+    // EOF
+    result = fgets(buf, TEST_BUF_SIZE, f);
+    assert(result == NULL);
+    printf("File test passed\n\n");
+
+    fclose(f);
+    remove("test.txt");
+}
+
+int main(void) {
+    printf("Running fgets tests...\n\n");
+    test_fgets_file();      // Non-interactive
+    test_fgets_stdin();     // Interactive
+    printf("All fgets tests passed!\n");
+    return 0;
+}
+
 void test_stdio() {
 
     test_stdio_basic();
@@ -293,6 +361,10 @@ void test_stdio() {
     test_printf_float_basic();
     test_printf_scientific_basic();
     test_printf_float_edge_cases();
+
+    printf("Running fgets tests...\n\n");
+    test_fgets_file();      // Non-interactive
+    test_fgets_stdin();     // Interactive
 
 }
 

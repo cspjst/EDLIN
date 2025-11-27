@@ -1,10 +1,10 @@
 #ifndef TEST_DOS_FILES_H
 #define TEST_DOS_FILES_H
 
-#include "dos_tools_files.h"
-#include "dos_services_files.h"
+#include "dos_file_tools.h"
+#include "dos_file_services.h"
 #include "dos_error_types.h"
-#include "dos_services_files_types.h"
+#include "dos_file_services.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
