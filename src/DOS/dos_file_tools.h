@@ -1,7 +1,7 @@
 #ifndef DOS_FILE_TOOLS_H
 #define DOS_FILE_TOOLS_H
 
-#include "dos_files_types.h"
+#include "dos_file_types.h"
 #include "dos_error_types.h"
 #include <stdint.h>
 

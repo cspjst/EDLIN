@@ -1,2 +1,0 @@
-/Users/jeremythornton/dosbox/cspjst/edlin/src/STD/tiny_stdlib.c(5): Warning! W107: Missing return value for function 'malloc'
-/Users/jeremythornton/dosbox/cspjst/edlin/src/STD/tiny_stdlib.c(13): Warning! W107: Missing return value for function 'calloc'

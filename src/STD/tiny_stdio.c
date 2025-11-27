@@ -1,5 +1,5 @@
 #include "tiny_stdio.h"
-#include "errno.h"
+#include "tiny_errno.h"
 #include "../DOS/dos_services_constants.h"
 #include <stdarg.h>
 #include <stdbool.h>
@@ -66,7 +66,7 @@ static void print_scientific(double val, bool uppercase) {
     }
     print_float(val);
     putchar(uppercase ? 'E' : 'e');
-    print_int(exp, 1, 10);
+    print_int(exp, 10);
 }
 #endif
 

@@ -16,15 +16,15 @@ typedef struct {
 typedef union {
     void* ptr;
     uint32_t memloc;
-    mem_segoff_t segoff;
+    dos_segoff_t segoff;
     uint16_t words[2];
     uint8_t bytes[4];
 } dos_address_t;
 
-dos_error_t dos_allocate_memory_blocks(uint16_t paragraphs, uint16_t* segment);
+dos_error_code_t dos_allocate_memory_blocks(uint16_t paragraphs, uint16_t* segment);
 
-dos_error_t dos_free_allocated_memory_blocks(uint16_t segment);
+dos_error_code_t dos_free_allocated_memory_blocks(uint16_t segment);
 
-dos_error_t dos_get_free_memory_paragraphs(uint16_t* free);
+dos_error_code_t dos_get_free_memory_paragraphs(uint16_t* free);
 
 #endif

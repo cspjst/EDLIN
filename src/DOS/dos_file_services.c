@@ -1,7 +1,7 @@
 #include "dos_file_services.h"
 #include "dos_error_types.h"
-#include "dos_constants.h"
-#include "dos_files_types.h"
+#include "dos_services_constants.h"
+#include "dos_file_types.h"
 
 /**
 * INT 21,36 - Get Disk Free Space

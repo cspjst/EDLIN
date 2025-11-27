@@ -28,7 +28,7 @@
  * - 16-bit file positions only
  */
 
-#include "../DOS/dos_services_files.h"
+#include "../DOS/dos_file_services.h"
 #include <stddef.h>
 
 #define EOF (-1)

@@ -1,4 +1,4 @@
-#include "dos_memory_services.h" 
+#include "dos_memory_services.h"
 #include "../DOS/dos_error_types.h"
 #include "../DOS/dos_services_constants.h"
 
@@ -36,14 +36,13 @@
 * @param       segment* pointer to segment variable
 * @return      the segment address of the reserved memory or 0 if request failed
 */
-dos_error_t dos_get_free_memory_paragraphs(uint16_t* free); dos_allocate_memory_blocks(uint16_t paragraphs, uint16_t* segment) {
-    dos_error_code_t err_code;
-    available = mem_seg = err_code = 0;
+dos_error_code_t dos_allocate_memory_blocks(uint16_t paragraphs, uint16_t* segment) {
+    dos_error_code_t err_code = 0;
     __asm {
         .8086
         pushf
         push    ds
-    
+
         mov     bx, paragraphs              ; number requested paragraphs
         mov     ah, DOS_ALLOCATE_MEMORY_BLOCKS  ; allocate memory
         int     DOS_SERVICE                 ; 48h service
@@ -52,7 +51,7 @@ dos_error_t dos_get_free_memory_paragraphs(uint16_t* free); dos_allocate_memory_
         xor     ax, ax
 OK:     les     di, segment
         stosw
-    
+
         pop     ds
         popf
     }
@@ -105,7 +104,7 @@ uint16_t dos_free_allocated_memory_blocks(uint16_t segment) {
  * available memory, which will be returned in BX. (The call will return an error, which can be
  * ignored, since DOS cannot allocate more than 640k of memory.)
  */
-dos_error_t dos_get_free_memory_paragraphs(uint16_t* free) {
+dos_error_code_t dos_get_free_memory_paragraphs(uint16_t* free) {
     dos_error_code_t err_code;
     __asm {
         .8086
@@ -122,5 +121,5 @@ dos_error_t dos_get_free_memory_paragraphs(uint16_t* free) {
         pop     ds
         popf
     }
-    return err_code; 
+    return err_code;
 }
