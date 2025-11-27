@@ -72,6 +72,7 @@ static void print_scientific(double val, bool uppercase) {
 
 // ================
 
+// character output
 int fputc(int c, FILE* stream) {
     dos_file_handle_t handle = (dos_file_handle_t)(uintptr_t)stream;
     dos_error_code_t dos_err = 0;
@@ -113,6 +114,7 @@ END:    pop     si
     return (unsigned char)c;
 }
 
+// string output
 int fputs(const char* str, FILE* stream) {
     while (*str) {
         if (fputc(*str++, stream) == EOF) return EOF;
@@ -120,6 +122,7 @@ int fputs(const char* str, FILE* stream) {
     return 0;
 }
 
+// formatted output
 int printf(const char* format, ...) {
     va_list args;
     va_start(args, format);
@@ -213,4 +216,14 @@ int printf(const char* format, ...) {
 
     va_end(args);
     return 0;
+}
+
+// character input
+int fgetc(FILE* stream) {
+
+}
+
+// string input
+char* fgets(char* s, int size, FILE* stream){
+
 }

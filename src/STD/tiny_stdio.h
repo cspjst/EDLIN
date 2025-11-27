@@ -37,36 +37,46 @@
 #define SEEK_CUR FSEEK_CUR
 #define SEEK_END FSEEK_END
 
+#define TINY_POLICY_STDIO_GETS_MAX  256
+
 typedef dos_file_handle_t FILE;
 
-#define stdin   ((FILE *)0)
-#define stdout  ((FILE *)1)
-#define stderr  ((FILE *)2)
+// C type punning
+#define stdin  ((FILE*)(uintptr_t)0)
+#define stdout ((FILE*)(uintptr_t)1)
+#define stderr ((FILE*)(uintptr_t)2)
 
-int fclose(FILE* stream);
-
-int fgetc(FILE* stream);
-
-FILE* fopen(const char* filename, const char* mode);
-
-int fputc(int c, FILE* stream);
-
-int fputs(const char* str, FILE* stream);
-
-size_t fread(void* ptr, size_t size, size_t count, FILE* stream);
-
-int fseek(FILE* stream, long offset, int origin);
-
-long ftell(FILE* stream);
-
-size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
-
-int printf(const char* format, ...);
-
-#define putc(c, stream) fputc(c, stream)
-
+// character output
+int fputc(int c, FILE* stream);             // core primitive
+#define putc(c, stream) fputc(c, stream)    // macro alias
 #define putchar(c) fputc(c, stdout)
 
+// string output
+int fputs(const char* str, FILE* stream);
 #define puts(str) (fputs(str, stdout), fputc('\n', stdout))
+
+// formatted ouput
+int printf(const char* format, ...);    // NB policy defined
+
+// character input
+int fgetc(FILE* stream);            // core primitive
+#define getc(stream) fgetc(stream)  // macro alias
+#define getchar() fgetc(stdin)      // convenience macro
+
+// string input
+char* fgets(char* s, int size, FILE* stream);   // safe line reading (stops at \n, EOF, or size-1)
+#define gets(s) fgets((s), TINY_POLICY_STDIO_GETS_MAX, stdin);  // NB inherently unsafe anddeprecated in C99
+
+// formatted input
+int fscanf(FILE* stream, const char* format, ...);  // NB policy defined
+#define scanf(fmt, ...) fscanf(stdin, fmt, ##__VA_ARGS__)   // convenience macro
+
+// file operations
+FILE* fopen(const char* filename, const char* mode);
+size_t fread(void* ptr, size_t size, size_t count, FILE* stream);
+size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream);
+int fseek(FILE* stream, long offset, int origin);
+long ftell(FILE* stream);
+int fclose(FILE* stream);
 
 #endif
