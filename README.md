@@ -1,5 +1,8 @@
 # EDLIN - A Historical Re-creation in C
 My C99 implementation of the venerable PC/MS-DOS multi-modal, line-orientated, text editor - EDLIN.
+```
+© Jeremy Simon Thornton 2025
+```
 
 ## Synopsis
 EDLIN was developed in 1980 by Tim Paterson for Seattle Computer Products' QDOS 0.1. When Paterson sold the operating system to Microsoft, EDLIN was included as a temporary solution—intended to last about six months. By virtue of its sheer utility, it persisted as the standard text editor until MS-DOS 4.01, surviving for nearly 11 years until the release of MS-DOS 5.0. During that time, despite various language localizations, it was never significantly updated or overhauled.
